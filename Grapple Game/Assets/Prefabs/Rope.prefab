@@ -92,7 +92,7 @@ LineRenderer:
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.33333334
-      m_PreInfinity: 2
+      m_PreInfinity: 3
       m_PostInfinity: 2
       m_RotationOrder: 4
     colorGradient:
@@ -144,11 +144,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e443bc229f4dcf4cbf89dc717c20d7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
   points: []
   lines: []
-  swingDecceleration: 0.5
-  velPower: 0.96
   gravityScale: 1
   fullTime: 2
   invisTime: 0

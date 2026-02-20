@@ -1,0 +1,61 @@
+2026-02-19 16:54:58.3848 [INFO; Root]  KinematicSoup Technologies Inc.
+2026-02-19 16:54:58.3895 [INFO; Root]  Scene Fusion Server 2.0.4asl
+2026-02-19 16:54:58.4195 [DEBUG; Root]  Loading Asset Scripts
+2026-02-19 16:54:58.4204 [DEBUG; Root]  Loading Room Configs
+2026-02-19 16:54:58.4221 [DEBUG; Root]  Loading entity prefabs
+2026-02-19 16:54:58.4222 [DEBUG; Root]  Loading entity instances
+2026-02-19 16:54:58.4226 [DEBUG; Root]  Initializing scripts
+2026-02-19 16:54:58.4300 [INFO; Root]  Loading config.json
+2026-02-19 16:54:58.4302 [INFO; Root]  ProjectId: 1
+2026-02-19 16:54:58.4302 [INFO; Root]  Tier: SF Unity LAN
+2026-02-19 16:54:58.4302 [INFO; Root]  Terrain Editing: True
+2026-02-19 16:54:58.4302 [INFO; Root]  Object Limit: Unlimited
+2026-02-19 16:54:58.4673 [DEBUG; Root]  Room setup complete
+2026-02-19 16:54:58.4677 [INFO;  .⁑]  Starting room 0
+2026-02-19 16:54:58.4678 [INFO; Root]  Sending client updates every 6 frames
+2026-02-19 16:54:58.4679 [INFO; Root]  Setting player limit to 2
+2026-02-19 16:54:58.4679 [INFO; Root]  Opening TCP port 8000
+2026-02-19 16:55:00.2525 [INFO; Root]  Client(id = 1, address = 127.0.0.1:53340) connected
+2026-02-19 16:55:00.2528 [DEBUG; Root]  Client(id = 1, address = 127.0.0.1:53340) model validated
+2026-02-19 16:55:00.2693 [INFO; Authentication]  Client(id = 1, address = 127.0.0.1) authenticated.
+2026-02-19 16:55:00.2709 [INFO; KS.SceneFusion2.Server.srAuthenticationManager]  Connection [account = Komine3000, address = 127.0.0.1]
+2026-02-19 16:55:00.2852 [INFO; Root]  Client(id = 2, address = 10.0.0.43:49343) connected
+2026-02-19 16:55:00.2856 [DEBUG; Root]  Client(id = 2, address = 10.0.0.43:49343) model validated
+2026-02-19 16:55:00.2937 [INFO; Authentication]  Client(id = 2, address = 10.0.0.43) authenticated.
+2026-02-19 16:55:00.3102 [INFO; KS.SceneFusion2.Server.srAuthenticationManager]  Connection [account = NinjaCad, address = 10.0.0.43]
+2026-02-19 16:55:00.3228 [DEBUG; KS.SceneFusion2.Server.srObjectManager]  Created 1 object(s).
+Total: 85 B (1), Config: 53 B (1), String Table: 32 B
+2026-02-19 16:55:00.3239 [DEBUG; KS.SceneFusion2.Server.srObjectManager]  Created 1 object(s).
+Total: 168 B (2), String Table: 71 B, Config: 53 B (1), SceneSubscriptions: 44 B (1)
+2026-02-19 16:55:00.3249 [DEBUG; KS.SceneFusion2.Server.srObjectManager]  Created 1 object(s).
+Total: 193 B (3), String Table: 80 B, Config: 53 B (1), SceneSubscriptions: 44 B (1), SceneLock: 16 B (1)
+2026-02-19 16:55:00.3255 [DEBUG; KS.SceneFusion2.Server.srObjectManager]  Created 1 object(s).
+Total: 474 B (4), Avatar: 198 B (1), String Table: 163 B, Config: 53 B (1), SceneSubscriptions: 44 B (1), SceneLock: 16 B (1)
+2026-02-19 16:55:00.3957 [DEBUG; KS.SceneFusion2.Server.srObjectManager]  Created 1 object(s).
+Total: 557 B (5), String Table: 202 B, Avatar: 198 B (1), SceneSubscriptions: 88 B (2), Config: 53 B (1), SceneLock: 16 B (1)
+2026-02-19 16:55:00.3957 [DEBUG; KS.SceneFusion2.Server.srObjectManager]  Created 1 object(s).
+Total: 838 B (6), Avatar: 396 B (2), String Table: 285 B, SceneSubscriptions: 88 B (2), Config: 53 B (1), SceneLock: 16 B (1)
+2026-02-19 16:55:00.8469 [DEBUG; KS.SceneFusion2.Server.srObjectManager]  Created 1 object(s).
+Total: 1.03 kB (7), Avatar: 396 B (2), String Table: 390 B, SceneSubscriptions: 104 B (2), AssetPath: 69 B (1), Config: 53 B (1), SceneLock: 16 B (1)
+2026-02-19 16:55:00.8470 [DEBUG; KS.SceneFusion2.Server.srObjectManager]  Created 1 object(s).
+Total: 1.19 kB (8), String Table: 502 B, Avatar: 396 B (2), AssetPath: 121 B (2), SceneSubscriptions: 104 B (2), Config: 53 B (1), SceneLock: 16 B (1)
+2026-02-19 16:55:00.8470 [DEBUG; KS.SceneFusion2.Server.srObjectManager]  Created 1 object(s).
+Total: 1.37 kB (9), String Table: 592 B, Avatar: 396 B (2), AssetPath: 210 B (3), SceneSubscriptions: 104 B (2), Config: 53 B (1), SceneLock: 16 B (1)
+2026-02-19 16:55:00.8470 [DEBUG; KS.SceneFusion2.Server.srObjectManager]  Created 1 object(s).
+Total: 1.51 kB (10), String Table: 675 B, Avatar: 396 B (2), AssetPath: 262 B (4), SceneSubscriptions: 104 B (2), Config: 53 B (1), SceneLock: 16 B (1)
+2026-02-19 16:55:00.8549 [DEBUG; KS.SceneFusion2.Server.srObjectManager]  Created 2514 object(s).
+Total: 241 kB (2524), Component: 187 kB (1884), GameObject: 48.7 kB (625), String Table: 3.3 kB, LightmapSettings: 981 B (1), RenderSettings: 518 B (1), Avatar: 396 B (2), AssetPath: 262 B (4), SceneSubscriptions: 104 B (2), OcclusionSettings: 76 B (1), Config: 53 B (1), Scene: 28 B (1), SceneLock: 16 B (1), Hierarchy: 16 B (1)
+2026-02-19 16:55:03.6058 [WARNING; Root]  Network sync rate is lower than the target sync rate. Sync rate reduced to 9 of 10 syncs per second.
+2026-02-19 16:55:09.3936 [INFO; Root]  Client(id = 2, address = 10.0.0.43:49343) disconnected: 2-End of file
+2026-02-19 16:55:09.3952 [INFO; KS.SceneFusion2.Server.srAuthenticationManager]  Disconnection [account = NinjaCad, address = 10.0.0.43]
+2026-02-19 16:55:09.3996 [DEBUG; KS.SceneFusion2.Server.srObjectManager]  Deleted 2 object(s).
+Total: 241 kB (2522), Component: 187 kB (1884), GameObject: 48.7 kB (625), String Table: 3.3 kB, LightmapSettings: 981 B (1), RenderSettings: 518 B (1), AssetPath: 262 B (4), Avatar: 198 B (1), OcclusionSettings: 76 B (1), SceneSubscriptions: 60 B (1), Config: 53 B (1), Scene: 28 B (1), SceneLock: 16 B (1), Hierarchy: 16 B (1)
+2026-02-19 16:55:12.8732 [INFO; Root]  Client(id = 1, address = 127.0.0.1:53340) disconnected: 2-End of file
+2026-02-19 16:55:12.8841 [INFO; KS.SceneFusion2.Server.srAuthenticationManager]  Disconnection [account = Komine3000, address = 127.0.0.1]
+2026-02-19 16:55:12.8861 [DEBUG; KS.SceneFusion2.Server.srObjectManager]  Deleted 2 object(s).
+Total: 241 kB (2520), Component: 187 kB (1884), GameObject: 48.7 kB (625), String Table: 3.3 kB, LightmapSettings: 981 B (1), RenderSettings: 518 B (1), AssetPath: 262 B (4), OcclusionSettings: 76 B (1), Config: 53 B (1), Scene: 28 B (1), SceneLock: 16 B (1), Hierarchy: 16 B (1)
+2026-02-19 16:55:12.8861 [INFO; KS.SceneFusion2.Server.srAuthenticationManager]  Shutting down because no users are connected.
+2026-02-19 16:55:12.9656 [INFO;  .⁑]  Stopping room 0
+2026-02-19 16:55:12.9666 [DEBUG; KS.SceneFusion2.Server.srAnalytics]  Sending analytics data...
+2026-02-19 16:55:13.1953 [DEBUG; KS.SceneFusion2.Server.srAnalytics]  Analytics event recorded succesfully.
+2026-02-19 16:55:16.1673 [INFO; Root]  Closing TCP port 8000

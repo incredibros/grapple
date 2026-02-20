@@ -5,11 +5,14 @@ using UnityEngine;
 
 public class PlayerRope : PlayerSystem
 {
+    // This system script creates, moves, and detaches ropes from the player, but does not handle rope physics or rendering
+    
     Rope ropeScript;
     
     void Update()
     {
-        if (ropeScript == null) { return; }
+        if (ropeScript == null)
+            { return; }
 
         ropeScript.points[0].pastPos = ropeScript.points[0].currentPos;
 		ropeScript.points[0].currentPos = transform.position;
@@ -17,7 +20,8 @@ public class PlayerRope : PlayerSystem
 
     void CreateNewRope(Vector2 grapplePoint)
     {
-        if (ropeScript != null) { DetachRope(); }
+        if (ropeScript != null)
+            { DetachRope(); }
         
         GameObject currentPrefab = Instantiate(player.data.grapplePrefab);
 		ropeScript = currentPrefab.GetComponent<Rope>();
@@ -37,16 +41,17 @@ public class PlayerRope : PlayerSystem
 		}
 
 		ropeScript.points.Add(new Point());
-		ropeScript.points[ropeScript.points.Count - 1].currentPos = grapplePoint;
-		ropeScript.points[ropeScript.points.Count - 1].isLocked = true;
+		ropeScript.points[^1].currentPos = grapplePoint;
+		ropeScript.points[^1].isLocked = true;
 		ropeScript.lines.Add(new Line());
-		ropeScript.lines[ropeScript.lines.Count - 1].pointIndexes = new int2(ropeScript.points.Count - 1, ropeScript.points.Count - 2);
-		ropeScript.lines[ropeScript.lines.Count - 1].lineLength = grappleRadius % 0.5f;
+		ropeScript.lines[^1].pointIndexes = new int2(ropeScript.points.Count - 1, ropeScript.points.Count - 2);
+		ropeScript.lines[^1].lineLength = grappleRadius % 0.5f;
     }
 
     void DetachRope()
     {
-        if (ropeScript == null) { return; }
+        if (ropeScript == null)
+            { return; }
 
         ropeScript.points[0].isLocked = false;
 		for (int i = 0; i < ropeScript.lines.Count; i++)

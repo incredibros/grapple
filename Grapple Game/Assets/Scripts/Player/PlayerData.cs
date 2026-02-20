@@ -5,7 +5,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/PlayerData", order = 1)]
 public class PlayerData : ScriptableObject
 {
-    [Header("Run")]
+    // This script contains all the info to control the player
+	// This script is a child of scriptable object, which is a premade unity script that basically allows this script to keep all of its info
+	// in its own file location outside of the player
+	
+	[Header("Run")]
 	public float moveSpeed;
 	public float acceleration;
 	public float decceleration;
