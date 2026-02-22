@@ -33,7 +33,7 @@ public class PlayerData : ScriptableObject
 	public float maxFallSpeed;
 	public float fastFallMultiplier;
 	[Space(5)]
-	public float wallSlideGravity;
+	public float wallSlideGravityMultiplier;
 	public float startWallSlideSpeed;
 	public float maxWallSlideSpeed;
 	

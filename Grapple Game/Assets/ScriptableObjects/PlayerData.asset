@@ -29,7 +29,7 @@ MonoBehaviour:
   fallGravityMultiplier: 2
   maxFallSpeed: 40
   fastFallMultiplier: 2
-  wallSlideGravity: 1.35
+  wallSlideGravityMultiplier: 0
   startWallSlideSpeed: 2.5
   maxWallSlideSpeed: 15
   groundCheckPoint: {x: 0, y: -0.55}
