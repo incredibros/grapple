@@ -13,17 +13,17 @@ public class PlayerMovement : PlayerSystem
 	DistanceJoint2D joint;
 	Rope ropeScript;
 
-	PlayerStates state = new PlayerStates();
+    PlayerStates state = new PlayerStates();
 	Vector2 moveInput;
 
 	float coyote;
 	float2 wallCoyote;
 	float buffer;
 	float jumpDelay;
+	float accelTime;
 
 	[HideInInspector] public Vector2 grapplePoint;
 	[HideInInspector] public float grappleRadius;
-	[HideInInspector] public bool inGrappleAccel;
 
 	// Override calls this awake function instead of the awake function from the parent
 	// base.Awake still makes sure to call the parent's awake function
@@ -36,7 +36,7 @@ public class PlayerMovement : PlayerSystem
 
 	void Update()
 	{
-		if (state.isDead || state.isPulling)
+		if (state.isDead)
 			{ return; }
 		
 		#region Timers
@@ -45,6 +45,7 @@ public class PlayerMovement : PlayerSystem
 		wallCoyote[1] -= Time.deltaTime;
 		buffer -= Time.deltaTime;
 		jumpDelay -= Time.deltaTime;
+		accelTime += Time.deltaTime;
 		#endregion
 
 		#region Checks
@@ -52,7 +53,6 @@ public class PlayerMovement : PlayerSystem
 		{
 			coyote = player.data.coyoteTime;
 			state.onGround = true;
-			inGrappleAccel = false;
 		}
 		else
 			{ state.onGround = false; }
@@ -62,18 +62,12 @@ public class PlayerMovement : PlayerSystem
 			state.isFalling = true;
 			if (moveInput.y == -1)
 				{ state.isFastFalling = true; }
-			// Keep here for now
-			state.isJumping = false;
-			state.isWallJumping = false;
 		}
 		else
 		{
 			state.isFalling = false;
 			state.isFastFalling = false;
 		}
-		
-		if (moveInput.x == -Mathf.Sign(rb.velocity.x))
-			{ inGrappleAccel = false; }
 
 		state.onWall = new bool2(Physics2D.OverlapBox(player.data.leftCheckPoint + (Vector2) transform.position, player.data.wallCheckSize, 0f, player.data.wallLayer) && Mathf.Abs(rb.velocity.x) <= 0.001f,
 			Physics2D.OverlapBox(player.data.rightCheckPoint + (Vector2) transform.position, player.data.wallCheckSize, 0f, player.data.wallLayer) && Mathf.Abs(rb.velocity.x) <= 0.001f);
@@ -112,26 +106,15 @@ public class PlayerMovement : PlayerSystem
 
 	void FixedUpdate()
 	{
-		if (state.isDead || state.isPulling)
+		if (state.isDead)
 			{ return; }
 		
 		#region Run
-		if ((state.isWallJumping[0] && moveInput.x == -1) || (state.isWallJumping[1] && moveInput.x == 1))
-			{ moveInput.x = 0; }
-
 		float targetSpeed = moveInput.x * player.data.moveSpeed;
 		float speedDif = targetSpeed - rb.velocity.x;
-		float accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? (!inGrappleAccel ? player.data.acceleration : player.data.swingAcceleration) : (state.isWallJumping.Equals(false) ? (!inGrappleAccel ? player.data.decceleration : player.data.swingDecceleration) : player.data.wallJumpDecceleration);
+		float accelRate = FindAcceleration(Mathf.Abs(targetSpeed) > 0.01f);
 		float movement = Mathf.Pow(Mathf.Abs(speedDif) * accelRate, player.data.velPower) * Mathf.Sign(speedDif);
 		rb.AddForce(movement * Vector2.right);
-		#endregion
-
-		#region Friction
-		if (state.onGround && Mathf.Abs(moveInput.x) == 0f)
-		{
-			float amount = Mathf.Min(Mathf.Abs(rb.velocity.x), player.data.frictionAmount) * Mathf.Sign(rb.velocity.x);
-			rb.AddForce(Vector2.right * -amount, ForceMode2D.Impulse);
-		}
 		#endregion
 
 		#region Gravity
@@ -151,6 +134,25 @@ public class PlayerMovement : PlayerSystem
         moveInput = input;
     }
 
+	float FindAcceleration(bool accel)
+	{
+		// WallJump(3) -> Pull(4) -> Ground(0) -> Swing(2) -> Air(1)
+
+		if (!state.isWallJumping.Equals(false) && accelTime >= player.data.accels[3].time)
+			{ state.isWallJumping = false; }
+		if (state.isPulling && accelTime >= player.data.accels[4].time)
+			{ state.isPulling = false; }
+		
+		int type = !state.isWallJumping.Equals(false) ? 3 : state.isPulling ? 4 : state.onGround ? 0 : state.isHanging ? 2 : 1;
+		float value = accel ? player.data.accels[type].accel : player.data.accels[type].decel;
+		if (type == 3 || type == 4)
+		{
+			value *= accel ? player.data.accels[type].accelCurve.Evaluate(accelTime / player.data.accels[type].time)
+			: player.data.accels[type].decelCurve.Evaluate(accelTime / player.data.accels[type].time);
+		}
+		return value;
+	}
+
     void OnJumpButtonDown()
     {
         buffer = player.data.bufferTime;
@@ -168,10 +170,10 @@ public class PlayerMovement : PlayerSystem
 		wallCoyote[1] = 0f;
 		buffer = 0f;
 		jumpDelay = player.data.jumpDelayTime;
-		inGrappleAccel = false;
 		
 		state.isJumping = true;
 		state.isWallJumping = new bool2(dir == -1, dir == 1);
+		accelTime = dir != 0 ? 0f : accelTime;
 	}
 
 	void OnJumpButtonUp()
@@ -180,6 +182,7 @@ public class PlayerMovement : PlayerSystem
 			{ rb.AddForce(rb.velocity.y * (1 - player.data.jumpCutMultiplier) * Vector2.down, ForceMode2D.Impulse); }
 		state.isJumping = false;
 		//state.isWallJumping = false;
+		//state.inWallJumpAccel = false;
 		buffer = 0f;
 	}
 
@@ -208,10 +211,7 @@ public class PlayerMovement : PlayerSystem
 	void OnGrapple()
 	{
 		if (Vector2.Distance(transform.position, grapplePoint) >= grappleRadius - 0.1f && !state.onGround)
-		{
-			inGrappleAccel = true;
-			state.isHanging = true;
-		}
+			{ state.isHanging = true; }
 		else
 			{ state.isHanging = false; }
 	}
@@ -231,13 +231,13 @@ public class PlayerMovement : PlayerSystem
 		state.isHanging = false;
 		state.isJumping = false;
 		state.isWallJumping = false;
-		inGrappleAccel = true;
+		state.isPulling = true;
+		accelTime = 0f;
 		rb.velocity = (grapplePoint - (Vector2) transform.position).normalized * Mathf.Max(player.data.minPullSpeed, rb.velocity.magnitude);
 		OnGrappleButtonUp();
-		StartCoroutine(PullStopMovement());
 	}
 
-	IEnumerator PullStopMovement()
+	/*IEnumerator PullStopMovement()
 	{
 		state.isPulling = true;
 		
@@ -252,7 +252,7 @@ public class PlayerMovement : PlayerSystem
 		yield return new WaitForSeconds(player.data.pullDuration);
 
 		state.isPulling = false;
-	}
+	}*/
 
 	void OnDeath()
 	{

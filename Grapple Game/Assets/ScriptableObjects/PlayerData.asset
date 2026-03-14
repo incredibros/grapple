@@ -13,14 +13,10 @@ MonoBehaviour:
   m_Name: PlayerData
   m_EditorClassIdentifier: 
   moveSpeed: 9
-  acceleration: 13
-  decceleration: 16
   velPower: 0.96
-  frictionAmount: 0.22
   jumpForce: 14
-  wallJumpForce: {x: 12, y: 12}
+  wallJumpForce: {x: 9, y: 12}
   jumpCutMultiplier: 0.4
-  wallJumpDecceleration: 11
   coyoteTime: 0.1
   wallCoyoteTime: 0.05
   bufferTime: 0.1
@@ -49,13 +45,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   grapplePrefab: {fileID: 4091299313004935833, guid: 2b82373813a6b9445a35b39c01866d71, type: 3}
-  swingAcceleration: 1
-  swingDecceleration: 0.5
   grappleRange: 15
   grappleLayers:
     serializedVersion: 2
     m_Bits: 256
-  minPullSpeed: 20
+  minPullSpeed: 22
   pullDuration: 0.05
   checkpointCheckSize: {x: 1, y: 1}
   checkpointLayer:
@@ -65,3 +59,170 @@ MonoBehaviour:
   hazardLayer:
     serializedVersion: 2
     m_Bits: 2048
+  accels:
+  - type: Ground
+    constant: 1
+    accel: 13
+    accelCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 0
+      m_PostInfinity: 0
+      m_RotationOrder: 0
+    decel: 20
+    decelCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 0
+      m_PostInfinity: 0
+      m_RotationOrder: 0
+    time: 0
+  - type: Air
+    constant: 1
+    accel: 13
+    accelCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 0
+      m_PostInfinity: 0
+      m_RotationOrder: 0
+    decel: 10
+    decelCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 0
+      m_PostInfinity: 0
+      m_RotationOrder: 0
+    time: 0
+  - type: Swing
+    constant: 1
+    accel: 1
+    accelCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 0
+      m_PostInfinity: 0
+      m_RotationOrder: 0
+    decel: 0.5
+    decelCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 0
+      m_PostInfinity: 0
+      m_RotationOrder: 0
+    time: 0
+  - type: WallJump
+    constant: 0
+    accel: 13
+    accelCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 2
+        outSlope: 2
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.4626259
+        value: 0.62712324
+        inSlope: 1.1414149
+        outSlope: 1.1414149
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    decel: 10
+    decelCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 2
+        outSlope: 2
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    time: 1
+  - type: Pull
+    constant: 0
+    accel: 13
+    accelCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 2
+        outSlope: 2
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    decel: 10
+    decelCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 2
+        outSlope: 2
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    time: 1

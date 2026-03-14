@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using NaughtyAttributes;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/PlayerData", order = 1)]
@@ -11,17 +12,12 @@ public class PlayerData : ScriptableObject
 	
 	[Header("Run")]
 	public float moveSpeed;
-	public float acceleration;
-	public float decceleration;
 	public float velPower;
-	[Space(5)]
-	public float frictionAmount;
 
 	[Header("Jump")]
 	public float jumpForce;
 	public Vector2 wallJumpForce;
 	[Range(0f, 1)] public float jumpCutMultiplier;
-	public float wallJumpDecceleration;
 	[Space(5)]
 	public float coyoteTime;
 	public float wallCoyoteTime;
@@ -53,8 +49,6 @@ public class PlayerData : ScriptableObject
 
 	[Header("Grapple")]
 	public GameObject grapplePrefab;
-	public float swingAcceleration;
-	public float swingDecceleration;
 	public float grappleRange;
 	public LayerMask grappleLayers;
 	[Space(5)]
@@ -68,4 +62,19 @@ public class PlayerData : ScriptableObject
 	[Header("Hazards")]
 	public Vector2 hazardCheckSize;
 	public LayerMask hazardLayer;
+
+	[Header("Accelerations and Decelerations")]
+	public List<AccelInfo> accels;
+}
+
+[System.Serializable]
+public class AccelInfo
+{
+	public string type;
+	public bool constant;
+	public float accel;
+	[HideIf("constant")] [AllowNesting] public AnimationCurve accelCurve;
+	public float decel;
+	[HideIf("constant")] [AllowNesting] public AnimationCurve decelCurve;
+	[HideIf("constant")] [AllowNesting] public float time;
 }
