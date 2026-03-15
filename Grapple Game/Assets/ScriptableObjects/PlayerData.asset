@@ -23,9 +23,9 @@ MonoBehaviour:
   jumpDelayTime: 0.25
   gravityScale: 4
   fallGravityMultiplier: 2
-  maxFallSpeed: 40
+  maxFallSpeed: 20
   fastFallMultiplier: 2
-  wallSlideGravityMultiplier: 0
+  wallSlideGravityMultiplier: 0.4
   startWallSlideSpeed: 2.5
   maxWallSlideSpeed: 15
   groundCheckPoint: {x: 0, y: -0.55}
@@ -50,7 +50,31 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   minPullSpeed: 22
-  pullDuration: 0.05
+  freezeDuration: 0.05
+  freezeVelocity:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.0000017434359
+      value: 1.9991962
+      inSlope: 0.008015522
+      outSlope: 0.008015522
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.2094463
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: -2.7053702
+      outSlope: -2.7053702
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.0480201
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   checkpointCheckSize: {x: 1, y: 1}
   checkpointLayer:
     serializedVersion: 2
@@ -59,6 +83,10 @@ MonoBehaviour:
   hazardLayer:
     serializedVersion: 2
     m_Bits: 2048
+  orbCheckSize: {x: 1, y: 1}
+  orbLayer:
+    serializedVersion: 2
+    m_Bits: 4096
   accels:
   - type: Ground
     constant: 1
@@ -207,20 +235,29 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 0
         value: 0
-        inSlope: 2
-        outSlope: 2
+        inSlope: 1.3694462
+        outSlope: 1.3694462
         tangentMode: 0
         weightedMode: 0
         inWeight: 0
-        outWeight: 0
+        outWeight: 0.14994507
+      - serializedVersion: 3
+        time: 0.4594275
+        value: 0.56944567
+        inSlope: 1.1878116
+        outSlope: 1.1878116
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
         value: 1
-        inSlope: 0
-        outSlope: 0
+        inSlope: 0.45485184
+        outSlope: 0.45485184
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0
+        inWeight: 0.20143248
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2

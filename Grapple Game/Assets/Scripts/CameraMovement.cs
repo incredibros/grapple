@@ -7,7 +7,7 @@ public class CameraMovement : MonoBehaviour
 {
     GameObject target;
     Vector3 targetPosition;
-    float smoothTime;
+    public float smoothTime;
     Vector3 velocity;
 
     public List<Area> allAreas = new List<Area>();
@@ -22,7 +22,6 @@ public class CameraMovement : MonoBehaviour
     void Start()
     {
         velocity = Vector3.zero;
-        smoothTime = 0.1f;
     }
 
     void Update()

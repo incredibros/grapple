@@ -53,7 +53,8 @@ public class PlayerData : ScriptableObject
 	public LayerMask grappleLayers;
 	[Space(5)]
 	public float minPullSpeed;
-	public float pullDuration;
+	public float freezeDuration;
+	public AnimationCurve freezeVelocity;
 
 	[Header("Checkpoint")]
 	public Vector2 checkpointCheckSize;
@@ -62,6 +63,10 @@ public class PlayerData : ScriptableObject
 	[Header("Hazards")]
 	public Vector2 hazardCheckSize;
 	public LayerMask hazardLayer;
+
+	[Header("Orbs")]
+	public Vector2 orbCheckSize;
+	public LayerMask orbLayer;
 
 	[Header("Accelerations and Decelerations")]
 	public List<AccelInfo> accels;

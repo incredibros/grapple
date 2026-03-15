@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
@@ -11,7 +12,6 @@ public class PlayerMovement : PlayerSystem
 	
 	Rigidbody2D rb;
 	DistanceJoint2D joint;
-	Rope ropeScript;
 
     PlayerStates state = new PlayerStates();
 	Vector2 moveInput;
@@ -24,6 +24,9 @@ public class PlayerMovement : PlayerSystem
 
 	[HideInInspector] public Vector2 grapplePoint;
 	[HideInInspector] public float grappleRadius;
+
+	int grapples;
+	int pulls;
 
 	// Override calls this awake function instead of the awake function from the parent
 	// base.Awake still makes sure to call the parent's awake function
@@ -53,6 +56,8 @@ public class PlayerMovement : PlayerSystem
 		{
 			coyote = player.data.coyoteTime;
 			state.onGround = true;
+			if (grapples == 0 && !state.isGrappled)
+				{ grapples++; }
 		}
 		else
 			{ state.onGround = false; }
@@ -136,14 +141,14 @@ public class PlayerMovement : PlayerSystem
 
 	float FindAcceleration(bool accel)
 	{
-		// WallJump(3) -> Pull(4) -> Ground(0) -> Swing(2) -> Air(1)
+		// Swing(2) -> WallJump(3) -> Pull(4) -> Ground(0) -> Air(1)
 
 		if (!state.isWallJumping.Equals(false) && accelTime >= player.data.accels[3].time)
 			{ state.isWallJumping = false; }
 		if (state.isPulling && accelTime >= player.data.accels[4].time)
 			{ state.isPulling = false; }
 		
-		int type = !state.isWallJumping.Equals(false) ? 3 : state.isPulling ? 4 : state.onGround ? 0 : state.isHanging ? 2 : 1;
+		int type = state.isHanging ? 2 : !state.isWallJumping.Equals(false) ? 3 : state.isPulling ? 4 : state.onGround ? 0 : 1;
 		float value = accel ? player.data.accels[type].accel : player.data.accels[type].decel;
 		if (type == 3 || type == 4)
 		{
@@ -181,13 +186,15 @@ public class PlayerMovement : PlayerSystem
 		if (state.isJumping)
 			{ rb.AddForce(rb.velocity.y * (1 - player.data.jumpCutMultiplier) * Vector2.down, ForceMode2D.Impulse); }
 		state.isJumping = false;
-		//state.isWallJumping = false;
-		//state.inWallJumpAccel = false;
 		buffer = 0f;
 	}
 
 	void OnGrappleButtonDown()
 	{
+		if (grapples == 0)
+			{  return; }
+		grapples--;
+		
 		Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		Vector2 direction = (mousePos - (Vector2) transform.position).normalized;
 		RaycastHit2D raycast = Physics2D.Raycast(transform.position, direction, player.data.grappleRange, player.data.grappleLayers);
@@ -225,8 +232,9 @@ public class PlayerMovement : PlayerSystem
 
 	void OnPullButtonDown()
 	{
-		if (!state.isGrappled)
+		if (!state.isGrappled || pulls == 0)
 			{ return; }
+		pulls--;
 		
 		state.isHanging = false;
 		state.isJumping = false;
@@ -234,12 +242,15 @@ public class PlayerMovement : PlayerSystem
 		state.isPulling = true;
 		accelTime = 0f;
 		rb.velocity = (grapplePoint - (Vector2) transform.position).normalized * Mathf.Max(player.data.minPullSpeed, rb.velocity.magnitude);
+		
 		OnGrappleButtonUp();
+		StartCoroutine(FreezeMovement());
+		player.events.OnPull?.Invoke();
 	}
 
-	/*IEnumerator PullStopMovement()
+	IEnumerator FreezeMovement()
 	{
-		state.isPulling = true;
+		state.isDead = true;
 		
 		buffer = 0.0f;
 		coyote = 0.0f;
@@ -249,10 +260,19 @@ public class PlayerMovement : PlayerSystem
 
 		rb.gravityScale = 0;
 
-		yield return new WaitForSeconds(player.data.pullDuration);
+		Vector2 startingVelocity = rb.velocity;
+		float timer = 0f;
+		
+		while (timer < player.data.freezeDuration)
+		{
+			rb.velocity = startingVelocity * player.data.freezeVelocity.Evaluate(timer / player.data.freezeDuration);
+			timer += Time.deltaTime;
+			yield return new WaitForSeconds(0);
+		}
 
-		state.isPulling = false;
-	}*/
+		rb.velocity = startingVelocity;
+		state.isDead = false;
+	}
 
 	void OnDeath()
 	{
@@ -278,6 +298,47 @@ public class PlayerMovement : PlayerSystem
 		state.isDead = false;
 	}
 
+	void OnOrbPickUp(GameObject orb)
+	{
+		GameManager.OrbType type = orb.GetComponent<Orb>().type;
+		
+		switch (type)
+		{
+			case GameManager.OrbType.Grapple:
+				if (grapples != 0)
+					{ return; }
+				grapples = 1;
+				break;
+			case GameManager.OrbType.DoubleGrapple:
+				if (grapples == 2)
+					{ return; }
+				grapples = 2;
+				break;
+			case GameManager.OrbType.Pull:
+				if (pulls != 0)
+					{ return; }
+				pulls = 1;
+				break;
+			case GameManager.OrbType.DoublePull:
+				if (pulls == 2)
+					{ return; }
+				pulls = 2;
+				break;
+			case GameManager.OrbType.GrapplePull:
+				if (grapples != 0 && pulls != 0)
+					{ return; }
+				if (grapples == 0)
+					{ grapples = 1; }
+				if (pulls == 0)
+					{ pulls = 1; }
+				break;
+			default:
+				return;
+		}
+
+		orb.GetComponent<Orb>().OnPickUp(this.transform);
+	}
+
     void OnEnable()
     {
         player.events.OnXYInput += OnXYInput;
@@ -288,6 +349,7 @@ public class PlayerMovement : PlayerSystem
         player.events.OnPullButtonDown += OnPullButtonDown;
 		player.events.OnDeath += OnDeath;
 		player.events.OnRespawn += OnRespawn;
+		player.events.OnOrbPickUp += OnOrbPickUp;
     }
 
     void OnDisable()
@@ -300,6 +362,7 @@ public class PlayerMovement : PlayerSystem
         player.events.OnPullButtonDown -= OnPullButtonDown;
 		player.events.OnDeath -= OnDeath;
 		player.events.OnRespawn -= OnRespawn;
+		player.events.OnOrbPickUp -= OnOrbPickUp;
     }
 }
 

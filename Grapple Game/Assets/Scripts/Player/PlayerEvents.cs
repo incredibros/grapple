@@ -29,10 +29,13 @@ public struct PlayerEvents
     public Action<Vector2> OnGrapple;
     public Action OnGrappleButtonUp;
     public Action OnPullButtonDown;
+    public Action OnPull;
     #endregion
 
     #region Death and Respawn
     public Action OnDeath;
     public Action OnRespawn;
     #endregion
+
+    public Action<GameObject> OnOrbPickUp;
 }
