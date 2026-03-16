@@ -67,8 +67,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5210432870057780889}
-  - component: {fileID: 7319182056786367168}
-  - component: {fileID: 1863608490353472521}
+  - component: {fileID: 3465223207878967131}
+  - component: {fileID: 6332704414408717872}
   - component: {fileID: 8952208203492402206}
   m_Layer: 7
   m_Name: Ground
@@ -93,14 +93,14 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &7319182056786367168
+--- !u!212 &3465223207878967131
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8883621674613365572}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -145,7 +145,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!61 &1863608490353472521
+--- !u!61 &6332704414408717872
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
