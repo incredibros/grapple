@@ -49,7 +49,10 @@ MonoBehaviour:
   grappleLayers:
     serializedVersion: 2
     m_Bits: 256
-  minPullSpeed: 22
+  semiSolidLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  minPullSpeed: 14
   freezeDuration: 0.05
   freezeVelocity:
     serializedVersion: 2
@@ -75,6 +78,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  releaseDelayTime: 0.01
   checkpointCheckSize: {x: 1, y: 1}
   checkpointLayer:
     serializedVersion: 2

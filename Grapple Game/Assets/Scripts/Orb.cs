@@ -6,8 +6,6 @@ using UnityEngine;
 public class Orb : MonoBehaviour
 {
     SpriteRenderer sP;
-    
-    public GameManager.OrbType type;
 
     public float travelTime;
     public float respawnTime;

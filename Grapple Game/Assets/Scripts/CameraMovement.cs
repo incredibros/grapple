@@ -72,10 +72,19 @@ public class CameraMovement : MonoBehaviour
 
     void DrawBox(Vector2[] points)
     {
-        Gizmos.DrawLine(points[0], new Vector2(points[0].x, points[1].y));
-        Gizmos.DrawLine(new Vector2(points[0].x, points[1].y), points[1]);
-        Gizmos.DrawLine(points[1], new Vector2(points[1].x, points[0].y));
-        Gizmos.DrawLine(new Vector2(points[1].x, points[0].y), points[0]);
+        if (points[0] == points[1])
+        {
+            Gizmos.DrawLine(points[0], points[0] + Vector2.right / 4);
+            Gizmos.DrawLine(points[0], points[0] + Vector2.down / 4);
+            Gizmos.DrawLine(points[0], points[0] + Vector2.left / 4);
+            Gizmos.DrawLine(points[0], points[0] + Vector2.up / 4);
+        } else
+        {
+            Gizmos.DrawLine(points[0], new Vector2(points[0].x, points[1].y));
+            Gizmos.DrawLine(new Vector2(points[0].x, points[1].y), points[1]);
+            Gizmos.DrawLine(points[1], new Vector2(points[1].x, points[0].y));
+            Gizmos.DrawLine(new Vector2(points[1].x, points[0].y), points[0]);
+        }
     }
 }
 

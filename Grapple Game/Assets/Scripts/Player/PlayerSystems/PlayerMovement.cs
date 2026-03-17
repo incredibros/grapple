@@ -20,13 +20,13 @@ public class PlayerMovement : PlayerSystem
 	float2 wallCoyote;
 	float buffer;
 	float jumpDelay;
+	float releaseDelay;
 	float accelTime;
 
 	[HideInInspector] public Vector2 grapplePoint;
 	[HideInInspector] public float grappleRadius;
 
 	int grapples;
-	int pulls;
 
 	// Override calls this awake function instead of the awake function from the parent
 	// base.Awake still makes sure to call the parent's awake function
@@ -48,6 +48,7 @@ public class PlayerMovement : PlayerSystem
 		wallCoyote[1] -= Time.deltaTime;
 		buffer -= Time.deltaTime;
 		jumpDelay -= Time.deltaTime;
+		releaseDelay -= Time.deltaTime;
 		accelTime += Time.deltaTime;
 		#endregion
 
@@ -183,7 +184,7 @@ public class PlayerMovement : PlayerSystem
 
 	void OnJumpButtonUp()
 	{
-		if (state.isJumping)
+		if (state.isJumping && !state.isFalling)
 			{ rb.AddForce(rb.velocity.y * (1 - player.data.jumpCutMultiplier) * Vector2.down, ForceMode2D.Impulse); }
 		state.isJumping = false;
 		buffer = 0f;
@@ -192,22 +193,32 @@ public class PlayerMovement : PlayerSystem
 	void OnGrappleButtonDown()
 	{
 		if (grapples == 0)
-			{  return; }
+			{ return; }
 		grapples--;
 		
 		Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		Vector2 direction = (mousePos - (Vector2) transform.position).normalized;
-		RaycastHit2D raycast = Physics2D.Raycast(transform.position, direction, player.data.grappleRange, player.data.grappleLayers);
-		
-		if (raycast.collider == null)
+		RaycastHit2D[] raycast = Physics2D.RaycastAll(transform.position, direction, player.data.grappleRange, player.data.grappleLayers);
+		if (raycast.Length == 0)
+			{ return; }
+		int raycastIndex = -1;
+		for (int i = 0; i < raycast.Length; i++)
+		{
+			if ((player.data.semiSolidLayer.value & (1 << raycast[i].collider.transform.parent.gameObject.layer)) != 0 && direction.y >= 0)
+				{ continue; }
+			raycastIndex = i;
+			break;
+		}
+		if (raycastIndex == -1)
 			{ return; }
 			
 		state.isGrappled = true;
 		joint.enabled = true;
-		TargetPosition hitCollider = raycast.collider.gameObject.GetComponentInParent<TargetPosition>();
+		releaseDelay = player.data.releaseDelayTime;
+		TargetPosition hitCollider = raycast[raycastIndex].collider.gameObject.GetComponentInParent<TargetPosition>();
 		grapplePoint = new Vector2(
-			Mathf.Clamp(raycast.point.x, hitCollider.gameObject.transform.position.x + hitCollider.minGrappleBounds.x, hitCollider.gameObject.transform.position.x + hitCollider.maxGrappleBounds.x),
-			Mathf.Clamp(raycast.point.y, hitCollider.gameObject.transform.position.y + hitCollider.minGrappleBounds.y, hitCollider.gameObject.transform.position.y + hitCollider.maxGrappleBounds.y));
+			Mathf.Clamp(raycast[raycastIndex].point.x, hitCollider.gameObject.transform.position.x + hitCollider.minGrappleBounds.x, hitCollider.gameObject.transform.position.x + hitCollider.maxGrappleBounds.x),
+			Mathf.Clamp(raycast[raycastIndex].point.y, hitCollider.gameObject.transform.position.y + hitCollider.minGrappleBounds.y, hitCollider.gameObject.transform.position.y + hitCollider.maxGrappleBounds.y));
 		joint.connectedAnchor = grapplePoint;
 		grappleRadius = Vector2.Distance(transform.position, grapplePoint);
 		joint.distance = grappleRadius;
@@ -225,6 +236,9 @@ public class PlayerMovement : PlayerSystem
 
 	void OnGrappleButtonUp()
 	{
+		if (releaseDelay >= 0)
+			{ return; }
+		
 		state.isGrappled = false;
 		state.isHanging = false;
 		joint.enabled = false;
@@ -232,16 +246,19 @@ public class PlayerMovement : PlayerSystem
 
 	void OnPullButtonDown()
 	{
-		if (!state.isGrappled || pulls == 0)
-			{ return; }
-		pulls--;
+		if (!state.isGrappled)
+		{
+			player.events.OnGrappleButtonDown?.Invoke();
+			if (!state.isGrappled)
+				{ return; }
+		}
 		
 		state.isHanging = false;
 		state.isJumping = false;
 		state.isWallJumping = false;
 		state.isPulling = true;
 		accelTime = 0f;
-		rb.velocity = (grapplePoint - (Vector2) transform.position).normalized * Mathf.Max(player.data.minPullSpeed, rb.velocity.magnitude);
+		rb.velocity = (grapplePoint - (Vector2) transform.position).normalized * player.data.minPullSpeed;
 		
 		OnGrappleButtonUp();
 		StartCoroutine(FreezeMovement());
@@ -300,42 +317,9 @@ public class PlayerMovement : PlayerSystem
 
 	void OnOrbPickUp(GameObject orb)
 	{
-		GameManager.OrbType type = orb.GetComponent<Orb>().type;
-		
-		switch (type)
-		{
-			case GameManager.OrbType.Grapple:
-				if (grapples != 0)
-					{ return; }
-				grapples = 1;
-				break;
-			case GameManager.OrbType.DoubleGrapple:
-				if (grapples == 2)
-					{ return; }
-				grapples = 2;
-				break;
-			case GameManager.OrbType.Pull:
-				if (pulls != 0)
-					{ return; }
-				pulls = 1;
-				break;
-			case GameManager.OrbType.DoublePull:
-				if (pulls == 2)
-					{ return; }
-				pulls = 2;
-				break;
-			case GameManager.OrbType.GrapplePull:
-				if (grapples != 0 && pulls != 0)
-					{ return; }
-				if (grapples == 0)
-					{ grapples = 1; }
-				if (pulls == 0)
-					{ pulls = 1; }
-				break;
-			default:
-				return;
-		}
-
+		if (grapples != 0)
+			{ return; }
+		grapples = 1;
 		orb.GetComponent<Orb>().OnPickUp(this.transform);
 	}
 

@@ -51,10 +51,13 @@ public class PlayerData : ScriptableObject
 	public GameObject grapplePrefab;
 	public float grappleRange;
 	public LayerMask grappleLayers;
+	public LayerMask semiSolidLayer;
 	[Space(5)]
 	public float minPullSpeed;
 	public float freezeDuration;
 	public AnimationCurve freezeVelocity;
+	[Space(5)]
+	public float releaseDelayTime;
 
 	[Header("Checkpoint")]
 	public Vector2 checkpointCheckSize;
