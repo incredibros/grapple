@@ -21,7 +21,8 @@ public class PlayerData : ScriptableObject
 	[Space(5)]
 	public float coyoteTime;
 	public float wallCoyoteTime;
-	public float bufferTime;
+	public float jumpBufferTime;
+	public float lateralBufferTime;
 	public float jumpDelayTime;
 	[Space(5)]
 	public float gravityScale;
