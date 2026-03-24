@@ -40,7 +40,7 @@ public class PlayerMovement : PlayerSystem
 
 	void Update()
 	{
-		if (state.isDead)
+		if (state.isDead || state.isFrozen)
 			{ return; }
 		
 		#region Timers
@@ -55,7 +55,37 @@ public class PlayerMovement : PlayerSystem
 		accelTime += Time.deltaTime;
 		#endregion
 
-		#region Checks
+		Checks();
+
+		if (jumpBuffer > 0f && jumpDelay <= 0f && !state.isJumping)
+			{ OnJumpInput(); }
+
+		if (state.isGrappled)
+			{ OnGrapple(); }
+	}
+
+	void FixedUpdate()
+	{
+		if (state.isDead || state.isFrozen)
+			{ return; }
+		
+		LateralMovement();
+
+		#region Gravity
+		if (state.isFalling && !state.isHanging)
+		{
+			rb.gravityScale = player.data.gravityScale * (!state.isSliding ? player.data.fallGravityMultiplier : player.data.wallSlideGravityMultiplier);
+			rb.gravityScale *= state.isFastFalling ? player.data.fastFallMultiplier : 1;
+			rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, !state.isSliding ? -player.data.maxFallSpeed : -player.data.maxWallSlideSpeed));
+		}
+		else
+			{ rb.gravityScale = player.data.gravityScale; }
+		#endregion
+	}
+
+	#region Checks
+	void Checks()
+	{
 		if (Physics2D.OverlapBox(player.data.groundCheckPoint + (Vector2) transform.position, player.data.groundCheckSize, 0f, player.data.groundLayer) && Mathf.Abs(rb.velocity.y) <= 0.001f)
 		{
 			coyote = player.data.coyoteTime;
@@ -78,8 +108,7 @@ public class PlayerMovement : PlayerSystem
 			state.isFastFalling = false;
 		}
 
-		state.onWall = new bool2(Physics2D.OverlapBox(player.data.leftCheckPoint + (Vector2) transform.position, player.data.wallCheckSize, 0f, player.data.wallLayer) && Mathf.Abs(rb.velocity.x) <= 0.001f,
-			Physics2D.OverlapBox(player.data.rightCheckPoint + (Vector2) transform.position, player.data.wallCheckSize, 0f, player.data.wallLayer) && Mathf.Abs(rb.velocity.x) <= 0.001f);
+		state.onWall = new bool2(CheckForWalls(-1), CheckForWalls(1));
 		state.isClinging = (state.onWall[0] && lateralBuffer[0] > 0f) || (state.onWall[1] && lateralBuffer[1] > 0f);
 
 		if (state.onWall[0])
@@ -95,60 +124,40 @@ public class PlayerMovement : PlayerSystem
 		}
 		else
 			{ state.isSliding = false; }
-		#endregion
+	}
 
-		#region Lateral Inputs
+	bool CheckForWalls(int dir)
+	{
+		if (Mathf.Abs(rb.velocity.x) > 0.001f)
+			{ return false; }
+		
+		int wallsDetected = 0;
+		foreach (Vector2 pos in dir == 1 ? player.data.rightCheckPoints : player.data.leftCheckPoints)
+		{
+			wallsDetected += Physics2D.OverlapBox(pos + (Vector2) transform.position, player.data.wallCheckSize, 0f, player.data.wallLayer) ? 1 : 0;
+		}
+		return wallsDetected >= 3;
+	}
+	#endregion
+
+	#region LateralMovement
+	void OnXYInput(Vector2 input)
+    {
+        moveInput = input;
 		if (moveInput.x == -1)
 			{ lateralBuffer[0] = player.data.lateralBufferTime; }
 		if (moveInput.x == 1)
 			{ lateralBuffer[1] = player.data.lateralBufferTime; }
-		#endregion
+    }
 
-		#region Jump Input
-		if (jumpBuffer > 0f && jumpDelay <= 0f && !state.isJumping)
-		{
-			if (coyote > 0f)
-				{ OnJump(0); }
-			else if ((wallCoyote[0] > 0f && lateralBuffer[0] > 0f) || (wallCoyote[1] > 0f && lateralBuffer[1] > 0f))
-				{ OnJump(wallCoyote[0] > wallCoyote[1] ? -1 : 1); }
-		}
-		#endregion
-
-		#region Grapple
-		if (state.isGrappled)
-			{ OnGrapple(); }
-		#endregion
-	}
-
-	void FixedUpdate()
+	void LateralMovement()
 	{
-		if (state.isDead)
-			{ return; }
-		
-		#region Run
 		float targetSpeed = moveInput.x * player.data.moveSpeed;
 		float speedDif = targetSpeed - rb.velocity.x;
 		float accelRate = FindAcceleration(Mathf.Abs(targetSpeed) > 0.01f);
 		float movement = Mathf.Pow(Mathf.Abs(speedDif) * accelRate, player.data.velPower) * Mathf.Sign(speedDif);
 		rb.AddForce(movement * Vector2.right);
-		#endregion
-
-		#region Gravity
-		if (state.isFalling && !state.isHanging)
-		{
-			rb.gravityScale = player.data.gravityScale * (!state.isSliding ? player.data.fallGravityMultiplier : player.data.wallSlideGravityMultiplier);
-			rb.gravityScale *= state.isFastFalling ? player.data.fastFallMultiplier : 1;
-			rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, !state.isSliding ? -player.data.maxFallSpeed : -player.data.maxWallSlideSpeed));
-		}
-		else
-			{ rb.gravityScale = player.data.gravityScale; }
-		#endregion
 	}
-
-	void OnXYInput(Vector2 input)
-    {
-        moveInput = input;
-    }
 
 	float FindAcceleration(bool accel)
 	{
@@ -161,18 +170,28 @@ public class PlayerMovement : PlayerSystem
 		
 		int type = state.isHanging ? 2 : !state.isWallJumping.Equals(false) ? 3 : state.isPulling ? 4 : state.onGround ? 0 : 1;
 		float value = accel ? player.data.accels[type].accel : player.data.accels[type].decel;
-		if (type == 3 || type == 4)
+		if (!player.data.accels[type].constant)
 		{
 			value *= accel ? player.data.accels[type].accelCurve.Evaluate(accelTime / player.data.accels[type].time)
 			: player.data.accels[type].decelCurve.Evaluate(accelTime / player.data.accels[type].time);
 		}
 		return value;
 	}
+	#endregion
 
-    void OnJumpButtonDown()
+    #region Jump
+	void OnJumpButtonDown()
     {
         jumpBuffer = player.data.jumpBufferTime;
     }
+
+	void OnJumpInput()
+	{
+		if (coyote > 0f)
+			{ OnJump(0); }
+		else if ((wallCoyote[0] > 0f && lateralBuffer[0] > 0f) || (wallCoyote[1] > 0f && lateralBuffer[1] > 0f))
+			{ OnJump(wallCoyote[0] > wallCoyote[1] ? -1 : 1); }
+	}
 
 	void OnJump(int dir)
 	{
@@ -201,7 +220,9 @@ public class PlayerMovement : PlayerSystem
 		state.isJumping = false;
 		jumpBuffer = 0f;
 	}
+	#endregion
 
+	#region Grapple
 	void OnGrappleButtonDown()
 	{
 		if (grapples == 0)
@@ -255,7 +276,9 @@ public class PlayerMovement : PlayerSystem
 		state.isHanging = false;
 		joint.enabled = false;
 	}
+	#endregion
 
+	#region Pull
 	void OnPullButtonDown()
 	{
 		if (!state.isGrappled)
@@ -280,7 +303,7 @@ public class PlayerMovement : PlayerSystem
 
 	IEnumerator FreezeMovement()
 	{
-		state.isDead = true;
+		state.isFrozen = true;
 
 		coyote = 0f;
 		wallCoyote[0] = 0f;
@@ -303,9 +326,11 @@ public class PlayerMovement : PlayerSystem
 		}
 
 		rb.velocity = startingVelocity;
-		state.isDead = false;
+		state.isFrozen = false;
 	}
+	#endregion
 
+	#region Death
 	void OnDeath()
 	{
 		state.isDead = true;
@@ -330,7 +355,9 @@ public class PlayerMovement : PlayerSystem
 	{
 		state.isDead = false;
 	}
+	#endregion
 
+	#region Orbs
 	void OnOrbPickUp(GameObject orb)
 	{
 		if (grapples != 0)
@@ -338,8 +365,10 @@ public class PlayerMovement : PlayerSystem
 		grapples = 1;
 		orb.GetComponent<Orb>().OnPickUp(this.transform);
 	}
+	#endregion
 
-    void OnEnable()
+    #region Events
+	void OnEnable()
     {
         player.events.OnXYInput += OnXYInput;
         player.events.OnJumpButtonDown += OnJumpButtonDown;
@@ -364,6 +393,7 @@ public class PlayerMovement : PlayerSystem
 		player.events.OnRespawn -= OnRespawn;
 		player.events.OnOrbPickUp -= OnOrbPickUp;
     }
+	#endregion
 }
 
 public class PlayerStates
@@ -379,5 +409,6 @@ public class PlayerStates
 	public bool isGrappled;
 	public bool isHanging;
 	public bool isPulling;
+	public bool isFrozen;
 	public bool isDead;
 }

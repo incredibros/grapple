@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
+[RequireComponent(typeof(LineRenderer))]
 public class Rope : MonoBehaviour
 {
     LineRenderer lineRenderer;
@@ -49,7 +50,8 @@ public class Rope : MonoBehaviour
         lineRenderer.SetPositions(pointPositions);
         #endregion
         
-        if (!isDetached) { return; }
+        if (!isDetached)
+            { return; }
         
         timeAfterDetached += Time.deltaTime;
 

@@ -39,8 +39,8 @@ public class PlayerData : ScriptableObject
 	public Vector2 groundCheckSize;
 	public LayerMask groundLayer;
 	[Space(5)]
-	public Vector2 leftCheckPoint;
-	public Vector2 rightCheckPoint;
+	public List<Vector2> leftCheckPoints;
+	public List<Vector2> rightCheckPoints;
 	public Vector2 wallCheckSize;
 	public LayerMask wallLayer;
 	[Space(5)]

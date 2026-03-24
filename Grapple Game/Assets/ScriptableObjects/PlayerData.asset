@@ -19,7 +19,8 @@ MonoBehaviour:
   jumpCutMultiplier: 0.4
   coyoteTime: 0.1
   wallCoyoteTime: 0.05
-  bufferTime: 0.1
+  jumpBufferTime: 0.1
+  lateralBufferTime: 0.1
   jumpDelayTime: 0.25
   gravityScale: 4
   fallGravityMultiplier: 2
@@ -29,13 +30,21 @@ MonoBehaviour:
   startWallSlideSpeed: 2.5
   maxWallSlideSpeed: 15
   groundCheckPoint: {x: 0, y: -0.55}
-  groundCheckSize: {x: 0.9, y: 0.1}
+  groundCheckSize: {x: 0.92, y: 0.1}
   groundLayer:
     serializedVersion: 2
     m_Bits: 640
-  leftCheckPoint: {x: -0.6, y: 0}
-  rightCheckPoint: {x: 0.6, y: 0}
-  wallCheckSize: {x: 0.2, y: 1}
+  leftCheckPoints:
+  - {x: -0.6, y: 0.3}
+  - {x: -0.6, y: 0.12}
+  - {x: -0.6, y: -0.12}
+  - {x: -0.6, y: -0.4}
+  rightCheckPoints:
+  - {x: 0.6, y: 0.3}
+  - {x: 0.6, y: 0.12}
+  - {x: 0.6, y: -0.12}
+  - {x: 0.6, y: -0.4}
+  wallCheckSize: {x: 0.2, y: 0.2}
   wallLayer:
     serializedVersion: 2
     m_Bits: 128

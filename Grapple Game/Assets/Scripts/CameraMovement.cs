@@ -10,6 +10,8 @@ public class CameraMovement : MonoBehaviour
     public float smoothTime;
     Vector3 velocity;
 
+    bool foundPlayer;
+
     public List<Area> allAreas = new List<Area>();
     int currentArea;
     public bool showAreas = true;
@@ -17,6 +19,7 @@ public class CameraMovement : MonoBehaviour
     void Awake()
     {
         target = GameObject.FindWithTag("Player");
+        foundPlayer = target != null;
     }
     
     void Start()
@@ -24,8 +27,11 @@ public class CameraMovement : MonoBehaviour
         velocity = Vector3.zero;
     }
 
-    void Update()
+    void LateUpdate()
     {
+        if (!foundPlayer)
+            { return; }
+        
         targetPosition = new Vector3(target.transform.position.x, target.transform.position.y, -10);
         
         if (currentArea == -1 || !(targetPosition.x >= allAreas[currentArea].playerBounds[0].x && targetPosition.x < allAreas[currentArea].playerBounds[1].x
