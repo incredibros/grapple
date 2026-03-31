@@ -146,6 +146,48 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   points: []
   lines: []
-  gravityScale: 1
+  maxLength: 0
+  gravityScale: 0.1
+  tensionCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: -0.39470527
+      outSlope: -0.39470527
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.9160825
+      value: 0.6384174
+      inSlope: -0.6447898
+      outSlope: -0.6447898
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.10274808
+      outWeight: 1
+    - serializedVersion: 3
+      time: 0.99998724
+      value: 0.010018692
+      inSlope: -7.48943
+      outSlope: -7.48943
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  collisionRadius: 0.075
+  collisionLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  bounceFactor: 0.1
+  iterations: 50
+  subSteps: 10
+  collisionIntervals: 2
   fullTime: 2
   invisTime: 0

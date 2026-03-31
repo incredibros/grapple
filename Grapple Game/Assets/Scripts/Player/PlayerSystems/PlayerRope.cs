@@ -7,62 +7,56 @@ public class PlayerRope : PlayerSystem
 {
     // This system script creates, moves, and detaches ropes from the player, but does not handle rope physics or rendering
     
-    Rope ropeScript;
+    Rope rope;
     
     void Update()
     {
-        if (ropeScript == null)
+        if (rope == null)
             { return; }
 
-        ropeScript.points[0].pastPos = ropeScript.points[0].currentPos;
-		ropeScript.points[0].currentPos = transform.position;
+        rope.points[^1].pastPos = rope.points[^1].currentPos;
+		rope.points[^1].currentPos = transform.position;
     }
 
-    void CreateNewRope(Vector2 grapplePoint)
+    void CreateNewRope(Vector2 point)
     {
-        if (ropeScript != null)
+        if (rope != null)
             { DetachRope(); }
         
         GameObject currentPrefab = Instantiate(player.data.grapplePrefab);
-		ropeScript = currentPrefab.GetComponent<Rope>();
+		rope = currentPrefab.GetComponent<Rope>();
 
-		float grappleRadius = Vector2.Distance(grapplePoint, transform.position);
-        ropeScript.points.Add(new Point());
-		ropeScript.points[0].currentPos = transform.position;
-		ropeScript.points[0].isLocked = true;
+        float radius = Vector2.Distance(point, transform.position);
+        rope.maxLength = radius;
+        int totalLines = Mathf.FloorToInt(radius / player.data.minLineLength);
+        float lineLength = radius / totalLines;
 
-		for (float i = 0.5f; i < grappleRadius; i += 0.5f)
-		{
-			ropeScript.points.Add(new Point());
-			ropeScript.points[(int) (i * 2)].currentPos = Vector2.Lerp(transform.position, grapplePoint, i / grappleRadius);
-			ropeScript.lines.Add(new Line());
-			ropeScript.lines[(int) (i * 2) - 1].pointIndexes = new int2((int) (i * 2), (int) (i * 2) - 1);
-			ropeScript.lines[(int) (i * 2) - 1].lineLength = 0.3f;
-		}
-
-		ropeScript.points.Add(new Point());
-		ropeScript.points[^1].currentPos = grapplePoint;
-		ropeScript.points[^1].isLocked = true;
-		ropeScript.lines.Add(new Line());
-		ropeScript.lines[^1].pointIndexes = new int2(ropeScript.points.Count - 1, ropeScript.points.Count - 2);
-		ropeScript.lines[^1].lineLength = grappleRadius % 0.5f;
+        for (int i = 0; i < totalLines + 1; i++)
+        {
+            rope.points.Add(new Point(Vector2.Lerp(point, transform.position, (float) i / totalLines), i == 0 || i == totalLines));
+            
+            if (i == 0)
+                { continue; }
+            
+            rope.lines.Add(new Line(new int2(i, i - 1), lineLength));
+        }
     }
 
     void DetachRope()
     {
-        if (ropeScript == null)
+        if (rope == null)
             { return; }
 
-        ropeScript.points[0].isLocked = false;
-		for (int i = 0; i < ropeScript.lines.Count; i++)
+        rope.points[^1].isLocked = false;
+		for (int i = 0; i < rope.lines.Count; i++)
 		{
-			ropeScript.lines[i].lineLength = Vector2.Distance(
-                ropeScript.points[ropeScript.lines[i].pointIndexes[0]].currentPos,
-                ropeScript.points[ropeScript.lines[i].pointIndexes[1]].currentPos);
+			rope.lines[i].length = Vector2.Distance(
+                rope.points[rope.lines[i].pointIndexes[0]].currentPos,
+                rope.points[rope.lines[i].pointIndexes[1]].currentPos);
 		}
 
-        ropeScript.DetachRope();
-        ropeScript = null;
+        rope.DetachRope();
+        rope = null;
     }
     
     void OnEnable()
