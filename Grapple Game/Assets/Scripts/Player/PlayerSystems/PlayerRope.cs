@@ -9,7 +9,7 @@ public class PlayerRope : PlayerSystem
     
     Rope rope;
     
-    void Update()
+    void FixedUpdate()
     {
         if (rope == null)
             { return; }

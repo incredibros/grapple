@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
@@ -15,11 +16,12 @@ public class Rope : MonoBehaviour
     bool isDetached;
     float timeAfterDetached;
     
-    float currentTension;
-    
     [Header("Swing")]
     [SerializeField] float gravityScale;
     [SerializeField] AnimationCurve tensionCurve;
+    [SerializeField] AnimationCurve adjustmentCurve;
+    [SerializeField] float adjustmentLength;
+    [SerializeField] float bendingStiffness;
     
     [Header("Collision")]
     [SerializeField] float collisionRadius;
@@ -27,7 +29,7 @@ public class Rope : MonoBehaviour
     [SerializeField] float bounceFactor;
     
     [Header("Optimizations")]
-    [SerializeField] int iterations;
+    [SerializeField] int iterationsPerSubStep;
     [SerializeField] int subSteps;
     [SerializeField] int collisionIntervals;
     
@@ -42,8 +44,8 @@ public class Rope : MonoBehaviour
 
     void Start()
     {
-        lineRenderer.startWidth = 0.15f;
-        lineRenderer.endWidth = 0.15f;
+        lineRenderer.startWidth = collisionRadius * 2;
+        lineRenderer.endWidth = collisionRadius * 2;
         timeAfterDetached = 0.0f;
 
         lineRenderer.positionCount = points.Count;
@@ -51,7 +53,7 @@ public class Rope : MonoBehaviour
 
     void Update()
     {
-        #region Update Renderer Position
+        #region Update Renderer
         Vector3[] pointPositions = new Vector3[points.Count];
         for (int i = 0; i < pointPositions.Length; i++)
         {
@@ -70,21 +72,23 @@ public class Rope : MonoBehaviour
 
     void FixedUpdate()
     {
-        SetTension();
+        FindValues(out float distance, out float tension, out float adjustment);
         for (int i = 0; i < subSteps; i++)
         {
-            ChangeVelocities();
-            SolveConstraints();
+            ChangeVelocities(adjustment);
+            SolveConstraints(tension, adjustment);
         }
+        AdjustRope(distance, adjustment);
     }
 
-    void SetTension()
+    void FindValues(out float distance, out float tension, out float adjustment)
     {
-        float distance = Vector2.Distance(points[0].currentPos, points[^1].currentPos);
-        currentTension = tensionCurve.Evaluate(Mathf.Clamp01(distance / maxLength));
+        distance = Vector2.Distance(points[0].currentPos, points[^1].currentPos);
+        tension = !isDetached ? tensionCurve.Evaluate(Mathf.Clamp01(distance / maxLength)) : 0.97f;
+        adjustment = !isDetached ? adjustmentCurve.Evaluate(Mathf.Clamp01((maxLength - distance) / adjustmentLength)) : 0;
     }
 
-    void ChangeVelocities()
+    void ChangeVelocities(float adjustment)
     {
         #region Change Velocity
         foreach (Point point in points)
@@ -93,19 +97,25 @@ public class Rope : MonoBehaviour
                 { continue; }
             
             Vector2 velocity = (point.currentPos - point.pastPos) / subSteps;
-            Vector2 gravity =  gravityScale * Time.fixedDeltaTime / subSteps * Physics.gravity;
-
+            Vector2 gravity = gravityScale * Mathf.Pow(Time.fixedDeltaTime / subSteps, 2) * (1 - adjustment) * Physics.gravity;
+            
             point.pastPos += velocity;
-            point.currentPos += velocity + gravity;
+            
+            velocity += gravity;
+            RaycastHit2D hit;
+            if (hit = Physics2D.CircleCast(point.currentPos, collisionRadius, velocity.normalized, velocity.magnitude, collisionLayer))
+                { point.currentPos = hit.point + (hit.normal * collisionRadius); }
+            else
+                { point.currentPos += velocity; }
         }
         #endregion
     }
 
-    void SolveConstraints()
+    void SolveConstraints(float tension, float adjustment)
     {
-        #region Find Positions
-        for (int i = 0; i < iterations / subSteps; i++)
+        for (int i = 0; i < iterationsPerSubStep; i++)
         {
+            #region Distance Constraints
             foreach (Line line in lines)
             {
                 int2 index = line.pointIndexes;
@@ -113,7 +123,7 @@ public class Rope : MonoBehaviour
                     { continue; }
                 
                 Vector2 distance = points[index[0]].currentPos - points[index[1]].currentPos;
-                float difference = distance.magnitude - (line.length * (!isDetached ? currentTension : 1));
+                float difference = distance.magnitude - (line.length * tension);
                 Vector2 direction = distance.normalized;
 
                 if (!points[index[0]].isLocked && !points[index[1]].isLocked)
@@ -130,7 +140,44 @@ public class Rope : MonoBehaviour
                         { points[index[1]].currentPos += difference * direction; }
                 }
             }
+            #endregion
 
+            #region Bending Constraints
+            /*
+            for (int j = 1; j < points.Count - 1; j++)
+            {
+                Vector2 v1 = points[j - 1].currentPos - points[j].currentPos;
+                Vector2 v2 = points[j + 1].currentPos - points[j].currentPos;
+
+                float distance1 = v1.magnitude;
+                float distance2 = v2.magnitude;
+                if (distance1 == 0 || distance2 == 0)
+                    { continue; }
+                
+                Vector2 direction1 = v1.normalized;
+                Vector2 direction2 = v2.normalized;
+                
+                float cosTheta = Vector2.Dot(direction1, direction2);
+                cosTheta = Mathf.Clamp(cosTheta, -1f, 1f); // -1 <= cosTheta <= 1
+                float error = (cosTheta + 1f) / 2; // 0 <= error <= 1
+                float stiffness = bendingStiffness * (1 - adjustment);
+                
+                Vector2 gradient1 = direction1 - (cosTheta * direction2);
+                Vector2 gradient2 = direction2 - (cosTheta * direction1);
+                Vector2 correction1 = error * stiffness * gradient1;
+                Vector2 correction2 = error * stiffness * gradient2;
+
+                if (!points[j - 1].isLocked)
+                    { points[j- 1].currentPos += correction1; }
+                if (!points[j + 1].isLocked)
+                    { points[j + 1].currentPos += correction2; }
+                if (!points[j].isLocked)
+                    { points[j].currentPos -= correction1 + correction2; }
+            }
+            */
+            #endregion
+
+            #region Collisions
             if (i % collisionIntervals != 0)
                 { continue; }
 
@@ -160,12 +207,43 @@ public class Rope : MonoBehaviour
 
                 point.pastPos = point.currentPos - velocity;
             }
+            #endregion
+        }
+    }
+    
+    void AdjustRope(float distance, float adjustment)
+    {
+        #region Adjustements
+        if (isDetached || maxLength - distance > adjustmentLength)
+            { return; }
+
+        int totalPoints = points.Count - 1;
+        for (int i = 1; i < points.Count - 1; i++)
+        {
+            Vector2 setPos = Vector2.Lerp(points[0].currentPos, points[^1].currentPos, (float) i / totalPoints);
+            Vector2 displacement = setPos - points[i].currentPos;
+            
+            points[i].currentPos += displacement * adjustment;
+            points[i].pastPos += displacement * adjustment;
         }
         #endregion
     }
 
     public void DetachRope()
     {
+        FindValues(out _, out _, out float adjustment);
+        if (adjustment != 0)
+        {
+            Vector2 direction = Vector2.Perpendicular((points[0].currentPos - points[^1].currentPos).normalized);
+            foreach (Point point in points)
+            {
+                Vector2 velocity = point.currentPos - point.pastPos;
+                Vector2 projected = Vector2.Dot(direction, velocity) * direction;
+                Vector2 finalVelocity = Vector2.Lerp(velocity, projected, adjustment);
+                point.pastPos = point.currentPos - finalVelocity;
+            }
+        }
+
         isDetached = true;
         timeAfterDetached = 0.0f;
     }

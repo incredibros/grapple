@@ -147,33 +147,33 @@ MonoBehaviour:
   points: []
   lines: []
   maxLength: 0
-  gravityScale: 0.1
+  gravityScale: 35
   tensionCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 1
-      inSlope: -0.39470527
-      outSlope: -0.39470527
+      inSlope: -0.2563476
+      outSlope: -0.2563476
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.9160825
-      value: 0.6384174
-      inSlope: -0.6447898
-      outSlope: -0.6447898
+      time: 0.83069354
+      value: 0.7870537
+      inSlope: -0.73987573
+      outSlope: -0.73987573
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.10274808
-      outWeight: 1
+      inWeight: 0.09575176
+      outWeight: 0.87861603
     - serializedVersion: 3
-      time: 0.99998724
-      value: 0.010018692
-      inSlope: -7.48943
-      outSlope: -7.48943
+      time: 1.000056
+      value: 0.010048147
+      inSlope: -4.587826
+      outSlope: -4.587826
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -181,13 +181,48 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  adjustmentCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: -2.9252837
+      outSlope: -2.9252837
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.24673375
+      value: 0.2782338
+      inSlope: -0.78967255
+      outSlope: -0.78967255
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.12639195
+    - serializedVersion: 3
+      time: 0.9999962
+      value: 0
+      inSlope: -0.36937168
+      outSlope: -0.36937168
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  adjustmentLength: 0.5
+  bendingStiffness: 0.02
   collisionRadius: 0.075
   collisionLayer:
     serializedVersion: 2
     m_Bits: 128
   bounceFactor: 0.1
-  iterations: 50
+  iterationsPerSubStep: 5
   subSteps: 10
-  collisionIntervals: 2
-  fullTime: 2
+  collisionIntervals: 4
+  fullTime: 5
   invisTime: 0
