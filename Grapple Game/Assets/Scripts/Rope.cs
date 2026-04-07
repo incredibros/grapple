@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
@@ -9,8 +8,11 @@ public class Rope : MonoBehaviour
 {
     LineRenderer lineRenderer;
 
+    public Player player;
+    
     public List<Point> points = new List<Point>();
     public List<Line> lines = new List<Line>();
+    public List<Vector2> wrapPoints = new List<Vector2>();
 
     [HideInInspector] public float maxLength;
     bool isDetached;
@@ -49,6 +51,7 @@ public class Rope : MonoBehaviour
         timeAfterDetached = 0.0f;
 
         lineRenderer.positionCount = points.Count;
+        wrapPoints.Add(points[0].currentPos);
     }
 
     void Update()
@@ -72,6 +75,7 @@ public class Rope : MonoBehaviour
 
     void FixedUpdate()
     {
+        CheckForWrapping();
         FindValues(out float distance, out float tension, out float adjustment);
         for (int i = 0; i < subSteps; i++)
         {
@@ -79,6 +83,39 @@ public class Rope : MonoBehaviour
             SolveConstraints(tension, adjustment);
         }
         AdjustRope(distance, adjustment);
+    }
+
+    void CheckForWrapping()
+    {
+        if (isDetached)
+            { return; }
+        
+        RaycastHit2D hit;
+        float distance = Vector2.Distance(points[^1].pastPos, points[^1].currentPos);
+        int steps = Mathf.FloorToInt(distance / 0.01f);
+        for (int i = 0; i < steps + 1; i++)
+        {
+            Vector2 point = i != steps ? Vector2.Lerp(points[^1].pastPos, points[^1].currentPos, 0.01f * i / distance) : points[^1].currentPos;
+            hit = Physics2D.Linecast(point, wrapPoints[^1], collisionLayer);
+            if (hit.collider != null && Vector2.Distance(hit.point, wrapPoints[^1]) > 0.1f)
+            {
+                wrapPoints.Add(hit.point);
+                player.events.OnChangeAnchorPoint?.Invoke(wrapPoints[^1], true);
+                Debug.Log(hit.point + ", " + steps + ", " + i);
+                break;
+            }
+        }
+
+        if (wrapPoints.Count == 1)
+            { return; }
+        
+        hit = Physics2D.Linecast(points[^1].currentPos, wrapPoints[^2], collisionLayer);
+        if (hit.collider == null || Vector2.Distance(hit.point, wrapPoints[^2]) <= 0.1f)
+        {
+            wrapPoints.RemoveAt(wrapPoints.Count - 1);
+            player.events.OnChangeAnchorPoint?.Invoke(wrapPoints[^1], false);
+            Debug.Log("Removed wrap point");
+        }
     }
 
     void FindValues(out float distance, out float tension, out float adjustment)

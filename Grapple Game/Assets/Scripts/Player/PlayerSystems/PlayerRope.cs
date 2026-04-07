@@ -25,6 +25,7 @@ public class PlayerRope : PlayerSystem
         
         GameObject currentPrefab = Instantiate(player.data.grapplePrefab);
 		rope = currentPrefab.GetComponent<Rope>();
+        rope.player = player;
 
         float radius = Vector2.Distance(point, transform.position);
         rope.maxLength = radius;

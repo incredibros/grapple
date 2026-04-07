@@ -248,13 +248,12 @@ public class PlayerMovement : PlayerSystem
 		state.isGrappled = true;
 		joint.enabled = true;
 		grappleReleaseDelay = player.data.releaseDelayTime;
+		
 		TargetPosition hitCollider = raycast[raycastIndex].collider.gameObject.GetComponentInParent<TargetPosition>();
-		grapplePoint = new Vector2(
+		joint.connectedAnchor = grapplePoint = new Vector2(
 			Mathf.Clamp(raycast[raycastIndex].point.x, hitCollider.gameObject.transform.position.x + hitCollider.minGrappleBounds.x, hitCollider.gameObject.transform.position.x + hitCollider.maxGrappleBounds.x),
 			Mathf.Clamp(raycast[raycastIndex].point.y, hitCollider.gameObject.transform.position.y + hitCollider.minGrappleBounds.y, hitCollider.gameObject.transform.position.y + hitCollider.maxGrappleBounds.y));
-		joint.connectedAnchor = grapplePoint;
-		grappleRadius = Vector2.Distance(transform.position, grapplePoint);
-		joint.distance = grappleRadius;
+		joint.distance = grappleRadius = Vector2.Distance(transform.position, grapplePoint);
 
 		player.events.OnGrapple?.Invoke(grapplePoint);
 	}
@@ -275,6 +274,13 @@ public class PlayerMovement : PlayerSystem
 		state.isGrappled = false;
 		state.isHanging = false;
 		joint.enabled = false;
+	}
+
+	void OnChangeAnchorPoint(Vector2 point, bool shorten)
+	{
+		grappleRadius += Vector2.Distance(grapplePoint, point) * (shorten ? -1f : 1f);
+		joint.connectedAnchor = point;
+		joint.distance = grappleRadius;
 	}
 	#endregion
 
@@ -375,6 +381,7 @@ public class PlayerMovement : PlayerSystem
         player.events.OnJumpButtonUp += OnJumpButtonUp;
         player.events.OnGrappleButtonDown += OnGrappleButtonDown;
         player.events.OnGrappleButtonUp += OnGrappleButtonUp;
+		player.events.OnChangeAnchorPoint += OnChangeAnchorPoint;
         player.events.OnPullButtonDown += OnPullButtonDown;
 		player.events.OnDeath += OnDeath;
 		player.events.OnRespawn += OnRespawn;
@@ -388,6 +395,7 @@ public class PlayerMovement : PlayerSystem
         player.events.OnJumpButtonUp -= OnJumpButtonUp;
         player.events.OnGrappleButtonDown -= OnGrappleButtonDown;
         player.events.OnGrappleButtonUp -= OnGrappleButtonUp;
+		player.events.OnChangeAnchorPoint -= OnChangeAnchorPoint;
         player.events.OnPullButtonDown -= OnPullButtonDown;
 		player.events.OnDeath -= OnDeath;
 		player.events.OnRespawn -= OnRespawn;
