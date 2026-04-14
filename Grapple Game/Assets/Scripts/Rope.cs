@@ -12,9 +12,10 @@ public class Rope : MonoBehaviour
     
     public List<Point> points = new List<Point>();
     public List<Line> lines = new List<Line>();
-    public List<Vector2> wrapPoints = new List<Vector2>();
+    public List<WrapPoint> wrapPoints = new List<WrapPoint>();
 
     [HideInInspector] public float maxLength;
+    float wrappedLength;
     bool isDetached;
     float timeAfterDetached;
     
@@ -51,7 +52,8 @@ public class Rope : MonoBehaviour
         timeAfterDetached = 0.0f;
 
         lineRenderer.positionCount = points.Count;
-        wrapPoints.Add(points[0].currentPos);
+        wrapPoints.Add(new WrapPoint(points[0].currentPos, 0, 0f));
+        wrappedLength = maxLength;
     }
 
     void Update()
@@ -76,53 +78,114 @@ public class Rope : MonoBehaviour
     void FixedUpdate()
     {
         CheckForWrapping();
-        FindValues(out float distance, out float tension, out float adjustment);
+        FindValuesForRope(out float distance, out float tension, out float adjustment);
         for (int i = 0; i < subSteps; i++)
         {
             ChangeVelocities(adjustment);
-            SolveConstraints(tension, adjustment);
+            SolveConstraints(tension);
         }
         AdjustRope(distance, adjustment);
     }
 
     void CheckForWrapping()
     {
+        #region Check Wrapping
         if (isDetached)
             { return; }
         
         RaycastHit2D hit;
         float distance = Vector2.Distance(points[^1].pastPos, points[^1].currentPos);
-        int steps = Mathf.FloorToInt(distance / 0.01f);
+        int steps = Mathf.CeilToInt(distance / 0.01f);
+        Vector2 end = wrapPoints[^1].pos;
+        
         for (int i = 0; i < steps + 1; i++)
         {
-            Vector2 point = i != steps ? Vector2.Lerp(points[^1].pastPos, points[^1].currentPos, 0.01f * i / distance) : points[^1].currentPos;
-            hit = Physics2D.Linecast(point, wrapPoints[^1], collisionLayer);
-            if (hit.collider != null && Vector2.Distance(hit.point, wrapPoints[^1]) > 0.1f)
+            Vector2 start = i != steps ? Vector2.Lerp(points[^1].pastPos, points[^1].currentPos, 0.01f * i / distance) : points[^1].currentPos;
+            List<RaycastHit2D> cornerHits = new List<RaycastHit2D>();
+            
+            hit = Physics2D.Linecast(start, end, collisionLayer);
+            if (hit.collider == null || Vector2.Distance(hit.point, end) < 0.1f)
+                { continue; }
+            cornerHits.Add(hit);
+            
+            hit = Physics2D.Linecast(end, start, collisionLayer);
+            if (hit.collider == null || Vector2.Distance(cornerHits[0].point, hit.point) > 0.45f)
             {
-                wrapPoints.Add(hit.point);
-                player.events.OnChangeAnchorPoint?.Invoke(wrapPoints[^1], true);
-                Debug.Log(hit.point + ", " + steps + ", " + i);
+                WrapPointFallback(end, cornerHits[0].point, (start - end).normalized);
+                Debug.Log("Fallback: no collision or too far collision");
                 break;
             }
+            cornerHits.Add(hit);
+
+            Vector2 normal1 = cornerHits[0].normal;
+            Vector2 normal2 = cornerHits[1].normal;
+            Vector2 cornerNormal = normal1 + normal2;
+            Vector2 offset = cornerNormal * collisionRadius;
+
+            float distance1 = Vector2.Dot(normal1, cornerHits[0].point);
+            float distance2 = Vector2.Dot(normal2, cornerHits[1].point);
+            float determinate = normal1.x * normal2.y - normal1.y * normal2.x;
+            if (Mathf.Abs(determinate) < 1e-6f)
+            {
+                WrapPointFallback(end, cornerHits[0].point, (start - end).normalized);
+                Debug.Log("Fallback: raycast within collider");
+                break;
+            }
+            
+            float x = (distance1 * normal2.y - distance2 * normal1.y) / determinate;
+            float y = (normal1.x * distance2 - normal2.x * distance1) / determinate;
+            Vector2 corner = new Vector2(x, y);
+
+            Vector2 newPos = corner + offset;
+            FindValuesForWrapPoint(end, newPos, out int index, out float remainder);
+            wrapPoints.Add(new WrapPoint(newPos, index, remainder));
+            player.events.OnChangeAnchorPoint?.Invoke(newPos, true);
+            wrappedLength -= Vector2.Distance(end, newPos);
+            Debug.Log(corner + ", " + offset);
+            break;
         }
 
         if (wrapPoints.Count == 1)
             { return; }
         
-        hit = Physics2D.Linecast(points[^1].currentPos, wrapPoints[^2], collisionLayer);
-        if (hit.collider == null || Vector2.Distance(hit.point, wrapPoints[^2]) <= 0.1f)
+        hit = Physics2D.Linecast(points[^1].currentPos, wrapPoints[^2].pos, collisionLayer);
+        if (hit.collider == null || Vector2.Distance(hit.point, wrapPoints[^2].pos) <= 0.1f)
         {
+            wrappedLength += Vector2.Distance(wrapPoints[^1].pos, wrapPoints[^2].pos);
+            player.events.OnChangeAnchorPoint?.Invoke(wrapPoints[^2].pos, false);
             wrapPoints.RemoveAt(wrapPoints.Count - 1);
-            player.events.OnChangeAnchorPoint?.Invoke(wrapPoints[^1], false);
-            Debug.Log("Removed wrap point");
+            //Debug.Log("Removed wrap point");
         }
+        #endregion
     }
 
-    void FindValues(out float distance, out float tension, out float adjustment)
+    void WrapPointFallback(Vector2 wrapPos, Vector2 hitPos, Vector2 direction)
     {
-        distance = Vector2.Distance(points[0].currentPos, points[^1].currentPos);
-        tension = !isDetached ? tensionCurve.Evaluate(Mathf.Clamp01(distance / maxLength)) : 0.97f;
-        adjustment = !isDetached ? adjustmentCurve.Evaluate(Mathf.Clamp01((maxLength - distance) / adjustmentLength)) : 0;
+        Vector2 partialOffset = direction * collisionRadius;
+        Vector2 newPos = hitPos + partialOffset;
+        FindValuesForWrapPoint(wrapPos, newPos, out int index, out float remainder);
+        wrapPoints.Add(new WrapPoint(newPos, index, remainder));
+        player.events.OnChangeAnchorPoint?.Invoke(newPos, true);
+        wrappedLength -= Vector2.Distance(wrapPos, newPos);
+    }
+
+    void FindValuesForWrapPoint(Vector2 wrapPos, Vector2 newPos, out int index, out float remainder)
+    {
+        float lineLength = maxLength / lines.Count;
+        float accumulatedLength = wrapPoints[^1].index * lineLength + wrapPoints[^1].remainder;
+        accumulatedLength += Vector2.Distance(wrapPos, newPos);
+        
+        index = Mathf.FloorToInt(accumulatedLength / lineLength);
+        remainder = accumulatedLength % lineLength;
+
+        Debug.Log("Max length: " + maxLength + ", Line Length: " + lineLength + ", Lines: " + lines.Count + ", Index: " + index + ", Remainder: " + remainder);
+    }
+
+    void FindValuesForRope(out float distance, out float tension, out float adjustment)
+    {
+        distance = Vector2.Distance(wrapPoints[^1].pos, points[^1].currentPos);
+        tension = !isDetached ? tensionCurve.Evaluate(Mathf.Clamp01(distance / wrappedLength)) : 0.97f;
+        adjustment = !isDetached ? adjustmentCurve.Evaluate(Mathf.Clamp01((wrappedLength - distance) / adjustmentLength)) : 0;
     }
 
     void ChangeVelocities(float adjustment)
@@ -148,7 +211,7 @@ public class Rope : MonoBehaviour
         #endregion
     }
 
-    void SolveConstraints(float tension, float adjustment)
+    void SolveConstraints(float tension)
     {
         for (int i = 0; i < iterationsPerSubStep; i++)
         {
@@ -251,24 +314,45 @@ public class Rope : MonoBehaviour
     void AdjustRope(float distance, float adjustment)
     {
         #region Adjustements
-        if (isDetached || maxLength - distance > adjustmentLength)
+        if (isDetached || wrappedLength - distance > adjustmentLength)
             { return; }
 
         int totalPoints = points.Count - 1;
-        for (int i = 1; i < points.Count - 1; i++)
+        float lineLength = maxLength / totalPoints;
+        for (int i = 0; i < wrapPoints.Count; i++)
+        {
+            int totalBoundedPoints = (i + 1 != wrapPoints.Count ? wrapPoints[i + 1].index + 1 : points.Count) - (wrapPoints[i].index + 1);
+            int startIndex = wrapPoints[i].index + 1;
+            Vector2 startPos = wrapPoints[i].pos;
+            Vector2 endPos = i + 1 != wrapPoints.Count ? wrapPoints[i + 1].pos : points[^1].currentPos;
+            float boundedDistance = Vector2.Distance(startPos, endPos);
+            float offset = lineLength - wrapPoints[i].remainder;
+            
+            for (int j = 0; j < totalBoundedPoints; j++)
+            {
+                int index = startIndex + j;
+                Vector2 setPos = Vector2.Lerp(startPos, endPos, ((float) (j * lineLength) + offset) / boundedDistance);
+                Vector2 displacement = setPos - points[index].currentPos;
+
+                points[index].currentPos += displacement * adjustment;
+                points[index].pastPos += displacement * adjustment;
+            }
+        }
+        
+        /* for (int i = 1; i < points.Count - 1; i++)
         {
             Vector2 setPos = Vector2.Lerp(points[0].currentPos, points[^1].currentPos, (float) i / totalPoints);
             Vector2 displacement = setPos - points[i].currentPos;
             
             points[i].currentPos += displacement * adjustment;
             points[i].pastPos += displacement * adjustment;
-        }
+        } */
         #endregion
     }
 
     public void DetachRope()
     {
-        FindValues(out _, out _, out float adjustment);
+        FindValuesForRope(out _, out _, out float adjustment);
         if (adjustment != 0)
         {
             Vector2 direction = Vector2.Perpendicular((points[0].currentPos - points[^1].currentPos).normalized);
@@ -311,5 +395,20 @@ public class Line
     {
         pointIndexes = p;
         length = l;
+    }
+}
+
+[System.Serializable]
+public class WrapPoint
+{
+    public Vector2 pos;
+    public int index;
+    public float remainder;
+
+    public WrapPoint(Vector2 p, int i, float r)
+    {
+        pos = p;
+        index = i;
+        remainder = r;
     }
 }

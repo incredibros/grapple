@@ -144,8 +144,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e443bc229f4dcf4cbf89dc717c20d7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
   points: []
   lines: []
+  wrapPoints: []
   maxLength: 0
   gravityScale: 35
   tensionCurve:
@@ -216,7 +218,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   adjustmentLength: 0.5
   bendingStiffness: 0.02
-  collisionRadius: 0.075
+  collisionRadius: 0.07
   collisionLayer:
     serializedVersion: 2
     m_Bits: 128

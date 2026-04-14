@@ -71,16 +71,7 @@ public class PlayerMovement : PlayerSystem
 		
 		LateralMovement();
 
-		#region Gravity
-		if (state.isFalling && !state.isHanging)
-		{
-			rb.gravityScale = player.data.gravityScale * (!state.isSliding ? player.data.fallGravityMultiplier : player.data.wallSlideGravityMultiplier);
-			rb.gravityScale *= state.isFastFalling ? player.data.fastFallMultiplier : 1;
-			rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, !state.isSliding ? -player.data.maxFallSpeed : -player.data.maxWallSlideSpeed));
-		}
-		else
-			{ rb.gravityScale = player.data.gravityScale; }
-		#endregion
+		Gravity();
 	}
 
 	#region Checks
@@ -179,6 +170,20 @@ public class PlayerMovement : PlayerSystem
 	}
 	#endregion
 
+	#region Gravity
+	void Gravity()
+	{
+		if (state.isFalling && !state.isHanging)
+		{
+			rb.gravityScale = player.data.gravityScale * (!state.isSliding ? player.data.fallGravityMultiplier : player.data.wallSlideGravityMultiplier);
+			rb.gravityScale *= state.isFastFalling ? player.data.fastFallMultiplier : 1;
+			rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, !state.isSliding ? -player.data.maxFallSpeed : -player.data.maxWallSlideSpeed));
+		}
+		else
+			{ rb.gravityScale = player.data.gravityScale; }
+	}
+	#endregion
+
     #region Jump
 	void OnJumpButtonDown()
     {
@@ -231,28 +236,30 @@ public class PlayerMovement : PlayerSystem
 		
 		Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		Vector2 direction = (mousePos - (Vector2) transform.position).normalized;
-		RaycastHit2D[] raycast = Physics2D.RaycastAll(transform.position, direction, player.data.grappleRange, player.data.grappleLayers);
-		if (raycast.Length == 0)
+		Vector2 nudge = direction * -0.01f;
+		RaycastHit2D[] hit = Physics2D.RaycastAll(transform.position, direction, player.data.grappleRange, player.data.grappleLayers);
+		if (hit.Length == 0)
 			{ return; }
-		int raycastIndex = -1;
-		for (int i = 0; i < raycast.Length; i++)
+		
+		int hitIndex = -1;
+		for (int i = 0; i < hit.Length; i++)
 		{
-			if ((player.data.semiSolidLayer.value & (1 << raycast[i].collider.transform.parent.gameObject.layer)) != 0 && direction.y >= 0)
+			if ((player.data.semiSolidLayer.value & (1 << hit[i].collider.transform.parent.gameObject.layer)) != 0 && direction.y >= 0)
 				{ continue; }
-			raycastIndex = i;
+			hitIndex = i;
 			break;
 		}
-		if (raycastIndex == -1)
+		if (hitIndex == -1)
 			{ return; }
 			
 		state.isGrappled = true;
 		joint.enabled = true;
 		grappleReleaseDelay = player.data.releaseDelayTime;
 		
-		TargetPosition hitCollider = raycast[raycastIndex].collider.gameObject.GetComponentInParent<TargetPosition>();
-		joint.connectedAnchor = grapplePoint = new Vector2(
-			Mathf.Clamp(raycast[raycastIndex].point.x, hitCollider.gameObject.transform.position.x + hitCollider.minGrappleBounds.x, hitCollider.gameObject.transform.position.x + hitCollider.maxGrappleBounds.x),
-			Mathf.Clamp(raycast[raycastIndex].point.y, hitCollider.gameObject.transform.position.y + hitCollider.minGrappleBounds.y, hitCollider.gameObject.transform.position.y + hitCollider.maxGrappleBounds.y));
+		TargetPosition hitCollider = hit[hitIndex].collider.gameObject.GetComponentInParent<TargetPosition>();
+		joint.connectedAnchor = grapplePoint = nudge + new Vector2(
+			Mathf.Clamp(hit[hitIndex].point.x, hitCollider.gameObject.transform.position.x + hitCollider.minGrappleBounds.x, hitCollider.gameObject.transform.position.x + hitCollider.maxGrappleBounds.x),
+			Mathf.Clamp(hit[hitIndex].point.y, hitCollider.gameObject.transform.position.y + hitCollider.minGrappleBounds.y, hitCollider.gameObject.transform.position.y + hitCollider.maxGrappleBounds.y));
 		joint.distance = grappleRadius = Vector2.Distance(transform.position, grapplePoint);
 
 		player.events.OnGrapple?.Invoke(grapplePoint);
@@ -279,7 +286,7 @@ public class PlayerMovement : PlayerSystem
 	void OnChangeAnchorPoint(Vector2 point, bool shorten)
 	{
 		grappleRadius += Vector2.Distance(grapplePoint, point) * (shorten ? -1f : 1f);
-		joint.connectedAnchor = point;
+		joint.connectedAnchor = grapplePoint = point;
 		joint.distance = grappleRadius;
 	}
 	#endregion
