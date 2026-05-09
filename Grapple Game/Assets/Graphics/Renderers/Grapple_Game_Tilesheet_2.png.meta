@@ -3,7 +3,7 @@ guid: 656a5049569975940a1e7681aeb5b5ae
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
-  serializedVersion: 11
+  serializedVersion: 12
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -63,6 +63,7 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 0
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -693,33 +694,33 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Grapple_Game_Tilesheet_2_21: -296947490
-      Grapple_Game_Tilesheet_2_11: 1702984709
-      Grapple_Game_Tilesheet_2_23: -1877757428
-      Grapple_Game_Tilesheet_2_8: 443442162
-      Grapple_Game_Tilesheet_2_25: 1007037843
-      Grapple_Game_Tilesheet_2_26: -556809759
-      Grapple_Game_Tilesheet_2_16: 456382430
-      Grapple_Game_Tilesheet_2_22: 786788670
-      Grapple_Game_Tilesheet_2_15: -921250375
-      Grapple_Game_Tilesheet_2_18: -244755938
-      Grapple_Game_Tilesheet_2_9: -290196781
-      Grapple_Game_Tilesheet_2_19: 2075552300
-      Grapple_Game_Tilesheet_2_7: -207054472
-      Grapple_Game_Tilesheet_2_4: -258214731
-      Grapple_Game_Tilesheet_2_12: 1910037326
-      Grapple_Game_Tilesheet_2_6: -1480878009
-      Grapple_Game_Tilesheet_2_5: 1360805031
+      Grapple_Game_Tilesheet_2_0: 1469314190
       Grapple_Game_Tilesheet_2_1: 1337183896
+      Grapple_Game_Tilesheet_2_10: 459838501
+      Grapple_Game_Tilesheet_2_11: 1702984709
+      Grapple_Game_Tilesheet_2_12: 1910037326
       Grapple_Game_Tilesheet_2_13: -1399520592
       Grapple_Game_Tilesheet_2_14: 140691700
+      Grapple_Game_Tilesheet_2_15: -921250375
+      Grapple_Game_Tilesheet_2_16: 456382430
+      Grapple_Game_Tilesheet_2_17: 463409989
+      Grapple_Game_Tilesheet_2_18: -244755938
+      Grapple_Game_Tilesheet_2_19: 2075552300
       Grapple_Game_Tilesheet_2_2: 2060736538
       Grapple_Game_Tilesheet_2_20: -554281601
-      Grapple_Game_Tilesheet_2_17: 463409989
+      Grapple_Game_Tilesheet_2_21: -296947490
+      Grapple_Game_Tilesheet_2_22: 786788670
+      Grapple_Game_Tilesheet_2_23: -1877757428
       Grapple_Game_Tilesheet_2_24: 1114100404
-      Grapple_Game_Tilesheet_2_10: 459838501
+      Grapple_Game_Tilesheet_2_25: 1007037843
+      Grapple_Game_Tilesheet_2_26: -556809759
       Grapple_Game_Tilesheet_2_3: 1909067131
-      Grapple_Game_Tilesheet_2_0: 1469314190
+      Grapple_Game_Tilesheet_2_4: -258214731
+      Grapple_Game_Tilesheet_2_5: 1360805031
+      Grapple_Game_Tilesheet_2_6: -1480878009
+      Grapple_Game_Tilesheet_2_7: -207054472
+      Grapple_Game_Tilesheet_2_8: 443442162
+      Grapple_Game_Tilesheet_2_9: -290196781
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

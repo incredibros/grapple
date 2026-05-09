@@ -10,7 +10,7 @@ public class PlayerInput : PlayerSystem
 	
 	void Update()
 	{
-		if (!canMove)
+		if (!canMove || MainMenu.GameIsPaused)
 			{ return; }
 		
 		// The question mark after each action makes sure there is as least one function connected to the action so that
