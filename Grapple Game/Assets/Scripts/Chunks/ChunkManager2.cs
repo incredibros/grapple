@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ChunkManager : MonoBehaviour
+public class ChunkManager2 : MonoBehaviour
 {
     [Header("Player")]
     public Transform player;
@@ -11,11 +11,11 @@ public class ChunkManager : MonoBehaviour
     public int chunkSize = 16;
     public int renderDistance = 2;
 
-    [Header("Chunk Parent")]
-    public Transform chunkParent;
-
     [Header("Chunk Prefabs")]
     public List<GameObject> chunkPrefabs;
+
+    [Header("Chunk Parent")]
+    public Transform chunkParent;
 
     // Loaded chunks in scene
     private Dictionary<Vector2Int, GameObject> loadedChunks = new Dictionary<Vector2Int, GameObject>();
@@ -23,9 +23,8 @@ public class ChunkManager : MonoBehaviour
     // All available chunk prefabs
     private Dictionary<Vector2Int, GameObject> chunkLookup = new Dictionary<Vector2Int, GameObject>();
 
-    IEnumerator Start()
+    void Start()
     {
-        yield return new WaitForEndOfFrame();
         RegisterChunks();
     }
 
@@ -35,7 +34,7 @@ public class ChunkManager : MonoBehaviour
     }
 
     // Register all chunk prefabs
-    public void RegisterChunks()
+    void RegisterChunks()
     {
         foreach (GameObject prefab in chunkPrefabs)
         {
@@ -96,9 +95,9 @@ public class ChunkManager : MonoBehaviour
     }
 
     // Convert world position to chunk coordinate
-    Vector2Int GetChunkCoord(Vector3 pos)
+    Vector2Int GetChunkCoord(Vector3 position)
     {
-        return new Vector2Int(Mathf.FloorToInt(pos.x / chunkSize), Mathf.FloorToInt(pos.y / chunkSize));
+        return new Vector2Int(Mathf.FloorToInt(position.x / chunkSize), Mathf.FloorToInt(position.y / chunkSize));
     }
 
     // Spawn chunk

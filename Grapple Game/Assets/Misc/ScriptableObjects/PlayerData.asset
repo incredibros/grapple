@@ -101,6 +101,7 @@ MonoBehaviour:
   orbLayer:
     serializedVersion: 2
     m_Bits: 4096
+  effectPrefab: {fileID: 852556821801593712, guid: 048194095832f4f0a8941085678e01e4, type: 3}
   accels:
   - type: Ground
     constant: 1

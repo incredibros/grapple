@@ -73,6 +73,9 @@ public class PlayerData : ScriptableObject
 	public Vector2 orbCheckSize;
 	public LayerMask orbLayer;
 
+	[Header("Effects")]
+	public GameObject effectPrefab;
+
 	[Header("Accelerations and Decelerations")]
 	public List<AccelInfo> accels;
 }
