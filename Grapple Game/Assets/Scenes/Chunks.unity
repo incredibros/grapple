@@ -22765,7 +22765,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 2134932216}
-  chunkSize: 2
+  chunkSize: 4
   renderDistance: 1
   chunkPrefabs:
   - {fileID: 8046510907000393790, guid: a6a745adfd3c04b3ebe8398fd9ce98ec, type: 3}

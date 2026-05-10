@@ -18,12 +18,10 @@ public class ChunkManager : MonoBehaviour
     public Transform chunkParent;
 
     // Loaded chunks in scene
-    private Dictionary<Vector2Int, GameObject> loadedChunks =
-        new Dictionary<Vector2Int, GameObject>();
+    private Dictionary<Vector2Int, GameObject> loadedChunks = new Dictionary<Vector2Int, GameObject>();
 
     // All available chunk prefabs
-    private Dictionary<Vector2Int, GameObject> chunkLookup =
-        new Dictionary<Vector2Int, GameObject>();
+    private Dictionary<Vector2Int, GameObject> chunkLookup = new Dictionary<Vector2Int, GameObject>();
 
     void Start()
     {
@@ -45,20 +43,13 @@ public class ChunkManager : MonoBehaviour
 
             if (chunkData == null)
             {
-                Debug.LogError(
-                    prefab.name +
-                    " is missing Chunk.cs!"
-                );
-
+                Debug.LogError(prefab.name + " is missing Chunk.cs!");
                 continue;
             }
 
             if (!chunkLookup.ContainsKey(chunkData.chunkCoord))
             {
-                chunkLookup.Add(
-                    chunkData.chunkCoord,
-                    prefab
-                );
+                chunkLookup.Add(chunkData.chunkCoord, prefab);
             }
         }
     }
@@ -66,26 +57,16 @@ public class ChunkManager : MonoBehaviour
     // Load/unload chunks around player
     void UpdateChunks()
     {
-        Vector2Int playerChunk =
-            GetChunkCoord(player.position);
+        Vector2Int playerChunk = GetChunkCoord(player.position);
 
-        HashSet<Vector2Int> neededChunks =
-            new HashSet<Vector2Int>();
+        HashSet<Vector2Int> neededChunks = new HashSet<Vector2Int>();
 
         // Load nearby chunks
-        for (int x = -renderDistance;
-             x <= renderDistance;
-             x++)
+        for (int x = -renderDistance; x <= renderDistance; x++)
         {
-            for (int y = -renderDistance;
-                 y <= renderDistance;
-                 y++)
+            for (int y = -renderDistance; y <= renderDistance; y++)
             {
-                Vector2Int coord =
-                    new Vector2Int(
-                        playerChunk.x + x,
-                        playerChunk.y + y
-                    );
+                Vector2Int coord = new Vector2Int(playerChunk.x + x, playerChunk.y + y);
 
                 neededChunks.Add(coord);
 
@@ -97,15 +78,13 @@ public class ChunkManager : MonoBehaviour
         }
 
         // Unload far chunks
-        List<Vector2Int> chunksToUnload =
-            new List<Vector2Int>();
+        List<Vector2Int> chunksToUnload = new List<Vector2Int>();
 
         foreach (var chunk in loadedChunks)
         {
             if (!neededChunks.Contains(chunk.Key))
             {
                 Destroy(chunk.Value);
-
                 chunksToUnload.Add(chunk.Key);
             }
         }
@@ -119,10 +98,7 @@ public class ChunkManager : MonoBehaviour
     // Convert world position to chunk coordinate
     Vector2Int GetChunkCoord(Vector3 position)
     {
-        return new Vector2Int(
-            Mathf.FloorToInt(position.x / chunkSize),
-            Mathf.FloorToInt(position.y / chunkSize)
-        );
+        return new Vector2Int(Mathf.FloorToInt(position.x / chunkSize), Mathf.FloorToInt(position.y / chunkSize));
     }
 
     // Spawn chunk
@@ -130,31 +106,15 @@ public class ChunkManager : MonoBehaviour
     {
         // Does this chunk exist?
         if (!chunkLookup.ContainsKey(coord))
-            return;
+            { return; }
 
-        GameObject prefab =
-            chunkLookup[coord];
+        GameObject prefab = chunkLookup[coord];
 
-        Vector3 worldPosition =
-            new Vector3(
-                coord.x * chunkSize,
-                coord.y * chunkSize,
-                0
-            );
+        Vector3 worldPosition = new Vector3(coord.x * chunkSize, coord.y * chunkSize, 0);
 
-        GameObject chunk =
-            Instantiate(
-                prefab,
-                worldPosition,
-                Quaternion.identity,
-                chunkParent
-            );
+        GameObject chunk = Instantiate(prefab, worldPosition, Quaternion.identity, chunkParent);
 
-        chunk.name =
-            "Chunk_" +
-            coord.x +
-            "_" +
-            coord.y;
+        chunk.name = "Chunk_" + coord.x + "_" + coord.y;
 
         loadedChunks.Add(coord, chunk);
     }

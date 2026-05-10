@@ -32,10 +32,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2874948163783898942}
-  - {fileID: 2874948162162585518}
   - {fileID: 2874948162611406580}
   - {fileID: 2874948162004583912}
+  - {fileID: 2874948163783898942}
+  - {fileID: 2874948162162585518}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -148,23 +148,23 @@ CompositeCollider2D:
   m_ColliderPaths:
   - m_Collider: {fileID: 4055696065074112407}
     m_ColliderPaths:
-    - - X: -10000000
+    - - X: 30000000
         Y: -10000000
-      - X: -20000000
+      - X: 20000000
         Y: -10000000
-      - X: -20000000
+      - X: 20000000
         Y: -20000000
-      - X: -10000000
+      - X: 30000000
         Y: -20000000
   - m_Collider: {fileID: 4055696064490897159}
     m_ColliderPaths:
-    - - X: 0
+    - - X: 40000000
         Y: -10000000
-      - X: -10000000
+      - X: 30000000
         Y: -10000000
-      - X: -10000000
+      - X: 30000000
         Y: -20000000
-      - X: 0
+      - X: 40000000
         Y: -20000000
   - m_Collider: {fileID: 4055696064167835229}
     m_ColliderPaths:
@@ -188,10 +188,10 @@ CompositeCollider2D:
         Y: -20000000
   m_CompositePaths:
     m_Paths:
-    - - {x: 1.9999708, y: -2}
-      - {x: 1.9999708, y: -1}
-      - {x: -2, y: -1.0000293}
-      - {x: -1.9999708, y: -2}
+    - - {x: 3.999971, y: -2}
+      - {x: 3.999971, y: -1}
+      - {x: 0, y: -1.0000293}
+      - {x: 0.000029300001, y: -2}
   m_VertexDistance: 0.0005
   m_OffsetDistance: 0.00005
 --- !u!114 &8046510907000393779
@@ -216,11 +216,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5210432870057780889, guid: f98dc99e27a8c78429461a440d67d8fd, type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5210432870057780889, guid: f98dc99e27a8c78429461a440d67d8fd, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.5
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 5210432870057780889, guid: f98dc99e27a8c78429461a440d67d8fd, type: 3}
       propertyPath: m_LocalPosition.y
@@ -283,11 +283,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5210432870057780889, guid: f98dc99e27a8c78429461a440d67d8fd, type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5210432870057780889, guid: f98dc99e27a8c78429461a440d67d8fd, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.5
+      value: 3.5
       objectReference: {fileID: 0}
     - target: {fileID: 5210432870057780889, guid: f98dc99e27a8c78429461a440d67d8fd, type: 3}
       propertyPath: m_LocalPosition.y
@@ -350,7 +350,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5210432870057780889, guid: f98dc99e27a8c78429461a440d67d8fd, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5210432870057780889, guid: f98dc99e27a8c78429461a440d67d8fd, type: 3}
       propertyPath: m_LocalPosition.x
@@ -417,7 +417,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5210432870057780889, guid: f98dc99e27a8c78429461a440d67d8fd, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5210432870057780889, guid: f98dc99e27a8c78429461a440d67d8fd, type: 3}
       propertyPath: m_LocalPosition.x
