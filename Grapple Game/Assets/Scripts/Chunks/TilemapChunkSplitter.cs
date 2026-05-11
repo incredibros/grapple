@@ -4,7 +4,6 @@ using UnityEngine;
 public class TilemapChunkSplitter : MonoBehaviour
 {
     public ChunkManager chunkManager;
-    public Transform allChunksParent;
     public List<Transform> grids;
 
     private Dictionary<Vector2Int, List<GameObject>> chunks = new Dictionary<Vector2Int, List<GameObject>>();
@@ -41,7 +40,7 @@ public class TilemapChunkSplitter : MonoBehaviour
             List<GameObject> tiles = chunk.Value;
 
             GameObject chunkObject = new GameObject($"Chunk_{chunkPos.x}_{chunkPos.y}");
-            chunkObject.transform.SetParent(allChunksParent);
+            chunkObject.transform.SetParent(chunkManager.transform);
             chunkObject.SetActive(false);
 
             Chunk c = chunkObject.AddComponent<Chunk>();

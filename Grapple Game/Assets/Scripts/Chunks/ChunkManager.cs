@@ -5,7 +5,6 @@ using UnityEngine;
 public class ChunkManager : MonoBehaviour
 {
     public Transform player;
-    public Transform activeChunkParent;
 
     public int chunkSize = 16;
     public int renderDistance = 2;
@@ -113,7 +112,7 @@ public class ChunkManager : MonoBehaviour
 
         Vector3 worldPosition = new Vector3(coord.x * chunkSize, coord.y * chunkSize, 0);
 
-        GameObject chunk = Instantiate(prefab, Vector3.zero, Quaternion.identity, activeChunkParent);
+        GameObject chunk = Instantiate(prefab, Vector3.zero, Quaternion.identity, this.transform);
 
         chunk.SetActive(true);
 
