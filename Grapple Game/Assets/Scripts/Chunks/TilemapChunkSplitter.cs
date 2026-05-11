@@ -3,11 +3,9 @@ using UnityEngine;
 
 public class TilemapChunkSplitter : MonoBehaviour
 {
-    [Header("Tile Parent")]
-    public Transform tileParent;
-
-    [Header("Chunk System Reference")]
     public ChunkManager chunkManager;
+    public Transform allChunksParent;
+    public List<Transform> grids;
 
     private Dictionary<Vector2Int, List<GameObject>> chunks = new Dictionary<Vector2Int, List<GameObject>>();
 
@@ -18,48 +16,56 @@ public class TilemapChunkSplitter : MonoBehaviour
 
     void BuildChunks()
     {
+        if (grids == null)
+            { return; }
+
         chunks.Clear();
         chunkManager.chunkPrefabs.Clear();
 
-        List<GameObject> tiles = new List<GameObject>();
-
-        // Store all tiles first
-        foreach (GameObject tile in tileParent)
+        foreach (Transform grid in grids)
         {
-            tiles.Add(tile);
-
-            tile.gameObject.SetActive(false);
+            foreach (Transform tileMap in grid)
+            {
+                foreach (Transform tile in tileMap)
+                {
+                    AddOrCreateChunk(GetChunkCoord(tile.position), tile.gameObject);
+                }
+            }
         }
+        
+        
 
-        // Create chunks
-        foreach (GameObject tile in tiles)
+        foreach (KeyValuePair<Vector2Int, List<GameObject>> chunk in chunks)
         {
-            Vector3 pos = tile.position;
+            Vector2Int chunkPos = chunk.Key;
+            List<GameObject> tiles = chunk.Value;
 
-            Vector2Int chunkCoord = GetChunkCoord(pos);
+            GameObject chunkObject = new GameObject($"Chunk_{chunkPos.x}_{chunkPos.y}");
+            chunkObject.transform.SetParent(allChunksParent);
+            chunkObject.SetActive(false);
 
-            AddOrCreateChunk(tile, chunkCoord);
+            Chunk c = chunkObject.AddComponent<Chunk>();
+            c.chunkCoord = new Vector2Int(chunkPos.x, chunkPos.y);
+
+            foreach (GameObject tile in tiles)
+            {
+                tile.transform.SetParent(chunkObject.transform);
+            }
+
+            chunkManager.chunkPrefabs.Add(chunkObject);
         }
 
         chunkManager.RegisterChunks();
     }
 
-    GameObject AddOrCreateChunk(GameObject tile, Vector2Int coord)
+    void AddOrCreateChunk(Vector2Int coord, GameObject tile)
     {
-        if (chunks.Contains(coord))
+        if (!chunks.ContainsKey(coord))
         {
-            findChunk[coord].Add(tile);
-            return;
+            chunks[coord] = new List<GameObject>();
         }
 
-        //GameObject chunk = new GameObject($"Chunk_{coord.x}_{coord.y}");
-
-        //Chunk c = chunk.AddComponent<Chunk>();
-        //c.chunkCoord = new Vector3(coord.x * chunkManager.chunkSize, coord.y * chunkManager.chunkSize, 0);;
-
         chunks[coord].Add(tile);
-
-        return chunk;
     }
 
     Vector2Int GetChunkCoord(Vector3 pos)

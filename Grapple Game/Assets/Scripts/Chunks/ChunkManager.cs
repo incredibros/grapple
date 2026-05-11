@@ -4,17 +4,12 @@ using UnityEngine;
 
 public class ChunkManager : MonoBehaviour
 {
-    [Header("Player")]
     public Transform player;
+    public Transform activeChunkParent;
 
-    [Header("Chunk Settings")]
     public int chunkSize = 16;
     public int renderDistance = 2;
 
-    [Header("Chunk Parent")]
-    public Transform chunkParent;
-
-    [Header("Chunk Prefabs")]
     public List<GameObject> chunkPrefabs;
 
     // Loaded chunks in scene
@@ -37,6 +32,9 @@ public class ChunkManager : MonoBehaviour
     // Register all chunk prefabs
     public void RegisterChunks()
     {
+        if (chunkPrefabs == null)
+            { return; }
+
         foreach (GameObject prefab in chunkPrefabs)
         {
             Chunk chunkData = prefab.GetComponent<Chunk>();
@@ -57,6 +55,9 @@ public class ChunkManager : MonoBehaviour
     // Load/unload chunks around player
     void UpdateChunks()
     {
+        if (chunkPrefabs == null)
+            { return; }
+
         Vector2Int playerChunk = GetChunkCoord(player.position);
 
         HashSet<Vector2Int> neededChunks = new HashSet<Vector2Int>();
@@ -112,9 +113,14 @@ public class ChunkManager : MonoBehaviour
 
         Vector3 worldPosition = new Vector3(coord.x * chunkSize, coord.y * chunkSize, 0);
 
-        GameObject chunk = Instantiate(prefab, worldPosition, Quaternion.identity, chunkParent);
+        GameObject chunk = Instantiate(prefab, Vector3.zero, Quaternion.identity, activeChunkParent);
 
-        //chunk.name = "Chunk_" + coord.x + "_" + coord.y;
+        chunk.SetActive(true);
+
+        chunk.name = "Chunk_" + coord.x + "_" + coord.y;
+
+        if (loadedChunks.ContainsKey(coord))
+            { return; }
 
         loadedChunks.Add(coord, chunk);
     }
