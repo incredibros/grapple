@@ -22,6 +22,7 @@ public struct PlayerEvents
     public Action<Vector2> OnXYInput;
     public Action OnJumpButtonDown;
     public Action OnJumpButtonUp;
+    public Action<Vector2, bool> OnPointerMove;
     #endregion
 
     #region Grapple

@@ -52,7 +52,6 @@ public class Rope : MonoBehaviour
         timeAfterDetached = 0.0f;
 
         lineRenderer.positionCount = points.Count;
-        wrapPoints.Add(new WrapPoint(points[0].currentPos, 0, 0f));
         wrappedLength = maxLength;
     }
 

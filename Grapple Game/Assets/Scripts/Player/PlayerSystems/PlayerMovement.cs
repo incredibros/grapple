@@ -15,6 +15,7 @@ public class PlayerMovement : PlayerSystem
 
     PlayerStates state = new PlayerStates();
 	Vector2 moveInput;
+	Vector2 mouseDirection;
 
 	float coyote;
 	float2 wallCoyote;
@@ -43,18 +44,7 @@ public class PlayerMovement : PlayerSystem
 		if (state.isDead || state.isFrozen)
 			{ return; }
 		
-		#region Timers
-		coyote -= Time.deltaTime;
-		wallCoyote[0] -= Time.deltaTime;
-		wallCoyote[1] -= Time.deltaTime;
-		jumpBuffer -= Time.deltaTime;
-		lateralBuffer[0] -= Time.deltaTime;
-		lateralBuffer[1] -= Time.deltaTime;
-		jumpDelay -= Time.deltaTime;
-		grappleReleaseDelay -= Time.deltaTime;
-		accelTime += Time.deltaTime;
-		#endregion
-
+		Timers();
 		Checks();
 
 		if (jumpBuffer > 0f && jumpDelay <= 0f && !state.isJumping)
@@ -73,6 +63,26 @@ public class PlayerMovement : PlayerSystem
 
 		Gravity();
 	}
+
+	#region Timers
+	void Timers()
+	{
+		if (moveInput.x <= -1)
+			{ lateralBuffer[0] = player.data.lateralBufferTime; }
+		if (moveInput.x >= 1)
+			{ lateralBuffer[1] = player.data.lateralBufferTime; }
+
+		coyote -= Time.deltaTime;
+		wallCoyote[0] -= Time.deltaTime;
+		wallCoyote[1] -= Time.deltaTime;
+		jumpBuffer -= Time.deltaTime;
+		lateralBuffer[0] -= Time.deltaTime;
+		lateralBuffer[1] -= Time.deltaTime;
+		jumpDelay -= Time.deltaTime;
+		grappleReleaseDelay -= Time.deltaTime;
+		accelTime += Time.deltaTime;
+	}
+	#endregion
 
 	#region Checks
 	void Checks()
@@ -134,11 +144,7 @@ public class PlayerMovement : PlayerSystem
 	#region LateralMovement
 	void OnXYInput(Vector2 input)
     {
-        moveInput = input;
-		if (moveInput.x == -1)
-			{ lateralBuffer[0] = player.data.lateralBufferTime; }
-		if (moveInput.x == 1)
-			{ lateralBuffer[1] = player.data.lateralBufferTime; }
+        moveInput = Vector2Int.RoundToInt(input);
     }
 
 	void LateralMovement()
@@ -228,23 +234,34 @@ public class PlayerMovement : PlayerSystem
 	#endregion
 
 	#region Grapple
+	void OnPointerMove(Vector2 pos, bool directional)
+	{
+		if (directional)
+		{
+			mouseDirection = pos.normalized;
+		}
+		else
+		{
+			Vector2 mousePos = Camera.main.ScreenToWorldPoint(pos);
+			mouseDirection = (mousePos - (Vector2) transform.position).normalized;
+		}
+	}
+
 	void OnGrappleButtonDown()
 	{
 		if (grapples == 0)
 			{ return; }
 		grapples--;
 		
-		Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-		Vector2 direction = (mousePos - (Vector2) transform.position).normalized;
-		Vector2 nudge = direction * -0.01f;
-		RaycastHit2D[] hit = Physics2D.RaycastAll(transform.position, direction, player.data.grappleRange, player.data.grappleLayers);
+		Vector2 nudge = mouseDirection * -0.01f;
+		RaycastHit2D[] hit = Physics2D.RaycastAll(transform.position, mouseDirection, player.data.grappleRange, player.data.grappleLayers);
 		if (hit.Length == 0)
 			{ return; }
 		
 		int hitIndex = -1;
 		for (int i = 0; i < hit.Length; i++)
 		{
-			if ((player.data.semiSolidLayer.value & (1 << hit[i].collider.transform.parent.gameObject.layer)) != 0 && direction.y >= 0)
+			if ((player.data.semiSolidLayer.value & (1 << hit[i].collider.transform.parent.gameObject.layer)) != 0 && mouseDirection.y >= 0)
 				{ continue; }
 			hitIndex = i;
 			break;
@@ -277,7 +294,7 @@ public class PlayerMovement : PlayerSystem
 	{
 		if (grappleReleaseDelay > 0)
 			{ return; }
-		
+			
 		state.isGrappled = false;
 		state.isHanging = false;
 		joint.enabled = false;
@@ -300,7 +317,7 @@ public class PlayerMovement : PlayerSystem
 			if (!state.isGrappled)
 				{ return; }
 		}
-
+		
 		state.isHanging = false;
 		state.isJumping = false;
 		state.isWallJumping = false;
@@ -386,10 +403,11 @@ public class PlayerMovement : PlayerSystem
         player.events.OnXYInput += OnXYInput;
         player.events.OnJumpButtonDown += OnJumpButtonDown;
         player.events.OnJumpButtonUp += OnJumpButtonUp;
+		player.events.OnPointerMove += OnPointerMove;
         player.events.OnGrappleButtonDown += OnGrappleButtonDown;
         player.events.OnGrappleButtonUp += OnGrappleButtonUp;
+		player.events.OnPullButtonDown += OnPullButtonDown;
 		player.events.OnChangeAnchorPoint += OnChangeAnchorPoint;
-        player.events.OnPullButtonDown += OnPullButtonDown;
 		player.events.OnDeath += OnDeath;
 		player.events.OnRespawn += OnRespawn;
 		player.events.OnOrbPickUp += OnOrbPickUp;
@@ -400,10 +418,11 @@ public class PlayerMovement : PlayerSystem
         player.events.OnXYInput -= OnXYInput;
         player.events.OnJumpButtonDown -= OnJumpButtonDown;
         player.events.OnJumpButtonUp -= OnJumpButtonUp;
+		player.events.OnPointerMove -= OnPointerMove;
         player.events.OnGrappleButtonDown -= OnGrappleButtonDown;
         player.events.OnGrappleButtonUp -= OnGrappleButtonUp;
+		player.events.OnPullButtonDown -= OnPullButtonDown;
 		player.events.OnChangeAnchorPoint -= OnChangeAnchorPoint;
-        player.events.OnPullButtonDown -= OnPullButtonDown;
 		player.events.OnDeath -= OnDeath;
 		player.events.OnRespawn -= OnRespawn;
 		player.events.OnOrbPickUp -= OnOrbPickUp;

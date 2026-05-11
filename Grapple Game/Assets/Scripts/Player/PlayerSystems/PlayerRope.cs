@@ -41,6 +41,8 @@ public class PlayerRope : PlayerSystem
             
             rope.lines.Add(new Line(new int2(i, i - 1), lineLength));
         }
+
+        rope.wrapPoints.Add(new WrapPoint(point, 0, 0f));
     }
 
     void DetachRope()

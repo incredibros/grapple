@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerInput : PlayerSystem
 {
@@ -8,7 +9,7 @@ public class PlayerInput : PlayerSystem
 	
 	bool canMove = true;
 	
-	void Update()
+	/*void Update()
 	{
 		if (!canMove || MainMenu.GameIsPaused)
 			{ return; }
@@ -32,6 +33,63 @@ public class PlayerInput : PlayerSystem
 
         if (Input.GetMouseButtonDown(1))
 			{ player.events.OnPullButtonDown?.Invoke(); }
+	}*/
+
+	public void OnMove(InputAction.CallbackContext context)
+	{
+		if (!canMove || MainMenu.GameIsPaused)
+			{ return; }
+		
+		Vector2 moveInput = context.ReadValue<Vector2>().normalized;
+		player.events.OnXYInput?.Invoke(moveInput);
+	}
+
+	public void OnJump(InputAction.CallbackContext context)
+	{
+		if (!canMove || MainMenu.GameIsPaused)
+			{ return; }
+		
+		if (context.performed)
+			{ player.events.OnJumpButtonDown?.Invoke(); }
+		
+		if (context.canceled)
+			{ player.events.OnJumpButtonUp?.Invoke(); }
+	}
+
+	public void OnGrapple(InputAction.CallbackContext context)
+	{
+		if (!canMove || MainMenu.GameIsPaused)
+			{ return; }
+		
+		if (context.performed)
+			{ player.events.OnGrappleButtonDown?.Invoke(); }
+		
+		if (context.canceled)
+			{ player.events.OnGrappleButtonUp?.Invoke(); }
+	}
+
+	public void OnPull(InputAction.CallbackContext context)
+	{
+		if (!canMove || MainMenu.GameIsPaused)
+			{ return; }
+
+		if (context.performed)
+			{ player.events.OnPullButtonDown?.Invoke(); }
+	}
+
+	public void OnPointerMove(InputAction.CallbackContext context)
+	{
+		Vector2 currentPos = context.ReadValue<Vector2>();
+
+		if (context.control.device is Gamepad || context.control.device is Joystick)
+		{
+			player.events.OnPointerMove?.Invoke(currentPos, true);
+		}
+		else
+		{
+			player.events.OnPointerMove?.Invoke(currentPos, false);
+		}
+		
 	}
 
 	void OnDeath()
