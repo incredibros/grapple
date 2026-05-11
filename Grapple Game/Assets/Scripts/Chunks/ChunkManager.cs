@@ -114,7 +114,7 @@ public class ChunkManager : MonoBehaviour
 
         GameObject chunk = Instantiate(prefab, worldPosition, Quaternion.identity, chunkParent);
 
-        chunk.name = "Chunk_" + coord.x + "_" + coord.y;
+        //chunk.name = "Chunk_" + coord.x + "_" + coord.y;
 
         loadedChunks.Add(coord, chunk);
     }

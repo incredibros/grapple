@@ -9,8 +9,7 @@ public class TilemapChunkSplitter : MonoBehaviour
     [Header("Chunk System Reference")]
     public ChunkManager chunkManager;
 
-    // temp storage
-    private Dictionary<Vector2Int, GameObject> chunks = new Dictionary<Vector2Int, GameObject>();
+    private Dictionary<Vector2Int, List<GameObject>> chunks = new Dictionary<Vector2Int, List<GameObject>>();
 
     void Start()
     {
@@ -19,37 +18,46 @@ public class TilemapChunkSplitter : MonoBehaviour
 
     void BuildChunks()
     {
-        foreach (Transform tile in tileParent)
+        chunks.Clear();
+        chunkManager.chunkPrefabs.Clear();
+
+        List<GameObject> tiles = new List<GameObject>();
+
+        // Store all tiles first
+        foreach (GameObject tile in tileParent)
+        {
+            tiles.Add(tile);
+
+            tile.gameObject.SetActive(false);
+        }
+
+        // Create chunks
+        foreach (GameObject tile in tiles)
         {
             Vector3 pos = tile.position;
 
             Vector2Int chunkCoord = GetChunkCoord(pos);
 
-            GameObject chunk = GetOrCreateChunk(chunkCoord);
-
-            tile.SetParent(chunk.transform);
+            AddOrCreateChunk(tile, chunkCoord);
         }
 
         chunkManager.RegisterChunks();
     }
 
-    GameObject GetOrCreateChunk(Vector2Int coord)
+    GameObject AddOrCreateChunk(GameObject tile, Vector2Int coord)
     {
-        if (chunks.ContainsKey(coord))
-            return chunks[coord];
+        if (chunks.Contains(coord))
+        {
+            findChunk[coord].Add(tile);
+            return;
+        }
 
-        GameObject chunk = new GameObject($"Chunk_{coord.x}_{coord.y}");
+        //GameObject chunk = new GameObject($"Chunk_{coord.x}_{coord.y}");
 
-        chunk.transform.position = new Vector3(coord.x * chunkManager.chunkSize, coord.y * chunkManager.chunkSize, 0);
+        //Chunk c = chunk.AddComponent<Chunk>();
+        //c.chunkCoord = new Vector3(coord.x * chunkManager.chunkSize, coord.y * chunkManager.chunkSize, 0);;
 
-        chunk.transform.parent = chunkManager.chunkParent;
-
-        Chunk c = chunk.AddComponent<Chunk>();
-        c.chunkCoord = coord;
-
-        chunks.Add(coord, chunk);
-
-        chunkManager.chunkPrefabs.Add(chunk);
+        chunks[coord].Add(tile);
 
         return chunk;
     }
