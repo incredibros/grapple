@@ -6,7 +6,7 @@ public class PlayerRespawn : PlayerSystem
 {
     // This system script controls player death, keeping track of the last respawn point and running the death animation
     
-    GameObject lastCheckpoint;
+    Vector2 lastCheckpoint;
     
     bool canMove = true;
     
@@ -15,9 +15,9 @@ public class PlayerRespawn : PlayerSystem
         if (!canMove)
             { return; }
         
-        RaycastHit2D boxcast = Physics2D.BoxCast(transform.position, player.data.checkpointCheckSize, 0f, Vector2.zero, 0f, player.data.checkpointLayer);
-        if (boxcast.collider != null)
-            { lastCheckpoint = boxcast.collider.gameObject; }
+        Collider2D boxcast = Physics2D.OverlapBox(transform.position, player.data.checkpointCheckSize, 0f, player.data.checkpointLayer);
+        if (boxcast != null)
+            { lastCheckpoint = boxcast.transform.position; Debug.Log("Checkpoint reached");}
         
         if (Physics2D.OverlapBox(transform.position, player.data.hazardCheckSize, 0f, player.data.hazardLayer))
             { StartCoroutine(OnDeath()); }
@@ -31,7 +31,7 @@ public class PlayerRespawn : PlayerSystem
         yield return new WaitForSeconds(0.5f);
 
         if (lastCheckpoint != null)
-            { transform.position = lastCheckpoint.transform.position; }
+            { transform.position = lastCheckpoint; }
         else
             { transform.position = Vector2.zero; }
         
