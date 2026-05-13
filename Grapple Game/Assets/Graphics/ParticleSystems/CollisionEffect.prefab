@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6747487504644218509}
   - component: {fileID: 3647433385822716823}
   m_Layer: 0
-  m_Name: CollsionEffect
+  m_Name: CollisionEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
