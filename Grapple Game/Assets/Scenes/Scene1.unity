@@ -27355,16 +27355,6 @@ CompositeCollider2D:
   m_GenerationType: 0
   m_EdgeRadius: 0
   m_ColliderPaths:
-  - m_Collider: {fileID: 2024351256}
-    m_ColliderPaths:
-    - - X: 360000000
-        Y: -10000000
-      - X: 350000000
-        Y: -10000000
-      - X: 350000000
-        Y: -10100000
-      - X: 360000000
-        Y: -10100000
   - m_Collider: {fileID: 515630136}
     m_ColliderPaths:
     - - X: 460000000
@@ -27375,6 +27365,16 @@ CompositeCollider2D:
         Y: 39900000
       - X: 460000000
         Y: 39900000
+  - m_Collider: {fileID: 2024351256}
+    m_ColliderPaths:
+    - - X: 360000000
+        Y: -10000000
+      - X: 350000000
+        Y: -10000000
+      - X: 350000000
+        Y: -10100000
+      - X: 360000000
+        Y: -10100000
   - m_Collider: {fileID: 356554596}
     m_ColliderPaths:
     - - X: 510000000
@@ -43021,6 +43021,10 @@ PrefabInstance:
     - target: {fileID: 246653336153314835, guid: 33ba0f9214b35124fa13db34a75a7bf0, type: 3}
       propertyPath: m_Name
       value: SemiSolid
+      objectReference: {fileID: 0}
+    - target: {fileID: 937471003344159993, guid: 33ba0f9214b35124fa13db34a75a7bf0, type: 3}
+      propertyPath: m_UsedByEffector
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3489043043931073486, guid: 33ba0f9214b35124fa13db34a75a7bf0, type: 3}
       propertyPath: m_RootOrder
