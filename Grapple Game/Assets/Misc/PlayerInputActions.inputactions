@@ -164,6 +164,17 @@
                 },
                 {
                     "name": "",
+                    "id": "1adbb1fa-706c-4e6d-aae9-6f0d9bd5f5ec",
+                    "path": "<Sensor>/{Tilt}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Touch",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "0cf1a07f-9ea7-481e-8b23-ef144d999d90",
                     "path": "<Pointer>/position",
                     "interactions": "",
