@@ -7,6 +7,7 @@ public class TilemapChunkSplitter : MonoBehaviour
 {
     public ChunkManager chunkManager;
     public List<Transform> grids;
+    public List<GameObject> tileMaps;
 
     // Chunks(Vector2, Grids(Name, tileMaps(Name, List(tiles))))
     private Dictionary<Vector2Int, Dictionary<GameObject, Dictionary<GameObject, List<GameObject>>>> chunks = new Dictionary<Vector2Int, Dictionary<GameObject, Dictionary<GameObject, List<GameObject>>>>();

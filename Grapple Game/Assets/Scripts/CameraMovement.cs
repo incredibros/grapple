@@ -13,7 +13,7 @@ public class CameraMovement : MonoBehaviour
     bool foundPlayer;
 
     public List<Area> allAreas = new List<Area>();
-    int currentArea = -1;
+    int currentArea;
     public bool showAreas = true;
 
     void Awake()
@@ -45,8 +45,8 @@ public class CameraMovement : MonoBehaviour
             targetPosition = new Vector3(Mathf.Clamp(targetPosition.x, allAreas[currentArea].cameraBounds[0].x, allAreas[currentArea].cameraBounds[1].x),
                 Mathf.Clamp(targetPosition.y, allAreas[currentArea].cameraBounds[0].y, allAreas[currentArea].cameraBounds[1].y), -10);
         }
-        Vector3 currentPosition = new Vector3(transform.position.x, transform.position.y, -10);
-        transform.position = Vector3.SmoothDamp(currentPosition, targetPosition, ref velocity, smoothTime);
+
+        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
     }
 
     int FindCurrentArea(Vector2 targetPosition)

@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class PlayerRespawn : PlayerSystem
 {
@@ -22,13 +21,6 @@ public class PlayerRespawn : PlayerSystem
         
         if (Physics2D.OverlapBox(transform.position, player.data.hazardCheckSize, 0f, player.data.hazardLayer))
             { StartCoroutine(OnDeath()); }
-
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            player.events.OnDeath?.Invoke();
-            player.events.OnRespawn?.Invoke();
-            LoadNextScene();
-        }
     }
 
     IEnumerator OnDeath()
@@ -45,11 +37,5 @@ public class PlayerRespawn : PlayerSystem
         
         player.events.OnRespawn?.Invoke();
         canMove = true;
-    }
-
-    void LoadNextScene()
-    {
-        int nextScene = (SceneManager.GetActiveScene().buildIndex + 1) % SceneManager.sceneCountInBuildSettings;
-        SceneManager.LoadScene(nextScene);
     }
 }

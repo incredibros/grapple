@@ -101,7 +101,7 @@
         "com.unity.ugui": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0"
       },
-      "hash": "8de698ac55b7ed01ec95a43e714c6358505b8110"
+      "hash": "efc0a1e4e297ed25aecc70bb06952151ea2766f7"
     },
     "com.unity.burst": {
       "version": "1.8.18",

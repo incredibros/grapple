@@ -95,9 +95,6 @@ public class PlayerInput : PlayerSystem
 	void OnDeath()
 	{
 		canMove = false;
-		player.events.OnXYInput?.Invoke(Vector2.zero);
-		player.events.OnJumpButtonUp?.Invoke();
-		player.events.OnGrappleButtonUp?.Invoke();
 	}
 
 	void OnRespawn()
