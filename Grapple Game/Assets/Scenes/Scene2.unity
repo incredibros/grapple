@@ -47088,9 +47088,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chunkManager: {fileID: 1202509510}
-  grids:
-  - {fileID: 706304199}
-  - {fileID: 1246755454}
 --- !u!114 &1202509510
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -47103,7 +47100,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a80b6ff8f1484529a60586eadbb38ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 2792833293746372723}
   chunkSize: 16
   renderDistance: 2
   chunkPrefabs: []

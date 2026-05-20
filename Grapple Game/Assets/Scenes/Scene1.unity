@@ -26888,15 +26888,15 @@ CompositeCollider2D:
   m_GenerationType: 0
   m_EdgeRadius: 0
   m_ColliderPaths:
-  - m_Collider: {fileID: 515630136}
+  - m_Collider: {fileID: 356554596}
     m_ColliderPaths:
-    - - X: 460000000
+    - - X: 510000000
         Y: 40000000
-      - X: 450000000
+      - X: 500000000
         Y: 40000000
-      - X: 450000000
+      - X: 500000000
         Y: 39900000
-      - X: 460000000
+      - X: 510000000
         Y: 39900000
   - m_Collider: {fileID: 2024351256}
     m_ColliderPaths:
@@ -26908,16 +26908,6 @@ CompositeCollider2D:
         Y: -10100000
       - X: 360000000
         Y: -10100000
-  - m_Collider: {fileID: 356554596}
-    m_ColliderPaths:
-    - - X: 510000000
-        Y: 40000000
-      - X: 500000000
-        Y: 40000000
-      - X: 500000000
-        Y: 39900000
-      - X: 510000000
-        Y: 39900000
   - m_Collider: {fileID: 2079858323}
     m_ColliderPaths:
     - - X: 520000000
@@ -26927,6 +26917,16 @@ CompositeCollider2D:
       - X: 510000000
         Y: 39900000
       - X: 520000000
+        Y: 39900000
+  - m_Collider: {fileID: 515630136}
+    m_ColliderPaths:
+    - - X: 460000000
+        Y: 40000000
+      - X: 450000000
+        Y: 40000000
+      - X: 450000000
+        Y: 39900000
+      - X: 460000000
         Y: 39900000
   m_CompositePaths:
     m_Paths:
@@ -43436,9 +43436,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chunkManager: {fileID: 2115351699}
-  grids:
-  - {fileID: 1458100401}
-  - {fileID: 1774062197}
 --- !u!114 &2115351699
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -43451,7 +43448,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a80b6ff8f1484529a60586eadbb38ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 2792833293769150688}
   chunkSize: 16
   renderDistance: 2
   chunkPrefabs: []

@@ -30,4 +30,5 @@ Jump: Space
 Grapple: Left Click / O
 Pull: Right Click / P
 Next Scene: N
+Toggle Cursor Mode: M
 Pause Menu: Esc

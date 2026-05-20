@@ -42,6 +42,7 @@ public static class EditorScript
         gridBrushBases.Add(AssetDatabase.LoadAssetAtPath<GridBrushBase>("Assets/Graphics/Tilemap/Brushes/GroundBrush.asset"));
         gridBrushBases.Add(AssetDatabase.LoadAssetAtPath<GridBrushBase>("Assets/Graphics/Tilemap/Brushes/SemiSolidBrush.asset"));
         gridBrushBases.Add(AssetDatabase.LoadAssetAtPath<GridBrushBase>("Assets/Graphics/Tilemap/Brushes/HalfGroundBrush.asset"));
+        gridBrushBases.Add(AssetDatabase.LoadAssetAtPath<GridBrushBase>("Assets/Graphics/Tilemap/Brushes/HalfSemiSolidBrush.asset"));
 
         prefabs.Add(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Extras/CheckPoint.prefab"));
         prefabs.Add(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Extras/Orb.prefab"));
@@ -112,7 +113,7 @@ public static class EditorScript
         if (e.keyCode == KeyCode.Alpha6)
         {
             GridPaintingState.scenePaintTarget = tilemaps[5];
-            GridPaintingState.gridBrush = GridPaintingState.brushes[0];
+            GridPaintingState.gridBrush = gridBrushBases[3];
             TilemapEditorTool.SetActiveEditorTool(typeof(PaintTool));
             Debug.Log("Half Semi Solid Brush Selected");
         }

@@ -6,10 +6,17 @@ using UnityEngine.Tilemaps;
 public class TilemapChunkSplitter : MonoBehaviour
 {
     public ChunkManager chunkManager;
-    public List<Transform> grids;
+    List<GameObject> grids = new List<GameObject>();
 
     // Chunks(Vector2, Grids(Name, tileMaps(Name, List(tiles))))
     private Dictionary<Vector2Int, Dictionary<GameObject, Dictionary<GameObject, List<GameObject>>>> chunks = new Dictionary<Vector2Int, Dictionary<GameObject, Dictionary<GameObject, List<GameObject>>>>();
+
+    void Awake()
+    {
+        grids.Clear();
+        grids.Add(GameObject.Find("Grid"));
+        grids.Add(GameObject.Find("HalfGrid"));
+    }
 
     void Start()
     {
@@ -26,13 +33,13 @@ public class TilemapChunkSplitter : MonoBehaviour
         chunks.Clear();
         chunkManager.chunkPrefabs.Clear();
 
-        foreach (Transform grid in grids)
+        foreach (GameObject grid in grids)
         {
-            foreach (Transform tileMap in grid)
+            foreach (Transform tileMap in grid.transform)
             {
-                foreach (Transform tile in tileMap)
+                foreach (Transform tile in tileMap.transform)
                 {
-                    AddTile(GetChunkCoord(tile.position), grid.gameObject, tileMap.gameObject, tile.gameObject);
+                    AddTile(GetChunkCoord(tile.position), grid, tileMap.gameObject, tile.gameObject);
                 }
             }
         }

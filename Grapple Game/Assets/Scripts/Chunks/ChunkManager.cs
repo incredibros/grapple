@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ChunkManager : MonoBehaviour
 {
-    public Transform player;
+    GameObject player;
 
     public int chunkSize = 16;
     public int renderDistance = 2;
@@ -16,6 +16,11 @@ public class ChunkManager : MonoBehaviour
 
     // All available chunk prefabs
     private Dictionary<Vector2Int, GameObject> chunkLookup = new Dictionary<Vector2Int, GameObject>();
+
+    void Awake()
+    {
+        player = GameObject.FindWithTag("Player");
+    }
 
     IEnumerator Start()
     {
@@ -57,7 +62,7 @@ public class ChunkManager : MonoBehaviour
         if (chunkPrefabs == null)
             { return; }
 
-        Vector2Int playerChunk = GetChunkCoord(player.position);
+        Vector2Int playerChunk = GetChunkCoord(player.transform.position);
 
         HashSet<Vector2Int> neededChunks = new HashSet<Vector2Int>();
 

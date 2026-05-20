@@ -37,6 +37,11 @@ public class PlayerAnimation : PlayerSystem
             gun.rotation = Quaternion.Euler(0f, 0f, angle + 180f);
             Flip(gun, false);
         }
+
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            player.data.cursorMode = !player.data.cursorMode;
+        }
     }
 
     void Flip(Transform sprite, bool isRight)
