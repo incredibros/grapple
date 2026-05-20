@@ -50,6 +50,11 @@ public class PlayerAnimation : PlayerSystem
 
     void OnXYInput(Vector2 input)
     {
+        if (!player.data.cursorMode)
+		{
+			mouseDirection = input;
+		}
+
         moveInput = input;
     }
 
@@ -59,7 +64,7 @@ public class PlayerAnimation : PlayerSystem
 		{
 			mouseDirection = pos.normalized;
 		}
-		else
+		else if (player.data.cursorMode)
 		{
 			Vector2 mousePos = Camera.main.ScreenToWorldPoint(pos);
 			mouseDirection = (mousePos - (Vector2) transform.position).normalized;

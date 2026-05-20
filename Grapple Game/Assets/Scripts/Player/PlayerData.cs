@@ -52,6 +52,7 @@ public class PlayerData : ScriptableObject
 	public GameObject grapplePrefab;
 	public float grappleRange;
 	public float minLineLength;
+	public bool cursorMode;
 	public LayerMask grappleLayers;
 	public LayerMask semiSolidLayer;
 	[Space(5)]

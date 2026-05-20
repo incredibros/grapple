@@ -24,10 +24,10 @@ O: Spawn Orb
 I: Spawn Peg
 
 GAME:
-Move: W A S D
-Aim: Mouse Movement
+Move: W A S D / Arrow Keys
+Aim: Mouse Movement / Player Input
 Jump: Space
-Grapple: Left Click
-Pull: Right Click
+Grapple: Left Click / O
+Pull: Right Click / P
 Next Scene: N
 Pause Menu: Esc

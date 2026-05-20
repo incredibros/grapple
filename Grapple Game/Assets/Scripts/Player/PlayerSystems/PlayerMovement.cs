@@ -14,6 +14,7 @@ public class PlayerMovement : PlayerSystem
 	DistanceJoint2D joint;
 
     PlayerStates state = new PlayerStates();
+
 	Vector2 moveInput;
 	Vector2 mouseDirection;
 
@@ -144,6 +145,11 @@ public class PlayerMovement : PlayerSystem
 	#region LateralMovement
 	void OnXYInput(Vector2 input)
     {
+		if (!player.data.cursorMode)
+		{
+			mouseDirection = input;
+		}
+
         moveInput = Vector2Int.RoundToInt(input);
     }
 
@@ -240,7 +246,7 @@ public class PlayerMovement : PlayerSystem
 		{
 			mouseDirection = pos.normalized;
 		}
-		else
+		else if (player.data.cursorMode)
 		{
 			Vector2 mousePos = Camera.main.ScreenToWorldPoint(pos);
 			mouseDirection = (mousePos - (Vector2) transform.position).normalized;

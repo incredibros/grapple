@@ -6,8 +6,8 @@ public class PlayerOrb : PlayerSystem
 {
     void Update()
     {
-        RaycastHit2D boxcast = Physics2D.BoxCast(transform.position, player.data.orbCheckSize, 0f, Vector2.zero, 0f, player.data.orbLayer);
-        if (boxcast.collider != null)
-            { player.events.OnOrbPickUp?.Invoke(boxcast.collider.transform.parent.gameObject); }
+        Collider2D hit = Physics2D.OverlapBox(transform.position, player.data.orbCheckSize, 0f, player.data.orbLayer);
+        if (hit != null)
+            { player.events.OnOrbPickUp?.Invoke(hit.transform.parent.gameObject);}
     }
 }
