@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7059499288341297502}
   - component: {fileID: 295019660114372937}
   - component: {fileID: 5199896715014657446}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: HalfSemiSolid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -209,7 +209,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7967418312298916735}
   - component: {fileID: 1008872736301430406}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}

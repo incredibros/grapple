@@ -43,22 +43,26 @@ public class PlayerMovement : PlayerSystem
 	void Update()
 	{
 		if (state.isDead || state.isFrozen)
-			{ return; }
+			return;
 		
 		Timers();
 		Checks();
 
 		if (jumpBuffer > 0f && jumpDelay <= 0f && !state.isJumping)
-			{ OnJumpInput(); }
+		{
+			OnJumpInput();
+		}
 
 		if (state.isGrappled)
-			{ OnGrapple(); }
+		{
+			OnGrapple();
+		}
 	}
 
 	void FixedUpdate()
 	{
 		if (state.isDead || state.isFrozen)
-			{ return; }
+			return;
 		
 		LateralMovement();
 
@@ -69,9 +73,13 @@ public class PlayerMovement : PlayerSystem
 	void Timers()
 	{
 		if (moveInput.x <= -1)
-			{ lateralBuffer[0] = player.data.lateralBufferTime; }
+		{
+			lateralBuffer[0] = player.data.lateralBufferTime;
+		}
 		if (moveInput.x >= 1)
-			{ lateralBuffer[1] = player.data.lateralBufferTime; }
+		{
+			lateralBuffer[1] = player.data.lateralBufferTime;
+		}
 
 		coyote -= Time.deltaTime;
 		wallCoyote[0] -= Time.deltaTime;
@@ -93,16 +101,22 @@ public class PlayerMovement : PlayerSystem
 			coyote = player.data.coyoteTime;
 			state.onGround = true;
 			if (grapples == 0 && !state.isGrappled)
-				{ grapples++; }
+			{
+				grapples++;
+			}
 		}
 		else
-			{ state.onGround = false; }
+		{
+			state.onGround = false;
+		}
 		
 		if (rb.velocity.y < -0.001f && !state.isHanging)
 		{
 			state.isFalling = true;
 			if (moveInput.y == -1)
-				{ state.isFastFalling = true; }
+			{
+				state.isFastFalling = true;
+			}
 		}
 		else
 		{
@@ -114,24 +128,32 @@ public class PlayerMovement : PlayerSystem
 		state.isClinging = (state.onWall[0] && lateralBuffer[0] > 0f) || (state.onWall[1] && lateralBuffer[1] > 0f);
 
 		if (state.onWall[0])
-			{ wallCoyote[0] = player.data.wallCoyoteTime; }
+		{
+			wallCoyote[0] = player.data.wallCoyoteTime;
+		}
 		if (state.onWall[1])
-			{ wallCoyote[1] = player.data.wallCoyoteTime; }
+		{
+			wallCoyote[1] = player.data.wallCoyoteTime;
+		}
 		
 		if (state.isClinging && state.isFalling && !state.isHanging)
 		{
 			if (!state.isSliding)
-				{ rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, -player.data.maxWallSlideSpeed)); }
+			{
+				rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, -player.data.maxWallSlideSpeed));
+			}
 			state.isSliding = true;
 		}
 		else
-			{ state.isSliding = false; }
+		{
+			state.isSliding = false;
+		}
 	}
 
 	bool CheckForWalls(int dir)
 	{
 		if (Mathf.Abs(rb.velocity.x) > 0.001f)
-			{ return false; }
+			return false;
 		
 		int wallsDetected = 0;
 		foreach (Vector2 pos in dir == 1 ? player.data.rightCheckPoints : player.data.leftCheckPoints)
@@ -142,7 +164,7 @@ public class PlayerMovement : PlayerSystem
 	}
 	#endregion
 
-	#region LateralMovement
+	#region Lateral Movement
 	void OnXYInput(Vector2 input)
     {
 		if (!player.data.cursorMode)
@@ -167,9 +189,13 @@ public class PlayerMovement : PlayerSystem
 		// Swing(2) -> WallJump(3) -> Pull(4) -> Ground(0) -> Air(1)
 
 		if (!state.isWallJumping.Equals(false) && accelTime >= player.data.accels[3].time)
-			{ state.isWallJumping = false; }
+		{
+			state.isWallJumping = false;
+		}
 		if (state.isPulling && accelTime >= player.data.accels[4].time)
-			{ state.isPulling = false; }
+		{
+			state.isPulling = false;
+		}
 		
 		int type = state.isHanging ? 2 : !state.isWallJumping.Equals(false) ? 3 : state.isPulling ? 4 : state.onGround ? 0 : 1;
 		float value = accel ? player.data.accels[type].accel : player.data.accels[type].decel;
@@ -192,7 +218,9 @@ public class PlayerMovement : PlayerSystem
 			rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, !state.isSliding ? -player.data.maxFallSpeed : -player.data.maxWallSlideSpeed));
 		}
 		else
-			{ rb.gravityScale = player.data.gravityScale; }
+		{
+			rb.gravityScale = player.data.gravityScale;
+		}
 	}
 	#endregion
 
@@ -205,17 +233,25 @@ public class PlayerMovement : PlayerSystem
 	void OnJumpInput()
 	{
 		if (coyote > 0f)
-			{ OnJump(0); }
+		{
+			OnJump(0);
+		}
 		else if ((wallCoyote[0] > 0f && lateralBuffer[0] > 0f) || (wallCoyote[1] > 0f && lateralBuffer[1] > 0f))
-			{ OnJump(wallCoyote[0] > wallCoyote[1] ? -1 : 1); }
+		{
+			OnJump(wallCoyote[0] > wallCoyote[1] ? -1 : 1);
+		}
 	}
 
 	void OnJump(int dir)
 	{
 		if (dir == 0)
-			{ rb.velocity = new Vector2(rb.velocity.x, player.data.jumpForce); }
+		{
+			rb.velocity = new Vector2(rb.velocity.x, player.data.jumpForce);
+		}
 		else
-			{ rb.velocity = new Vector2(player.data.wallJumpForce.x * -dir, player.data.wallJumpForce.y); }
+		{
+			rb.velocity = new Vector2(player.data.wallJumpForce.x * -dir, player.data.wallJumpForce.y);
+		}
 
 		coyote = 0f;
 		wallCoyote[0] = 0f;
@@ -233,7 +269,9 @@ public class PlayerMovement : PlayerSystem
 	void OnJumpButtonUp()
 	{
 		if (state.isJumping && !state.isFalling)
-			{ rb.AddForce(rb.velocity.y * (1 - player.data.jumpCutMultiplier) * Vector2.down, ForceMode2D.Impulse); }
+		{
+			rb.AddForce(rb.velocity.y * (1 - player.data.jumpCutMultiplier) * Vector2.down, ForceMode2D.Impulse);
+		}
 		state.isJumping = false;
 		jumpBuffer = 0f;
 	}
@@ -256,24 +294,31 @@ public class PlayerMovement : PlayerSystem
 	void OnGrappleButtonDown()
 	{
 		if (grapples == 0)
-			{ return; }
+			return;
 		grapples--;
 		
 		Vector2 nudge = mouseDirection * -0.01f;
 		RaycastHit2D[] hit = Physics2D.RaycastAll(transform.position, mouseDirection, player.data.grappleRange, player.data.grappleLayers);
 		if (hit.Length == 0)
-			{ return; }
+			return;
 		
 		int hitIndex = -1;
 		for (int i = 0; i < hit.Length; i++)
 		{
-			if ((player.data.semiSolidLayer.value & (1 << hit[i].collider.transform.parent.gameObject.layer)) != 0 && mouseDirection.y >= 0)
-				{ continue; }
+			int layer = hit[i].collider.transform.parent.gameObject.layer;
+
+			if ((player.data.nonGrappleLayer.value & (1 << layer)) != 0)
+			{
+				Debug.Log("Ungrappleable");
+				return;
+			}
+			if ((player.data.semiSolidLayer.value & (1 << layer)) != 0 && mouseDirection.y >= 0)
+				continue;
 			hitIndex = i;
 			break;
 		}
 		if (hitIndex == -1)
-			{ return; }
+			return;
 			
 		state.isGrappled = true;
 		joint.enabled = true;
@@ -291,15 +336,19 @@ public class PlayerMovement : PlayerSystem
 	void OnGrapple()
 	{
 		if (Vector2.Distance(transform.position, grapplePoint) >= grappleRadius - 0.1f && !state.onGround)
-			{ state.isHanging = true; }
+		{
+			state.isHanging = true;
+		}
 		else
-			{ state.isHanging = false; }
+		{
+			state.isHanging = false;
+		}
 	}
 
 	void OnGrappleButtonUp()
 	{
 		if (grappleReleaseDelay > 0)
-			{ return; }
+			return;
 			
 		state.isGrappled = false;
 		state.isHanging = false;
@@ -321,7 +370,7 @@ public class PlayerMovement : PlayerSystem
 		{
 			player.events.OnGrappleButtonDown?.Invoke();
 			if (!state.isGrappled)
-				{ return; }
+				return;
 		}
 		
 		state.isHanging = false;
@@ -384,7 +433,9 @@ public class PlayerMovement : PlayerSystem
 		StopAllCoroutines();
 
 		if (state.isGrappled)
-			{ OnGrappleButtonUp(); }
+		{
+			OnGrappleButtonUp();
+		}
 	}
 
 	void OnRespawn()
@@ -397,7 +448,7 @@ public class PlayerMovement : PlayerSystem
 	void OnOrbPickUp(GameObject orb)
 	{
 		if (grapples != 0)
-			{ return; }
+			return;
 		grapples = 1;
 		orb.GetComponent<Orb>().OnPickUp(this.transform);
 	}
@@ -436,6 +487,7 @@ public class PlayerMovement : PlayerSystem
 	#endregion
 }
 
+#region Player States
 public class PlayerStates
 {
 	public bool onGround;
@@ -452,3 +504,4 @@ public class PlayerStates
 	public bool isFrozen;
 	public bool isDead;
 }
+#endregion

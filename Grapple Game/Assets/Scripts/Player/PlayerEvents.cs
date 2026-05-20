@@ -39,5 +39,7 @@ public struct PlayerEvents
     public Action OnRespawn;
     #endregion
 
+    #region Extras
     public Action<GameObject> OnOrbPickUp;
+    #endregion
 }

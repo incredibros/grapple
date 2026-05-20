@@ -14,13 +14,13 @@ TagManager:
   - Player
   - Platform
   - Grapple Collider
+  - NonGrapple Collider
   - SemiSolid
-  - CheckPoint
   - Hazard
+  - CheckPoint
   - Orb
   - Hidden
   - Locked
-  - 
   - 
   - 
   - 

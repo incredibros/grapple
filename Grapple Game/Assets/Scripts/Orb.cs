@@ -15,6 +15,8 @@ public class Orb : MonoBehaviour
         sP = GetComponent<SpriteRenderer>();
     }
     
+    #region Event Handler
+    // Called in playerOrb.cs
     public void OnPickUp(Transform player)
     {
         transform.GetChild(0).gameObject.SetActive(false);
@@ -40,4 +42,5 @@ public class Orb : MonoBehaviour
         sP.color = Color.white;
         transform.GetChild(0).gameObject.SetActive(true);
     }
+    #endregion
 }

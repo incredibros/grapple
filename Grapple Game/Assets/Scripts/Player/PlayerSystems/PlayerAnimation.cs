@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerAnimation : PlayerSystem
 {
+    // This system script controls all animation of the player, including gun movement and flipping sprites
+
     [SerializeField] Transform body;
     [SerializeField] Transform gun;
 
@@ -44,6 +46,7 @@ public class PlayerAnimation : PlayerSystem
         }
     }
 
+    #region Flip Sprite
     void Flip(Transform sprite, bool isRight)
     {
         Vector3 scale = sprite.localScale;
@@ -52,7 +55,9 @@ public class PlayerAnimation : PlayerSystem
 
         sprite.localScale = scale;
     }
+    #endregion
 
+    #region Movement
     void OnXYInput(Vector2 input)
     {
         if (!player.data.cursorMode)
@@ -62,7 +67,9 @@ public class PlayerAnimation : PlayerSystem
 
         moveInput = input;
     }
+    #endregion
 
+    #region Mouse Movement
     void OnPointerMove(Vector2 pos, bool directional)
 	{
 		if (directional)
@@ -75,12 +82,16 @@ public class PlayerAnimation : PlayerSystem
 			mouseDirection = (mousePos - (Vector2) transform.position).normalized;
 		}
 	}
+    #endregion
 
+    #region Grapple
     void OnChangeAnchorPoint(Vector2 point, bool shorten)
     {
         //Maybe point to last point that was called
     }
+    #endregion
 
+    #region Events
     void OnEnable()
     {
         player.events.OnXYInput += OnXYInput;
@@ -94,4 +105,5 @@ public class PlayerAnimation : PlayerSystem
         player.events.OnPointerMove -= OnPointerMove;
         player.events.OnChangeAnchorPoint -= OnChangeAnchorPoint;
     }
+    #endregion
 }

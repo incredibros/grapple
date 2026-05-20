@@ -4164,6 +4164,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SemiSolid
       objectReference: {fileID: 0}
+    - target: {fileID: 3345816502005971986, guid: 33ba0f9214b35124fa13db34a75a7bf0, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 3489043043931073486, guid: 33ba0f9214b35124fa13db34a75a7bf0, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -6115,6 +6119,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SemiSolid
       objectReference: {fileID: 0}
+    - target: {fileID: 3345816502005971986, guid: 33ba0f9214b35124fa13db34a75a7bf0, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 3489043043931073486, guid: 33ba0f9214b35124fa13db34a75a7bf0, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -6194,7 +6202,7 @@ GameObject:
   - component: {fileID: 519420029}
   - component: {fileID: 519420034}
   - component: {fileID: 519420035}
-  m_Layer: 13
+  m_Layer: 14
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -9158,7 +9166,7 @@ GameObject:
   m_Component:
   - component: {fileID: 762585477}
   - component: {fileID: 762585476}
-  m_Layer: 13
+  m_Layer: 14
   m_Name: Scene Fusion Guids
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11779,7 +11787,7 @@ GameObject:
   - component: {fileID: 849794176}
   - component: {fileID: 849794175}
   - component: {fileID: 849794174}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: HalfSemiSolidTilemap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14223,7 +14231,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9069f76574ce49cea67a42916cdc6d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pauseMenuUI: {fileID: 1176814571}
 --- !u!114 &1052165217
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26825,7 +26832,7 @@ GameObject:
   - component: {fileID: 1134473992}
   - component: {fileID: 1134473991}
   - component: {fileID: 1134473990}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: SemiSolidTilemap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29659,7 +29666,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1332172268}
   - component: {fileID: 1332172269}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: ExtraTilemap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41316,7 +41323,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1965267676}
   - component: {fileID: 1965267675}
-  m_Layer: 13
+  - component: {fileID: 1965267677}
+  m_Layer: 14
   m_Name: GameManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41488,6 +41496,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1965267677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1965267672}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bade9fec9512202498b70864127688e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1968574976 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6217788140244676933, guid: f98dc99e27a8c78429461a440d67d8fd, type: 3}
@@ -42065,6 +42085,10 @@ PrefabInstance:
       propertyPath: m_UsedByEffector
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3345816502005971986, guid: 33ba0f9214b35124fa13db34a75a7bf0, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 3489043043931073486, guid: 33ba0f9214b35124fa13db34a75a7bf0, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -42629,7 +42653,7 @@ GameObject:
   - component: {fileID: 2058531179}
   - component: {fileID: 2058531178}
   - component: {fileID: 2058531177}
-  m_Layer: 13
+  m_Layer: 14
   m_Name: EventSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42962,6 +42986,10 @@ PrefabInstance:
     - target: {fileID: 246653336153314835, guid: 33ba0f9214b35124fa13db34a75a7bf0, type: 3}
       propertyPath: m_Name
       value: SemiSolid
+      objectReference: {fileID: 0}
+    - target: {fileID: 3345816502005971986, guid: 33ba0f9214b35124fa13db34a75a7bf0, type: 3}
+      propertyPath: m_Layer
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3489043043931073486, guid: 33ba0f9214b35124fa13db34a75a7bf0, type: 3}
       propertyPath: m_RootOrder
@@ -43416,7 +43444,7 @@ GameObject:
   - component: {fileID: 2115351700}
   - component: {fileID: 2115351699}
   - component: {fileID: 2115351698}
-  m_Layer: 13
+  m_Layer: 14
   m_Name: Chunk Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -43435,7 +43463,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4204afaa6039f485aafaf91980c8428e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chunkManager: {fileID: 2115351699}
 --- !u!114 &2115351699
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -44292,7 +44319,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2792833292035471946}
   - component: {fileID: 2792833292035471945}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: Nozzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44326,7 +44353,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2792833292509745433}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: Character
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44410,7 +44437,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2792833292589610469}
   - component: {fileID: 2792833292589610468}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: LeftEye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44443,7 +44470,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2792833292720290832}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44527,7 +44554,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2792833292933611738}
   - component: {fileID: 2792833292933611737}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44611,7 +44638,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2792833292955576428}
   - component: {fileID: 2792833292955576427}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: Handle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44695,7 +44722,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2792833293231917013}
   - component: {fileID: 2792833293231917012}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: RIghtEye
   m_TagString: Untagged
   m_Icon: {fileID: 0}

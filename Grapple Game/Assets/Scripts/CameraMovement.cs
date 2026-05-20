@@ -15,12 +15,12 @@ public class CameraMovement : MonoBehaviour
 
     bool foundPlayer;
 
-    public AnimationCurve offsetCurve;
-    public int offsetMult;
+    [SerializeField] AnimationCurve offsetCurve;
+    [SerializeField] int offsetMult;
     
-    public List<Area> allAreas = new List<Area>();
+    [SerializeField] List<Area> allAreas = new List<Area>();
     int currentArea = -1;
-    public bool showAreas = true;
+    [SerializeField] bool showAreas = true;
 
     void Awake()
     {
@@ -36,6 +36,7 @@ public class CameraMovement : MonoBehaviour
         currentOffset = Vector3.zero;
     }
 
+    #region Move Camera
     void LateUpdate()
     {
         if (!foundPlayer)
@@ -77,7 +78,9 @@ public class CameraMovement : MonoBehaviour
         }
         return -1;
     }
+    #endregion
 
+    #region Draw Gizmos
     void OnDrawGizmos()
     {
         if (!showAreas) { return; }
@@ -108,6 +111,7 @@ public class CameraMovement : MonoBehaviour
             Gizmos.DrawLine(new Vector2(points[1].x, points[0].y), points[0]);
         }
     }
+    #endregion
 }
 
 [System.Serializable]

@@ -9,7 +9,9 @@ public class PlayerInput : PlayerSystem
 	
 	bool canMove = true;
 	
-	/*void Update()
+	/*
+	#region Input Manager (Old)
+	void Update()
 	{
 		if (!canMove || MainMenu.GameIsPaused)
 			{ return; }
@@ -33,12 +35,15 @@ public class PlayerInput : PlayerSystem
 
         if (Input.GetMouseButtonDown(1))
 			{ player.events.OnPullButtonDown?.Invoke(); }
-	}*/
+	}
+	#endregion
+	*/
 
+	#region Input System (New)
 	public void OnMove(InputAction.CallbackContext context)
 	{
 		if (!canMove || MainMenu.GameIsPaused)
-			{ return; }
+			return;
 		
 		Vector2 moveInput = context.ReadValue<Vector2>().normalized;
 		player.events.OnXYInput?.Invoke(moveInput);
@@ -47,34 +52,44 @@ public class PlayerInput : PlayerSystem
 	public void OnJump(InputAction.CallbackContext context)
 	{
 		if (!canMove || MainMenu.GameIsPaused)
-			{ return; }
+			return;
 		
 		if (context.performed)
-			{ player.events.OnJumpButtonDown?.Invoke(); }
+		{
+			player.events.OnJumpButtonDown?.Invoke();
+		}
 		
 		if (context.canceled)
-			{ player.events.OnJumpButtonUp?.Invoke(); }
+		{
+			player.events.OnJumpButtonUp?.Invoke();
+		}
 	}
 
 	public void OnGrapple(InputAction.CallbackContext context)
 	{
 		if (!canMove || MainMenu.GameIsPaused)
-			{ return; }
+			return;
 		
 		if (context.performed)
-			{ player.events.OnGrappleButtonDown?.Invoke(); }
+		{
+			player.events.OnGrappleButtonDown?.Invoke();
+		}
 		
 		if (context.canceled)
-			{ player.events.OnGrappleButtonUp?.Invoke(); }
+		{
+			player.events.OnGrappleButtonUp?.Invoke();
+		}
 	}
 
 	public void OnPull(InputAction.CallbackContext context)
 	{
 		if (!canMove || MainMenu.GameIsPaused)
-			{ return; }
+			return;
 
 		if (context.performed)
-			{ player.events.OnPullButtonDown?.Invoke(); }
+		{
+			player.events.OnPullButtonDown?.Invoke();
+		}
 	}
 
 	public void OnPointerMove(InputAction.CallbackContext context)
@@ -89,9 +104,10 @@ public class PlayerInput : PlayerSystem
 		{
 			player.events.OnPointerMove?.Invoke(currentPos, false);
 		}
-		
 	}
+	#endregion
 
+	#region Event Handlers
 	void OnDeath()
 	{
 		canMove = false;
@@ -104,7 +120,9 @@ public class PlayerInput : PlayerSystem
 	{
 		canMove = true;
 	}
+	#endregion
 
+	#region Events
 	void OnEnable()
 	{
 		player.events.OnDeath += OnDeath;
@@ -116,4 +134,5 @@ public class PlayerInput : PlayerSystem
 		player.events.OnDeath -= OnDeath;
 		player.events.OnRespawn -= OnRespawn;
 	}
+	#endregion
 }

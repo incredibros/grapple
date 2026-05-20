@@ -8,21 +8,19 @@ public class TileSnapper : MonoBehaviour
 {
     Grid grid;
 
+    #region Get Grid
     void OnEnable()
-    {
-        GetGrid();
-    }
-
-    void OnTransformParentChanged()
-    {
-        GetGrid();
-    }
-
-    void GetGrid()
     {
         grid = GetComponentInParent<Grid>();
     }
 
+    void OnTransformParentChanged()
+    {
+        grid = GetComponentInParent<Grid>();
+    }
+    #endregion
+
+    #region Snap
     void Update()
     {
         if (!grid)
@@ -30,11 +28,12 @@ public class TileSnapper : MonoBehaviour
 
        if (transform.hasChanged)
         {
-            GetGrid();
+            grid = GetComponentInParent<Grid>();
 
             if (grid != null)
+            {
                 Snap();
-
+            }
             transform.hasChanged = false;
         }
     }
@@ -44,4 +43,5 @@ public class TileSnapper : MonoBehaviour
         Vector3Int cell = grid.WorldToCell(transform.position);
         transform.position = grid.GetCellCenterWorld(cell);
     }
+    #endregion
 }

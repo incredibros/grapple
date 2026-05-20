@@ -8,10 +8,10 @@ using UnityEditor.SceneManagement;
 [InitializeOnLoad]
 public static class EditorScript
 {
-    public static List<GameObject> tilemaps = new List<GameObject>();
-    public static List<GridBrushBase> gridBrushBases = new List<GridBrushBase>();
-    public static List<GameObject> prefabs = new List<GameObject>();
-    public static GameObject player;
+    static List<GameObject> tilemaps = new List<GameObject>();
+    static List<GridBrushBase> gridBrushBases = new List<GridBrushBase>();
+    static List<GameObject> prefabs = new List<GameObject>();
+    static GameObject player;
 
     static EditorScript()
     {
@@ -22,7 +22,12 @@ public static class EditorScript
         EditorSceneManager.sceneOpened += OnSceneOpened;
     }
 
-    private static void Initialize()
+    static void OnSceneOpened(UnityEngine.SceneManagement.Scene scene, OpenSceneMode mode)
+    {
+        Initialize();
+    }
+
+    static void Initialize()
     {
         tilemaps.Clear();
         gridBrushBases.Clear();
@@ -51,7 +56,8 @@ public static class EditorScript
         player = GameObject.Find("Player");
     }
 
-    private static void OnSceneGUI(SceneView sceneView)
+    #region Shortcuts
+    static void OnSceneGUI(SceneView sceneView)
     {
         Event e = Event.current;
         if (e.type != EventType.KeyDown)
@@ -190,9 +196,5 @@ public static class EditorScript
             Debug.Log("Peg Spawned");
         }
     }
-
-    private static void OnSceneOpened(UnityEngine.SceneManagement.Scene scene, OpenSceneMode mode)
-    {
-        Initialize();
-    }
+    #endregion
 }

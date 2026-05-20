@@ -7,6 +7,7 @@ public class MainMenu : MonoBehaviour
 {
     public static bool GameIsPaused = false;
 
+    #region Event Handlers
     public void PlayGame()
     {
         GameIsPaused = false;
@@ -19,4 +20,5 @@ public class MainMenu : MonoBehaviour
         Debug.Log("Quitting game...");
         Application.Quit();
     }
+    #endregion
 }

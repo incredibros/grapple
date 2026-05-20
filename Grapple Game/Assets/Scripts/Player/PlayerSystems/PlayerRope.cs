@@ -13,19 +13,24 @@ public class PlayerRope : PlayerSystem
     void FixedUpdate()
     {
         if (detached)
-            { return; }
+            return;
 
         rope.points[^1].pastPos = rope.points[^1].currentPos;
 		rope.points[^1].currentPos = transform.position;
     }
 
+    #region Rope
     void CreateNewRope(Vector2 point)
     {
         if (!detached)
-            { DetachRope(); }
+        {
+            DetachRope();
+        }
         
         if (rope != null)
-            { rope.stopCollisions = true; }
+        {
+            rope.stopCollisions = true;
+        }
         
         
         GameObject currentPrefab = Instantiate(player.data.grapplePrefab);
@@ -42,7 +47,7 @@ public class PlayerRope : PlayerSystem
             rope.points.Add(new Point(Vector2.Lerp(point, transform.position, (float) i / totalLines), i == 0 || i == totalLines));
             
             if (i == 0)
-                { continue; }
+                continue;
             
             rope.lines.Add(new Line(new int2(i, i - 1), lineLength));
         }
@@ -54,7 +59,7 @@ public class PlayerRope : PlayerSystem
     void DetachRope()
     {
         if (rope == null)
-            { return; }
+            return;
 
         rope.points[^1].isLocked = false;
 		for (int i = 0; i < rope.lines.Count; i++)
@@ -67,7 +72,9 @@ public class PlayerRope : PlayerSystem
         rope.DetachRope();
         detached = true;
     }
+    #endregion
     
+    #region Events
     void OnEnable()
     {
         player.events.OnGrapple += CreateNewRope;
@@ -83,4 +90,5 @@ public class PlayerRope : PlayerSystem
         player.events.OnPull -= DetachRope;
         player.events.OnDeath -= DetachRope;
     }
+    #endregion
 }

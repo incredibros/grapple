@@ -5,7 +5,12 @@ using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
-    public GameObject pauseMenuUI;
+    GameObject pauseMenuUI;
+
+    void Awake()
+    {
+        pauseMenuUI = transform.GetChild(0).gameObject;
+    }
 
     void Update()
     {
@@ -22,6 +27,7 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
+    #region Event Handlers
     public void Resume()
     {
         Time.timeScale = 1f;
@@ -48,4 +54,5 @@ public class PauseMenu : MonoBehaviour
         MainMenu.GameIsPaused = false;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+    #endregion
 }

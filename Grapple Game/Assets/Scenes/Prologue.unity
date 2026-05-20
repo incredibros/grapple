@@ -1466,6 +1466,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SemiSolid
       objectReference: {fileID: 0}
+    - target: {fileID: 3345816502005971986, guid: 33ba0f9214b35124fa13db34a75a7bf0, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 3489043043931073486, guid: 33ba0f9214b35124fa13db34a75a7bf0, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -3021,7 +3025,7 @@ GameObject:
   - component: {fileID: 257093823}
   - component: {fileID: 257093822}
   - component: {fileID: 257093824}
-  m_Layer: 13
+  m_Layer: 14
   m_Name: EventSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3303,7 +3307,7 @@ GameObject:
   - component: {fileID: 275284212}
   - component: {fileID: 275284216}
   - component: {fileID: 275284215}
-  m_Layer: 13
+  m_Layer: 14
   m_Name: Chunk Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3448,10 +3452,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4204afaa6039f485aafaf91980c8428e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chunkManager: {fileID: 275284216}
-  grids:
-  - {fileID: 286607125}
-  - {fileID: 1073114899}
 --- !u!114 &275284216
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3464,7 +3464,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a80b6ff8f1484529a60586eadbb38ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 68723127}
   chunkSize: 16
   renderDistance: 2
   chunkPrefabs: []
@@ -3664,7 +3663,7 @@ GameObject:
   - component: {fileID: 298197403}
   - component: {fileID: 298197402}
   - component: {fileID: 298197401}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: HalfSemiSolidTilemap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6004,7 +6003,8 @@ GameObject:
   m_Component:
   - component: {fileID: 473133204}
   - component: {fileID: 473133203}
-  m_Layer: 13
+  - component: {fileID: 473133205}
+  m_Layer: 14
   m_Name: GameManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6176,6 +6176,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &473133205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 473133202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bade9fec9512202498b70864127688e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &489079841
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10024,7 +10036,7 @@ GameObject:
   m_Component:
   - component: {fileID: 606025346}
   - component: {fileID: 606025347}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: RIghtEye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15200,7 +15212,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1112933554}
   - component: {fileID: 1112933555}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: LeftEye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15890,7 +15902,7 @@ GameObject:
   - component: {fileID: 1216494643}
   - component: {fileID: 1216494642}
   - component: {fileID: 1216494646}
-  m_Layer: 13
+  m_Layer: 14
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -16370,7 +16382,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1251740999}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19030,7 +19042,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1415993659}
   - component: {fileID: 1415993660}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: Handle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19248,7 +19260,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1440182669}
   - component: {fileID: 1440182670}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19761,7 +19773,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1480825642}
   - component: {fileID: 1480825641}
-  m_Layer: 13
+  m_Layer: 14
   m_Name: Scene Fusion Guids
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -22009,7 +22021,7 @@ GameObject:
   - component: {fileID: 1616730696}
   - component: {fileID: 1616730695}
   - component: {fileID: 1616730694}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: SemiSolidTilemap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -22863,7 +22875,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1666091805}
   - component: {fileID: 1666091806}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: Nozzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23862,7 +23874,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1730670217}
   - component: {fileID: 1730670218}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: ExtraTilemap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -32508,7 +32520,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9069f76574ce49cea67a42916cdc6d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pauseMenuUI: {fileID: 1891643535}
 --- !u!1001 &1804120556
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -35810,7 +35821,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2131468366}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: Character
   m_TagString: Untagged
   m_Icon: {fileID: 0}

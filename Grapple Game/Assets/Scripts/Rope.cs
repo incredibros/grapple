@@ -68,11 +68,13 @@ public class Rope : MonoBehaviour
         #endregion
         
         if (!isDetached)
-            { return; }
+            return;
         
         timeAfterDetached += Time.deltaTime;
         if (timeAfterDetached > fullTime)
-            { Destroy(this.gameObject); }
+        {
+            Destroy(this.gameObject);
+        }
     }
 
     void FixedUpdate()
@@ -91,7 +93,7 @@ public class Rope : MonoBehaviour
     {
         #region Check Wrapping
         if (isDetached)
-            { return; }
+            return;
         
         RaycastHit2D hit;
         float distance = Vector2.Distance(points[^1].pastPos, points[^1].currentPos);
@@ -105,7 +107,7 @@ public class Rope : MonoBehaviour
             
             hit = Physics2D.Linecast(start, end, collisionLayer);
             if (hit.collider == null || Vector2.Distance(hit.point, end) < 0.1f)
-                { continue; }
+                continue;
             cornerHits.Add(hit);
             
             hit = Physics2D.Linecast(end, start, collisionLayer);
@@ -146,7 +148,7 @@ public class Rope : MonoBehaviour
         }
 
         if (wrapPoints.Count == 1)
-            { return; }
+            return;
         
         hit = Physics2D.Linecast(points[^1].currentPos, wrapPoints[^2].pos, collisionLayer);
         if (hit.collider == null || Vector2.Distance(hit.point, wrapPoints[^2].pos) <= 0.1f)
@@ -193,7 +195,7 @@ public class Rope : MonoBehaviour
         foreach (Point point in points)
         {
             if (point.isLocked)
-                { continue; }
+                continue;
             
             Vector2 velocity = (point.currentPos - point.pastPos) / subSteps;
             Vector2 gravity = gravityScale * Mathf.Pow(Time.fixedDeltaTime / subSteps, 2) * (1 - adjustment) * Physics.gravity;
@@ -203,9 +205,13 @@ public class Rope : MonoBehaviour
             velocity += gravity;
             RaycastHit2D hit;
             if (hit = Physics2D.CircleCast(point.currentPos, collisionRadius, velocity.normalized, velocity.magnitude, collisionLayer))
-                { point.currentPos = hit.point + (hit.normal * collisionRadius); }
+            {
+                point.currentPos = hit.point + (hit.normal * collisionRadius);
+            }
             else
-                { point.currentPos += velocity; }
+            {
+                point.currentPos += velocity;
+            }
         }
         #endregion
     }
@@ -219,7 +225,7 @@ public class Rope : MonoBehaviour
             {
                 int2 index = line.pointIndexes;
                 if (points[index[0]].isLocked && points[index[1]].isLocked)
-                    { continue; }
+                    continue;
                 
                 Vector2 distance = points[index[0]].currentPos - points[index[1]].currentPos;
                 float difference = distance.magnitude - (line.length * tension);
@@ -233,10 +239,14 @@ public class Rope : MonoBehaviour
                 else
                 {
                     if (!points[index[0]].isLocked)
-                        { points[index[0]].currentPos -= difference * direction; }
+                    {
+                        points[index[0]].currentPos -= difference * direction;
+                    }
                     
                     if (!points[index[1]].isLocked)
-                        { points[index[1]].currentPos += difference * direction; }
+                    {
+                        points[index[1]].currentPos += difference * direction;
+                    }
                 }
             }
             #endregion
@@ -251,7 +261,7 @@ public class Rope : MonoBehaviour
                 float distance1 = v1.magnitude;
                 float distance2 = v2.magnitude;
                 if (distance1 == 0 || distance2 == 0)
-                    { continue; }
+                    continue;
                 
                 Vector2 direction1 = v1.normalized;
                 Vector2 direction2 = v2.normalized;
@@ -267,23 +277,29 @@ public class Rope : MonoBehaviour
                 Vector2 correction2 = error * stiffness * gradient2;
 
                 if (!points[j - 1].isLocked)
-                    { points[j- 1].currentPos += correction1; }
+                {
+                    points[j- 1].currentPos += correction1;
+                }
                 if (!points[j + 1].isLocked)
-                    { points[j + 1].currentPos += correction2; }
+                {
+                    points[j + 1].currentPos += correction2;
+                }
                 if (!points[j].isLocked)
-                    { points[j].currentPos -= correction1 + correction2; }
+                {
+                    points[j].currentPos -= correction1 + correction2;
+                }
             }
             */
             #endregion
 
             #region Collisions
             if (i % collisionIntervals != 0 || stopCollisions)
-                { continue; }
+                continue;
 
             foreach (Point point in points)
             {
                 if (point.isLocked)
-                    { continue; }
+                    continue;
                 
                 Vector2 velocity = point.currentPos - point.pastPos;
                 Collider2D[] colliders = Physics2D.OverlapCircleAll(point.currentPos, collisionRadius, collisionLayer);
@@ -295,7 +311,9 @@ public class Rope : MonoBehaviour
                     {
                         Vector2 normal = (point.currentPos - closestPoint).normalized;
                         if (normal == Vector2.zero)
-                            { normal = (point.currentPos - (Vector2) collider.transform.position).normalized; }
+                        {
+                            normal = (point.currentPos - (Vector2) collider.transform.position).normalized;
+                        }
                         
                         float depth = collisionRadius - distance;
                         point.currentPos += depth * normal;
@@ -314,7 +332,7 @@ public class Rope : MonoBehaviour
     {
         #region Adjustements
         if (isDetached || wrappedLength - distance > adjustmentLength)
-            { return; }
+            return;
 
         int totalPoints = points.Count - 1;
         float lineLength = maxLength / totalPoints;

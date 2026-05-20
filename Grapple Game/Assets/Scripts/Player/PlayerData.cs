@@ -54,6 +54,7 @@ public class PlayerData : ScriptableObject
 	public float minLineLength;
 	public bool cursorMode;
 	public LayerMask grappleLayers;
+	public LayerMask nonGrappleLayer;
 	public LayerMask semiSolidLayer;
 	[Space(5)]
 	public float minPullSpeed;

@@ -6,16 +6,17 @@ public class ChunkManager : MonoBehaviour
 {
     GameObject player;
 
+    [Header("Settings")]
     public int chunkSize = 16;
     public int renderDistance = 2;
 
     public List<GameObject> chunkPrefabs;
 
     // Loaded chunks in scene
-    private Dictionary<Vector2Int, GameObject> loadedChunks = new Dictionary<Vector2Int, GameObject>();
+    Dictionary<Vector2Int, GameObject> loadedChunks = new Dictionary<Vector2Int, GameObject>();
 
     // All available chunk prefabs
-    private Dictionary<Vector2Int, GameObject> chunkLookup = new Dictionary<Vector2Int, GameObject>();
+    Dictionary<Vector2Int, GameObject> chunkLookup = new Dictionary<Vector2Int, GameObject>();
 
     void Awake()
     {
@@ -33,7 +34,7 @@ public class ChunkManager : MonoBehaviour
         UpdateChunks();
     }
 
-    // Register all chunk prefabs
+    #region Register Chunks
     public void RegisterChunks()
     {
         if (chunkPrefabs == null)
@@ -55,8 +56,9 @@ public class ChunkManager : MonoBehaviour
             }
         }
     }
+    #endregion
 
-    // Load/unload chunks around player
+    #region Update Chunks
     void UpdateChunks()
     {
         if (chunkPrefabs == null)
@@ -66,7 +68,7 @@ public class ChunkManager : MonoBehaviour
 
         HashSet<Vector2Int> neededChunks = new HashSet<Vector2Int>();
 
-        // Load nearby chunks
+        // Load Neaby Chunks
         for (int x = -renderDistance; x <= renderDistance; x++)
         {
             for (int y = -renderDistance; y <= renderDistance; y++)
@@ -111,7 +113,7 @@ public class ChunkManager : MonoBehaviour
     {
         // Does this chunk exist?
         if (!chunkLookup.ContainsKey(coord))
-            { return; }
+            return;
 
         GameObject prefab = chunkLookup[coord];
 
@@ -124,8 +126,9 @@ public class ChunkManager : MonoBehaviour
         chunk.name = "Chunk_" + coord.x + "_" + coord.y;
 
         if (loadedChunks.ContainsKey(coord))
-            { return; }
+            return;
 
         loadedChunks.Add(coord, chunk);
     }
+    #endregion
 }

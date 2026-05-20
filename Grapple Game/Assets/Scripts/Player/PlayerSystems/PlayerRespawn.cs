@@ -14,14 +14,19 @@ public class PlayerRespawn : PlayerSystem
     void Update()
     {
         if (!canMove)
-            { return; }
+            return;
         
-        Collider2D boxcast = Physics2D.OverlapBox(transform.position, player.data.checkpointCheckSize, 0f, player.data.checkpointLayer);
-        if (boxcast != null)
-            { lastCheckpoint = boxcast.transform.position; Debug.Log("Checkpoint reached");}
-        
-        if (Physics2D.OverlapBox(transform.position, player.data.hazardCheckSize, 0f, player.data.hazardLayer))
-            { StartCoroutine(OnDeath()); }
+        Collider2D checkpoint = Physics2D.OverlapBox(transform.position, player.data.checkpointCheckSize, 0f, player.data.checkpointLayer);
+        if (checkpoint != null)
+        {
+            lastCheckpoint = checkpoint.transform.position;
+            Debug.Log("Checkpoint reached");
+        }
+        Collider2D hazard = Physics2D.OverlapBox(transform.position, player.data.hazardCheckSize, 0f, player.data.hazardLayer);
+        if (hazard != null)
+        {
+            StartCoroutine(OnDeath());
+        }
 
         if (Input.GetKeyDown(KeyCode.N))
         {
@@ -39,9 +44,13 @@ public class PlayerRespawn : PlayerSystem
         yield return new WaitForSeconds(0.5f);
 
         if (lastCheckpoint != null)
-            { transform.position = lastCheckpoint; }
+        {
+            transform.position = lastCheckpoint;
+        }
         else
-            { transform.position = Vector2.zero; }
+        {
+            transform.position = Vector2.zero;
+        }
         
         player.events.OnRespawn?.Invoke();
         canMove = true;

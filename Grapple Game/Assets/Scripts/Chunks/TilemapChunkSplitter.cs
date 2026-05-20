@@ -5,14 +5,16 @@ using UnityEngine.Tilemaps;
 
 public class TilemapChunkSplitter : MonoBehaviour
 {
-    public ChunkManager chunkManager;
+    ChunkManager chunkManager;
     List<GameObject> grids = new List<GameObject>();
 
     // Chunks(Vector2, Grids(Name, tileMaps(Name, List(tiles))))
-    private Dictionary<Vector2Int, Dictionary<GameObject, Dictionary<GameObject, List<GameObject>>>> chunks = new Dictionary<Vector2Int, Dictionary<GameObject, Dictionary<GameObject, List<GameObject>>>>();
+    Dictionary<Vector2Int, Dictionary<GameObject, Dictionary<GameObject, List<GameObject>>>> chunks = new Dictionary<Vector2Int, Dictionary<GameObject, Dictionary<GameObject, List<GameObject>>>>();
 
     void Awake()
     {
+        chunkManager = GetComponent<ChunkManager>();
+
         grids.Clear();
         grids.Add(GameObject.Find("Grid"));
         grids.Add(GameObject.Find("HalfGrid"));
@@ -25,6 +27,7 @@ public class TilemapChunkSplitter : MonoBehaviour
         chunkManager.RegisterChunks();
     }
 
+    #region Build Chunks List
     void BuildChunks()
     {
         if (grids == null)
@@ -69,7 +72,9 @@ public class TilemapChunkSplitter : MonoBehaviour
     {
         return new Vector2Int(Mathf.FloorToInt(pos.x / chunkManager.chunkSize), Mathf.FloorToInt(pos.y / chunkManager.chunkSize));
     }
+    #endregion
 
+    #region Make Chunk GameObjects
     void MakeGameObjects()
     {
         foreach (var chunk in chunks)
@@ -147,4 +152,5 @@ public class TilemapChunkSplitter : MonoBehaviour
             chunkManager.chunkPrefabs.Add(chunkObject);
         }
     }
+    #endregion
 }
