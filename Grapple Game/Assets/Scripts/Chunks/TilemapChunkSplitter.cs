@@ -21,7 +21,7 @@ public class TilemapChunkSplitter : MonoBehaviour
     void BuildChunks()
     {
         if (grids == null)
-            { return; }
+            return;
 
         chunks.Clear();
         chunkManager.chunkPrefabs.Clear();

@@ -8,10 +8,11 @@ public class PlayerRope : PlayerSystem
     // This system script creates, moves, and detaches ropes from the player, but does not handle rope physics or rendering
     
     Rope rope;
+    bool detached = true;
     
     void FixedUpdate()
     {
-        if (rope == null)
+        if (detached)
             { return; }
 
         rope.points[^1].pastPos = rope.points[^1].currentPos;
@@ -20,8 +21,12 @@ public class PlayerRope : PlayerSystem
 
     void CreateNewRope(Vector2 point)
     {
-        if (rope != null)
+        if (!detached)
             { DetachRope(); }
+        
+        if (rope != null)
+            { rope.stopCollisions = true; }
+        
         
         GameObject currentPrefab = Instantiate(player.data.grapplePrefab);
 		rope = currentPrefab.GetComponent<Rope>();
@@ -43,6 +48,7 @@ public class PlayerRope : PlayerSystem
         }
 
         rope.wrapPoints.Add(new WrapPoint(point, 0, 0f));
+        detached = false;
     }
 
     void DetachRope()
@@ -59,7 +65,7 @@ public class PlayerRope : PlayerSystem
 		}
 
         rope.DetachRope();
-        rope = null;
+        detached = true;
     }
     
     void OnEnable()

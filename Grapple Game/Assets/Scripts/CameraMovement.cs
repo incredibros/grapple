@@ -7,11 +7,17 @@ public class CameraMovement : MonoBehaviour
 {
     GameObject target;
     Vector3 targetPosition;
-    public float smoothTime;
+    Vector3 currentPosition;
+    Vector3 currentOffset;
+    [SerializeField] float smoothTime;
     Vector3 velocity;
+    Vector3 velocityOffset;
 
     bool foundPlayer;
 
+    public AnimationCurve offsetCurve;
+    public int offsetMult;
+    
     public List<Area> allAreas = new List<Area>();
     int currentArea = -1;
     public bool showAreas = true;
@@ -25,6 +31,9 @@ public class CameraMovement : MonoBehaviour
     void Start()
     {
         velocity = Vector3.zero;
+        velocityOffset = Vector3.zero;
+        currentPosition = new Vector3(transform.position.x, transform.position.y, -10);
+        currentOffset = Vector3.zero;
     }
 
     void LateUpdate()
@@ -45,8 +54,17 @@ public class CameraMovement : MonoBehaviour
             targetPosition = new Vector3(Mathf.Clamp(targetPosition.x, allAreas[currentArea].cameraBounds[0].x, allAreas[currentArea].cameraBounds[1].x),
                 Mathf.Clamp(targetPosition.y, allAreas[currentArea].cameraBounds[0].y, allAreas[currentArea].cameraBounds[1].y), -10);
         }
-        Vector3 currentPosition = new Vector3(transform.position.x, transform.position.y, -10);
-        transform.position = Vector3.SmoothDamp(currentPosition, targetPosition, ref velocity, smoothTime);
+        
+        currentPosition = Vector3.SmoothDamp(currentPosition, targetPosition, ref velocity, smoothTime);
+        
+        Vector2 mousePosition = Input.mousePosition;
+        Vector2 center = new Vector2(Screen.width / 2, Screen.height / 2);
+        Vector2 offset = new Vector2((mousePosition.x - center.x) / (Screen.width / 2), (mousePosition.y - center.y) / (Screen.height / 2));
+        Vector3 shiftedOffset = new Vector3(offsetCurve.Evaluate(Mathf.Abs(offset.x)) * Mathf.Sign(offset.x) * offsetMult, offsetCurve.Evaluate(Mathf.Abs(offset.y)) * Mathf.Sign(offset.y) * offsetMult, 0);
+
+        currentOffset = Vector3.SmoothDamp(currentOffset, shiftedOffset, ref velocityOffset, smoothTime);
+
+        transform.position = currentPosition + currentOffset;
     }
 
     int FindCurrentArea(Vector2 targetPosition)
@@ -55,9 +73,7 @@ public class CameraMovement : MonoBehaviour
         {
             if (targetPosition.x >= allAreas[i].playerBounds[0].x && targetPosition.x < allAreas[i].playerBounds[1].x
                 && targetPosition.y >= allAreas[i].playerBounds[0].y && targetPosition.y < allAreas[i].playerBounds[1].y)
-            {
-                return i;
-            }
+                { return i; }
         }
         return -1;
     }

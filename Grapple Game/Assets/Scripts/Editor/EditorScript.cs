@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Tilemaps;
+using UnityEditor.SceneManagement;
 
 [InitializeOnLoad]
 public static class EditorScript
 {
     public static List<GameObject> tilemaps = new List<GameObject>();
     public static List<GridBrushBase> gridBrushBases = new List<GridBrushBase>();
+    public static List<GameObject> prefabs = new List<GameObject>();
     public static GameObject player;
 
     static EditorScript()
@@ -16,10 +18,15 @@ public static class EditorScript
         SceneView.duringSceneGui += OnSceneGUI;
 
         EditorApplication.delayCall += Initialize;
+
+        EditorSceneManager.sceneOpened += OnSceneOpened;
     }
 
     private static void Initialize()
     {
+        tilemaps.Clear();
+        gridBrushBases.Clear();
+
         tilemaps.Add(GameObject.Find("PlatformTilemap"));
         tilemaps.Add(GameObject.Find("SemiSolidTilemap"));
         tilemaps.Add(GameObject.Find("HazardTilemap"));
@@ -30,9 +37,15 @@ public static class EditorScript
         tilemaps.Add(GameObject.Find("HalfHazardTilemap"));
         tilemaps.Add(GameObject.Find("HalfSpriteTilemap"));
 
+        tilemaps.Add(GameObject.Find("ExtraTilemap"));
+
         gridBrushBases.Add(AssetDatabase.LoadAssetAtPath<GridBrushBase>("Assets/Graphics/Tilemap/Brushes/GroundBrush.asset"));
         gridBrushBases.Add(AssetDatabase.LoadAssetAtPath<GridBrushBase>("Assets/Graphics/Tilemap/Brushes/SemiSolidBrush.asset"));
         gridBrushBases.Add(AssetDatabase.LoadAssetAtPath<GridBrushBase>("Assets/Graphics/Tilemap/Brushes/HalfGroundBrush.asset"));
+
+        prefabs.Add(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Extras/CheckPoint.prefab"));
+        prefabs.Add(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Extras/Orb.prefab"));
+        prefabs.Add(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Extras/Peg.prefab"));
 
         player = GameObject.Find("Player");
     }
@@ -43,7 +56,7 @@ public static class EditorScript
         if (e.type != EventType.KeyDown)
             { return; }
 
-        if (e.keyCode == KeyCode.Alpha0)
+        if (e.keyCode == KeyCode.P)
         {
             Vector2 mousePos = Event.current.mousePosition;
             Ray worldRay = HandleUtility.GUIPointToWorldRay(mousePos);
@@ -51,7 +64,15 @@ public static class EditorScript
             player.transform.position = new Vector3(Mathf.Round(player.transform.position.x - 0.5f) + 0.5f, Mathf.Round(player.transform.position.y - 0.5f) + 0.5f, 0);
             Debug.Log("Player Selected");
         }
-            
+        
+        if (e.keyCode == KeyCode.Alpha0)
+        {
+            GridPaintingState.scenePaintTarget = tilemaps[0];
+            GridPaintingState.gridBrush = GridPaintingState.brushes[0];;
+            Tools.current = Tool.Move;
+            Selection.activeObject = null;
+            Debug.Log("Tilemap + selection cleared");
+        }
         if (e.keyCode == KeyCode.Alpha1)
         {
             GridPaintingState.scenePaintTarget = tilemaps[0];
@@ -109,5 +130,68 @@ public static class EditorScript
             TilemapEditorTool.SetActiveEditorTool(typeof(PaintTool));
             Debug.Log("Half Sprite Brush Selected");
         }
+
+        if (e.keyCode == KeyCode.U)
+        {
+            GameObject checkpoint = prefabs[0];
+
+            GameObject parent = tilemaps[8];
+
+            Vector2 mousePos = Event.current.mousePosition;
+            Ray worldRay = HandleUtility.GUIPointToWorldRay(mousePos);
+            Vector3 spawnPos = worldRay.GetPoint(10f);
+
+            GameObject obj = (GameObject)PrefabUtility.InstantiatePrefab(checkpoint, parent.transform);
+            obj.transform.position = new Vector3(Mathf.Round(spawnPos.x - 0.5f) + 0.5f, Mathf.Round(spawnPos.y - 0.5f) + 0.5f, 0);
+
+            Undo.RegisterCreatedObjectUndo(obj, "Spawn Checkpoint");
+
+            Selection.activeGameObject = obj;
+
+            Debug.Log("Checkpoint Spawned");
+        }
+        if (e.keyCode == KeyCode.O)
+        {
+            GameObject checkpoint = prefabs[1];
+
+            GameObject parent = tilemaps[8];
+
+            Vector2 mousePos = Event.current.mousePosition;
+            Ray worldRay = HandleUtility.GUIPointToWorldRay(mousePos);
+            Vector3 spawnPos = worldRay.GetPoint(10f);
+
+            GameObject obj = (GameObject)PrefabUtility.InstantiatePrefab(checkpoint, parent.transform);
+            obj.transform.position = new Vector3(Mathf.Round(spawnPos.x - 0.5f) + 0.5f, Mathf.Round(spawnPos.y - 0.5f) + 0.5f, 0);
+
+            Undo.RegisterCreatedObjectUndo(obj, "Spawn Orb");
+
+            Selection.activeGameObject = obj;
+
+            Debug.Log("Orb Spawned");
+        }
+        if (e.keyCode == KeyCode.I)
+        {
+            GameObject checkpoint = prefabs[2];
+
+            GameObject parent = tilemaps[8];
+
+            Vector2 mousePos = Event.current.mousePosition;
+            Ray worldRay = HandleUtility.GUIPointToWorldRay(mousePos);
+            Vector3 spawnPos = worldRay.GetPoint(10f);
+
+            GameObject obj = (GameObject)PrefabUtility.InstantiatePrefab(checkpoint, parent.transform);
+            obj.transform.position = new Vector3(Mathf.Round(spawnPos.x - 0.5f) + 0.5f, Mathf.Round(spawnPos.y - 0.5f) + 0.5f, 0);
+
+            Undo.RegisterCreatedObjectUndo(obj, "Spawn Peg");
+
+            Selection.activeGameObject = obj;
+
+            Debug.Log("Peg Spawned");
+        }
+    }
+
+    private static void OnSceneOpened(UnityEngine.SceneManagement.Scene scene, OpenSceneMode mode)
+    {
+        Initialize();
     }
 }

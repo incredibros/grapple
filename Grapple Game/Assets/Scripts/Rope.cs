@@ -18,6 +18,7 @@ public class Rope : MonoBehaviour
     float wrappedLength;
     bool isDetached;
     float timeAfterDetached;
+    public bool stopCollisions;
     
     [Header("Swing")]
     [SerializeField] float gravityScale;
@@ -153,7 +154,6 @@ public class Rope : MonoBehaviour
             wrappedLength += Vector2.Distance(wrapPoints[^1].pos, wrapPoints[^2].pos);
             player.events.OnChangeAnchorPoint?.Invoke(wrapPoints[^2].pos, false);
             wrapPoints.RemoveAt(wrapPoints.Count - 1);
-            //Debug.Log("Removed wrap point");
         }
         #endregion
     }
@@ -277,7 +277,7 @@ public class Rope : MonoBehaviour
             #endregion
 
             #region Collisions
-            if (i % collisionIntervals != 0)
+            if (i % collisionIntervals != 0 || stopCollisions)
                 { continue; }
 
             foreach (Point point in points)
