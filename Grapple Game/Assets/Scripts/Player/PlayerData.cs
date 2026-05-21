@@ -76,7 +76,8 @@ public class PlayerData : ScriptableObject
 	public LayerMask orbLayer;
 
 	[Header("Effects")]
-	public GameObject effectPrefab;
+	public GameObject groundEffectPrefab;
+	public GameObject gunShotEffectPrefab;
 
 	[Header("Accelerations and Decelerations")]
 	public List<AccelInfo> accels;

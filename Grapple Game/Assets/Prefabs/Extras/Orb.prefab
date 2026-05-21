@@ -57,8 +57,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9213701688015845557}
-  - component: {fileID: 9213701688015845556}
-  - component: {fileID: 9213701688015845555}
+  - component: {fileID: 2815044513943486382}
+  - component: {fileID: 1077231590814417050}
   - component: {fileID: 3210418785879035584}
   m_Layer: 13
   m_Name: Orb
@@ -83,7 +83,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &9213701688015845556
+--- !u!212 &2815044513943486382
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -135,7 +135,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &9213701688015845555
+--- !u!114 &1077231590814417050
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
