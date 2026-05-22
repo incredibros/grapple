@@ -11,7 +11,8 @@ public class MainMenu : MonoBehaviour
     public void PlayGame()
     {
         GameIsPaused = false;
-        SceneManager.LoadScene("Prologue");
+        int nextScene = (SceneManager.GetActiveScene().buildIndex + 1) % SceneManager.sceneCountInBuildSettings;
+        SceneManager.LoadScene(nextScene);
     }
 
     public void QuitGame()

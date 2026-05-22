@@ -29,6 +29,5 @@ Aim: Mouse Movement / Player Input
 Jump: Space
 Grapple: Left Click / O
 Pull: Right Click / P
-Next Scene: N
 Toggle Cursor Mode: H and O and G
 Pause Menu: Esc

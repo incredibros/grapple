@@ -27,13 +27,6 @@ public class PlayerRespawn : PlayerSystem
         {
             StartCoroutine(OnDeath());
         }
-
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            player.events.OnDeath?.Invoke();
-            player.events.OnRespawn?.Invoke();
-            LoadNextScene();
-        }
     }
 
     IEnumerator OnDeath()
@@ -54,11 +47,5 @@ public class PlayerRespawn : PlayerSystem
         
         player.events.OnRespawn?.Invoke();
         canMove = true;
-    }
-
-    void LoadNextScene()
-    {
-        int nextScene = (SceneManager.GetActiveScene().buildIndex + 1) % SceneManager.sceneCountInBuildSettings;
-        SceneManager.LoadScene(nextScene);
     }
 }
