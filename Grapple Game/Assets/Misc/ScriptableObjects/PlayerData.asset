@@ -56,7 +56,7 @@ MonoBehaviour:
   grapplePrefab: {fileID: 4091299313004935833, guid: 2b82373813a6b9445a35b39c01866d71, type: 3}
   grappleRange: 15
   minLineLength: 0.2
-  cursorMode: 0
+  cursorMode: 1
   grappleLayers:
     serializedVersion: 2
     m_Bits: 768

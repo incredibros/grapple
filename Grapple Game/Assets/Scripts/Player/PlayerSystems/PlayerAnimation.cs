@@ -12,6 +12,11 @@ public class PlayerAnimation : PlayerSystem
     Vector2 moveInput;
     Vector2 mouseDirection;
 
+    void Start()
+    {
+        player.data.cursorMode = true;
+    }
+
     void Update()
     {
         if (MainMenu.GameIsPaused)
@@ -40,7 +45,7 @@ public class PlayerAnimation : PlayerSystem
             Flip(gun, false);
         }
 
-        if (Input.GetKeyDown(KeyCode.M))
+        if (Input.GetKeyDown(KeyCode.H) && Input.GetKeyDown(KeyCode.O) && Input.GetKeyDown(KeyCode.G))
         {
             player.data.cursorMode = !player.data.cursorMode;
         }

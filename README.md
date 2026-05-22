@@ -16,7 +16,7 @@ The game website is linked directly in this repository. Open the provided Pages 
 | Grapple                   | `Left Click / O`       |
 | Pull Toward Grapple Point | `Right Click / P`      |
 | Next Scene                | `N`                    |
-| Toggle Cursor Mode        | `M`                    |
+| Toggle Cursor Mode        | `H and O and G`        |
 | Pause Menu                | `Esc`                  |
 
 ## Controller Support
