@@ -2,14 +2,35 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Audio;
+using TMPro;
 
 public class PauseMenu : MonoBehaviour
 {
-    GameObject pauseMenuUI;
+    [SerializeField] GameObject targetToKeepActive;
+    [SerializeField] GameObject pauseMenuUI;
+
+    Player player;
 
     void Awake()
     {
-        pauseMenuUI = transform.GetChild(0).gameObject;
+        player = GameObject.Find("Player").GetComponent<Player>();
+        Deactivate();
+    }
+
+    void Deactivate()
+    {
+        foreach (Transform child in transform)
+        {
+            if (child.gameObject == targetToKeepActive)
+            {
+                child.gameObject.SetActive(true);
+            }
+            else
+            {
+                child.gameObject.SetActive(false);
+            }
+        }
     }
 
     void Update()
@@ -50,9 +71,12 @@ public class PauseMenu : MonoBehaviour
 
     public void RestartLevel()
     {
+        player.events.OnDeath?.Invoke();
+        player.transform.position = Vector2.zero;
+        player.events.OnRespawn?.Invoke();
         Time.timeScale = 1f;
         MainMenu.GameIsPaused = false;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        pauseMenuUI.SetActive(false);
     }
     #endregion
 }

@@ -41,5 +41,7 @@ public struct PlayerEvents
 
     #region Extras
     public Action<GameObject> OnOrbPickUp;
+    public Action OnSpringActivated;
+    public Action OnPitonActivated;
     #endregion
 }

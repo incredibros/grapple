@@ -16,19 +16,25 @@ public class PlayerRespawn : PlayerSystem
         if (!canMove)
             return;
         
+        #region Checkpoint
         Collider2D checkpoint = Physics2D.OverlapBox(transform.position, player.data.checkpointCheckSize, 0f, player.data.checkpointLayer);
         if (checkpoint != null)
         {
             lastCheckpoint = checkpoint.transform.position;
             Debug.Log("Checkpoint reached");
         }
+        #endregion
+
+        #region Hazard
         Collider2D hazard = Physics2D.OverlapBox(transform.position, player.data.hazardCheckSize, 0f, player.data.hazardLayer);
         if (hazard != null)
         {
             StartCoroutine(OnDeath());
         }
+        #endregion
     }
 
+    #region Death
     IEnumerator OnDeath()
     {
         canMove = false;
@@ -48,4 +54,5 @@ public class PlayerRespawn : PlayerSystem
         player.events.OnRespawn?.Invoke();
         canMove = true;
     }
+    #endregion
 }

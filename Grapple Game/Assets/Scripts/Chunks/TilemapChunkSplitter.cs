@@ -2,14 +2,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
+using TMPro;
 
 public class TilemapChunkSplitter : MonoBehaviour
 {
+    [SerializeField] GameObject loadingCanvas;
+
     ChunkManager chunkManager;
     List<GameObject> grids = new List<GameObject>();
 
     // Chunks(Vector2, Grids(Name, tileMaps(Name, List(tiles))))
     Dictionary<Vector2Int, Dictionary<GameObject, Dictionary<GameObject, List<GameObject>>>> chunks = new Dictionary<Vector2Int, Dictionary<GameObject, Dictionary<GameObject, List<GameObject>>>>();
+
+    [Header("Loading Screen UI")]
+    [SerializeField] TextMeshProUGUI progressText;
+    [SerializeField] Slider loadingSlider;
+
+    [Header("Performance Settings")]
+    [Tooltip("How many full chunks to instantiate before pausing for one frame.")]
+    [SerializeField] int chunksPerFrame = 1;
+    int totalChunksGenerated;
 
     void Awake()
     {
@@ -22,9 +35,23 @@ public class TilemapChunkSplitter : MonoBehaviour
 
     void Start()
     {
+        StartCoroutine(GenerateWorldRoutine());
+    }
+
+    IEnumerator GenerateWorldRoutine()
+    {
+        Time.timeScale = 0f;
+        loadingCanvas.SetActive(true);
+        loadingSlider.value = 0;
+        progressText.text = "0%";
         BuildChunks();
-        MakeGameObjects();
+        yield return null;
+        yield return StartCoroutine(MakeGameObjectsRoutine());
+        yield return null;
         chunkManager.RegisterChunks();
+        yield return null;
+        loadingCanvas.SetActive(false);
+        Time.timeScale = 1f;
     }
 
     #region Build Chunks List
@@ -74,9 +101,11 @@ public class TilemapChunkSplitter : MonoBehaviour
     }
     #endregion
 
-    #region Make Chunk GameObjects
-    void MakeGameObjects()
+    #region Make Chunk GameObjects (Staggered Coroutine)
+    IEnumerator MakeGameObjectsRoutine()
     {
+        int chunksCreatedThisFrame = 0;
+
         foreach (var chunk in chunks)
         {
             Vector2Int chunkPos = chunk.Key;
@@ -150,6 +179,19 @@ public class TilemapChunkSplitter : MonoBehaviour
             }
 
             chunkManager.chunkPrefabs.Add(chunkObject);
+
+            totalChunksGenerated++;
+
+            float progressValue = Mathf.Clamp01((float) totalChunksGenerated / chunks.Count);
+            loadingSlider.value = progressValue;
+            progressText.text = Mathf.RoundToInt(progressValue * 100f) + "%";
+
+            chunksCreatedThisFrame++;
+            if (chunksCreatedThisFrame >= chunksPerFrame)
+            {
+                chunksCreatedThisFrame = 0;
+                yield return null;
+            }
         }
     }
     #endregion

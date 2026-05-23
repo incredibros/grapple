@@ -75,6 +75,15 @@ public class PlayerData : ScriptableObject
 	public Vector2 orbCheckSize;
 	public LayerMask orbLayer;
 
+	[Header("Springs")]
+	public Vector2 springCheckSize;
+	public LayerMask springLayer;
+	public int springForce;
+
+	[Header("Pitons")]
+	public Vector2 pitonCheckSize;
+	public LayerMask pitonLayer;
+
 	[Header("Effects")]
 	public GameObject groundEffectPrefab;
 	public GameObject gunShotEffectPrefab;

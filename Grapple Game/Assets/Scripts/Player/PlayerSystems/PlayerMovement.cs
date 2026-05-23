@@ -36,13 +36,14 @@ public class PlayerMovement : PlayerSystem
 	protected override void Awake()
 	{
 		base.Awake();
+
         rb = GetComponent<Rigidbody2D>();
 		joint = GetComponent<DistanceJoint2D>();
 	}
 
 	void Update()
 	{
-		if (state.isDead || state.isFrozen)
+		if (state.isDead || state.isFrozen || MainMenu.GameIsPaused)
 			return;
 		
 		Timers();
@@ -61,7 +62,7 @@ public class PlayerMovement : PlayerSystem
 
 	void FixedUpdate()
 	{
-		if (state.isDead || state.isFrozen)
+		if (state.isDead || state.isFrozen || MainMenu.GameIsPaused)
 			return;
 		
 		LateralMovement();
@@ -280,15 +281,19 @@ public class PlayerMovement : PlayerSystem
 	#region Grapple
 	void OnPointerMove(Vector2 pos, bool directional)
 	{
-		if (directional)
+		if (pos != null)
 		{
-			mouseDirection = pos.normalized;
+			if (directional)
+			{
+				mouseDirection = pos.normalized;
+			}
+			else if (player.data.cursorMode)
+			{
+				Vector2 mousePos = Camera.main.ScreenToWorldPoint(pos);
+				mouseDirection = (mousePos - (Vector2) transform.position).normalized;
+			}
 		}
-		else if (player.data.cursorMode)
-		{
-			Vector2 mousePos = Camera.main.ScreenToWorldPoint(pos);
-			mouseDirection = (mousePos - (Vector2) transform.position).normalized;
-		}
+		
 	}
 
 	void OnGrappleButtonDown()
@@ -454,6 +459,25 @@ public class PlayerMovement : PlayerSystem
 	}
 	#endregion
 
+	#region Spring
+	void OnSpringActivated()
+	{
+		state.isHanging = false;
+		state.isJumping = false;
+		state.isWallJumping = false;
+		state.isPulling = true;
+		accelTime = 0f;
+		rb.velocity = new Vector2(rb.velocity.x, player.data.springForce);
+	}
+	#endregion
+
+	#region Piton
+	void OnPitonActivated()
+	{
+		// Boost
+	}
+	#endregion
+
     #region Events
 	void OnEnable()
     {
@@ -468,6 +492,8 @@ public class PlayerMovement : PlayerSystem
 		player.events.OnDeath += OnDeath;
 		player.events.OnRespawn += OnRespawn;
 		player.events.OnOrbPickUp += OnOrbPickUp;
+		player.events.OnSpringActivated += OnSpringActivated;
+		player.events.OnPitonActivated += OnPitonActivated;
     }
 
     void OnDisable()
@@ -483,6 +509,8 @@ public class PlayerMovement : PlayerSystem
 		player.events.OnDeath -= OnDeath;
 		player.events.OnRespawn -= OnRespawn;
 		player.events.OnOrbPickUp -= OnOrbPickUp;
+		player.events.OnSpringActivated -= OnSpringActivated;
+		player.events.OnPitonActivated -= OnPitonActivated;
     }
 	#endregion
 }

@@ -23,11 +23,11 @@ public class ChunkManager : MonoBehaviour
         player = GameObject.FindWithTag("Player");
     }
 
-    IEnumerator Start()
+    /*IEnumerator Start()
     {
         yield return new WaitForEndOfFrame();
         RegisterChunks();
-    }
+    }*/
 
     void Update()
     {

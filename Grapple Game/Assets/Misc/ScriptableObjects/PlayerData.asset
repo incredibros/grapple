@@ -105,6 +105,11 @@ MonoBehaviour:
   orbLayer:
     serializedVersion: 2
     m_Bits: 8192
+  springCheckSize: {x: 1, y: 1}
+  springLayer:
+    serializedVersion: 2
+    m_Bits: 65536
+  springForce: 20
   groundEffectPrefab: {fileID: 852556821801593712, guid: 048194095832f4f0a8941085678e01e4, type: 3}
   gunShotEffectPrefab: {fileID: 4659489677238979286, guid: c5397f7b2dbcdf14ca0e03c4a932c1b0, type: 3}
   accels:
