@@ -28,6 +28,7 @@ public class PlayerMovement : PlayerSystem
 
 	[HideInInspector] public Vector2 grapplePoint;
 	[HideInInspector] public float grappleRadius;
+	[HideInInspector] public static bool CursorMode = true;
 
 	int grapples;
 
@@ -168,7 +169,7 @@ public class PlayerMovement : PlayerSystem
 	#region Lateral Movement
 	void OnXYInput(Vector2 input)
     {
-		if (!player.data.cursorMode)
+		if (!CursorMode)
 		{
 			mouseDirection = input;
 		}
@@ -287,7 +288,7 @@ public class PlayerMovement : PlayerSystem
 			{
 				mouseDirection = pos.normalized;
 			}
-			else if (player.data.cursorMode)
+			else if (CursorMode)
 			{
 				Vector2 mousePos = Camera.main.ScreenToWorldPoint(pos);
 				mouseDirection = (mousePos - (Vector2) transform.position).normalized;
@@ -329,10 +330,16 @@ public class PlayerMovement : PlayerSystem
 		joint.enabled = true;
 		grappleReleaseDelay = player.data.releaseDelayTime;
 		
-		TargetPosition hitCollider = hit[hitIndex].collider.gameObject.GetComponentInParent<TargetPosition>();
-		joint.connectedAnchor = grapplePoint = nudge + new Vector2(
-			Mathf.Clamp(hit[hitIndex].point.x, hitCollider.gameObject.transform.position.x + hitCollider.minGrappleBounds.x, hitCollider.gameObject.transform.position.x + hitCollider.maxGrappleBounds.x),
-			Mathf.Clamp(hit[hitIndex].point.y, hitCollider.gameObject.transform.position.y + hitCollider.minGrappleBounds.y, hitCollider.gameObject.transform.position.y + hitCollider.maxGrappleBounds.y));
+		TargetPosition hitCollider = hit[hitIndex].collider.GetComponentInParent<TargetPosition>();
+		Vector2 hitPoint = hit[hitIndex].point;
+		if (hitCollider != null)
+		{
+			hitPoint = new Vector2(
+				Mathf.Clamp(hitPoint.x, hitCollider.transform.position.x + hitCollider.minGrappleBounds.x, hitCollider.transform.position.x + hitCollider.maxGrappleBounds.x),
+				Mathf.Clamp(hitPoint.y, hitCollider.transform.position.y + hitCollider.minGrappleBounds.y, hitCollider.transform.position.y + hitCollider.maxGrappleBounds.y)
+			);
+		}
+		joint.connectedAnchor = grapplePoint = nudge + hitPoint;
 		joint.distance = grappleRadius = Vector2.Distance(transform.position, grapplePoint);
 
 		player.events.OnGrapple?.Invoke(grapplePoint);

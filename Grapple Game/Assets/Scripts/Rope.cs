@@ -14,6 +14,9 @@ public class Rope : MonoBehaviour
     public List<Line> lines = new List<Line>();
     public List<WrapPoint> wrapPoints = new List<WrapPoint>();
 
+    static readonly Collider2D[] collisionResults = new Collider2D[8];
+    Vector3[] renderPositions;
+
     [HideInInspector] public float maxLength;
     float wrappedLength;
     bool isDetached;
@@ -33,9 +36,13 @@ public class Rope : MonoBehaviour
     [SerializeField] float bounceFactor;
     
     [Header("Optimizations")]
-    [SerializeField] int iterationsPerSubStep;
     [SerializeField] int subSteps;
+    [SerializeField] int iterationsPerSubStep;
     [SerializeField] int collisionIntervals;
+
+    [Header("Wrap")]
+    [SerializeField] float wrapResolution;
+    [SerializeField] int maxWrapChecks;
     
     [Header("Timers")]
     [SerializeField] float fullTime;
@@ -54,17 +61,19 @@ public class Rope : MonoBehaviour
 
         lineRenderer.positionCount = points.Count;
         wrappedLength = maxLength;
+
+        renderPositions = new Vector3[points.Count];
     }
 
     void Update()
     {
         #region Update Renderer
-        Vector3[] pointPositions = new Vector3[points.Count];
-        for (int i = 0; i < pointPositions.Length; i++)
+        for (int i = 0; i < renderPositions.Length; i++)
         {
-            pointPositions[i] = points[i].currentPos;
+            renderPositions[i] = points[i].currentPos;
         }
-        lineRenderer.SetPositions(pointPositions);
+
+        lineRenderer.SetPositions(renderPositions);
         #endregion
         
         if (!isDetached)
@@ -97,12 +106,12 @@ public class Rope : MonoBehaviour
         
         RaycastHit2D hit;
         float distance = Vector2.Distance(points[^1].pastPos, points[^1].currentPos);
-        int steps = Mathf.CeilToInt(distance / 0.01f);
+        int steps = Mathf.Min(Mathf.CeilToInt(distance / wrapResolution), maxWrapChecks);
         Vector2 end = wrapPoints[^1].pos;
         
         for (int i = 0; i < steps + 1; i++)
         {
-            Vector2 start = i != steps ? Vector2.Lerp(points[^1].pastPos, points[^1].currentPos, 0.01f * i / distance) : points[^1].currentPos;
+            Vector2 start = i != steps ? Vector2.Lerp(points[^1].pastPos, points[^1].currentPos, (wrapResolution * i) / distance) : points[^1].currentPos;
             List<RaycastHit2D> cornerHits = new List<RaycastHit2D>();
             
             hit = Physics2D.Linecast(start, end, collisionLayer);
@@ -203,15 +212,8 @@ public class Rope : MonoBehaviour
             point.pastPos += velocity;
             
             velocity += gravity;
-            RaycastHit2D hit;
-            if (hit = Physics2D.CircleCast(point.currentPos, collisionRadius, velocity.normalized, velocity.magnitude, collisionLayer))
-            {
-                point.currentPos = hit.point + (hit.normal * collisionRadius);
-            }
-            else
-            {
-                point.currentPos += velocity;
-            }
+            
+            point.currentPos += velocity;
         }
         #endregion
     }
@@ -302,9 +304,12 @@ public class Rope : MonoBehaviour
                     continue;
                 
                 Vector2 velocity = point.currentPos - point.pastPos;
-                Collider2D[] colliders = Physics2D.OverlapCircleAll(point.currentPos, collisionRadius, collisionLayer);
-                foreach (Collider2D collider in colliders)
+                int count = Physics2D.OverlapCircleNonAlloc(point.currentPos, collisionRadius, collisionResults, collisionLayer);
+
+                for (int c = 0; c < count; c++)
                 {
+                    Collider2D collider = collisionResults[c];
+
                     Vector2 closestPoint = collider.ClosestPoint(point.currentPos);
                     float distance = Vector2.Distance(point.currentPos, closestPoint);
                     if (distance < collisionRadius)

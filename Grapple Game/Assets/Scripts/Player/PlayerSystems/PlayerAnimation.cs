@@ -12,11 +12,6 @@ public class PlayerAnimation : PlayerSystem
     Vector2 moveInput;
     Vector2 mouseDirection;
 
-    void Start()
-    {
-        player.data.cursorMode = true;
-    }
-
     void Update()
     {
         if (MainMenu.GameIsPaused)
@@ -47,7 +42,7 @@ public class PlayerAnimation : PlayerSystem
 
         if (Input.GetKeyDown(KeyCode.H) && Input.GetKeyDown(KeyCode.O) && Input.GetKeyDown(KeyCode.G))
         {
-            player.data.cursorMode = !player.data.cursorMode;
+            PlayerMovement.CursorMode = !PlayerMovement.CursorMode;
         }
     }
 
@@ -65,7 +60,7 @@ public class PlayerAnimation : PlayerSystem
     #region Movement
     void OnXYInput(Vector2 input)
     {
-        if (!player.data.cursorMode)
+        if (!PlayerMovement.CursorMode)
 		{
 			mouseDirection = input;
 		}
@@ -81,7 +76,7 @@ public class PlayerAnimation : PlayerSystem
 		{
 			mouseDirection = pos.normalized;
 		}
-		else if (player.data.cursorMode)
+		else if (PlayerMovement.CursorMode)
 		{
 			Vector2 mousePos = Camera.main.ScreenToWorldPoint(pos);
 			mouseDirection = (mousePos - (Vector2) transform.position).normalized;
