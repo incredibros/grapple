@@ -1,0 +1,411 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Tilemaps;
+using System.Text.RegularExpressions;
+
+public class ChunkEditorScript : MonoBehaviour
+{
+    [SerializeField] ChunkManager chunkManager;
+    [SerializeField] List<GameObject> grids;
+
+    // Chunks(Vector2, Grids(Name, tileMaps(Name, List(tiles))))
+    public List<ChunkData> chunks = new List<ChunkData>();
+
+    #region Revert Chunks
+    [ContextMenu("Revert Chunks")]
+    void RevertChunks()
+    {
+        List<Transform> groundTiles = new List<Transform>();
+        List<Transform> semiSolidTiles = new List<Transform>();
+        List<Transform> extraTiles = new List<Transform>();
+
+        List<Transform> halfGroundTiles = new List<Transform>();
+        List<Transform> halfSemiSolidTiles = new List<Transform>();
+
+        foreach (Transform chunk in transform)
+        {
+            foreach (Transform grid in chunk)
+            {
+                foreach (Transform tilemap in grid)
+                {
+                    foreach (Transform tile in tilemap)
+                    {
+                        if (tile.name == "Ground")
+                        {
+                            groundTiles.Add(tile);
+                        }
+                        else if (tile.name == "SemiSolid")
+                        {
+                            semiSolidTiles.Add(tile);
+                        }
+                        else if (tile.name == "HalfGround")
+                        {
+                            halfGroundTiles.Add(tile);
+                        }
+                        else if (tile.name == "HalfSemiSolid")
+                        {
+                            halfSemiSolidTiles.Add(tile);
+                        }
+                        else
+                        {
+                            extraTiles.Add(tile);
+                        }
+                    }
+                }
+            }
+        }
+        Transform platformsTilemap = grids[0].transform.Find("PlatformTilemap");
+        Transform semiSolidTilemap = grids[0].transform.Find("SemiSolidTilemap");
+        Transform extraTilemap = grids[0].transform.Find("ExtraTilemap");
+
+        Transform halfPlatformsTilemap = grids[1].transform.Find("HalfPlatformTilemap");
+        Transform halfSemiSolidTilemap = grids[1].transform.Find("HalfSemiSolidTilemap");
+
+        foreach (var tile in groundTiles)
+            tile.SetParent(platformsTilemap, true);
+
+        foreach (var tile in semiSolidTiles)
+            tile.SetParent(semiSolidTilemap, true);
+
+        foreach (var tile in extraTiles)
+            tile.SetParent(extraTilemap, true);
+
+        foreach (var tile in halfGroundTiles)
+            tile.SetParent(halfPlatformsTilemap, true);
+
+        foreach (var tile in halfSemiSolidTiles)
+            tile.SetParent(halfSemiSolidTilemap, true);
+        
+        RemoveEmptyChunks();
+    }
+    #endregion
+    
+    #region Execute Chunking
+    [ContextMenu("Execute Chunks")]
+    void ExecuteChunking()
+    {
+        UpdateChunksList();
+        RemoveEmptyChunks();
+        InstantiateChunks();
+        SortChildren();
+    }
+    #endregion
+
+    #region Update Chunks List
+    void UpdateChunksList()
+    {
+        foreach (GameObject grid in grids)
+        {
+            foreach (Transform tileMap in grid.transform)
+            {
+                foreach (Transform tile in tileMap.transform)
+                {
+                    AddTile(GetChunkCoord(tile.position), grid, tileMap.gameObject, tile.gameObject);
+                }
+            }
+        }
+    }
+
+    void AddTile(Vector2Int chunkPos, GameObject gridObj, GameObject tilemapObj, GameObject tileObj)
+    {
+        ChunkData chunk = chunks.Find(c => c.chunkCoord == chunkPos);
+        if (chunk == null)
+        {
+            chunk = new ChunkData { chunkCoord = chunkPos };
+            chunks.Add(chunk);
+        }
+
+        GridData grid = chunk.grids.Find(g => g.gridObject == gridObj);
+        if (grid == null)
+        {
+            grid = new GridData { gridObject = gridObj };
+            chunk.grids.Add(grid);
+        }
+
+        TilemapData tilemap = grid.tilemaps.Find(t => t.tilemapObject == tilemapObj);
+        if (tilemap == null)
+        {
+            tilemap = new TilemapData { tilemapObject = tilemapObj };
+            grid.tilemaps.Add(tilemap);
+        }
+
+        if (!tilemap.tiles.Exists(t => t.tileObject == tileObj))
+        {
+            tilemap.tiles.Add(new TileData
+            {
+                tileObject = tileObj,
+            });
+        }
+    }
+
+    Vector2Int GetChunkCoord(Vector3 pos)
+    {
+        return new Vector2Int(Mathf.FloorToInt(pos.x / chunkManager.chunkSize), Mathf.FloorToInt(pos.y / chunkManager.chunkSize));
+    }
+    #endregion
+
+    #region Instantiate Chunks
+    void InstantiateChunks()
+    {
+        foreach (var chunk in chunks)
+        {
+            Vector2Int chunkPos = chunk.chunkCoord;
+
+            string chunkName = $"Chunk_{chunkPos.x}_{chunkPos.y}";
+
+            Transform existingChunk = chunkManager.transform.Find(chunkName);
+
+            GameObject chunkObject;
+
+            if (existingChunk != null)
+            {
+                chunkObject = existingChunk.gameObject;
+            }
+            else
+            {
+                chunkObject = new GameObject(chunkName);
+                chunkObject.transform.SetParent(chunkManager.transform);
+
+                Chunk c = chunkObject.AddComponent<Chunk>();
+                c.chunkCoord = chunkPos;
+
+                chunkManager.chunkPrefabs.Add(chunkObject);
+            }
+
+            foreach (var grid in chunk.grids)
+            {
+                Transform existingGrid = chunkObject.transform.Find(grid.gridObject.name);
+
+                GameObject gridObject;
+
+                if (existingGrid != null)
+                {
+                    gridObject = existingGrid.gameObject;
+                }
+                else
+                {
+                    gridObject = new GameObject($"{grid.gridObject.name}_{chunkPos.x}_{chunkPos.y}");
+                    gridObject.transform.SetParent(chunkObject.transform);
+
+                    if (grid.gridObject.TryGetComponent<Grid>(out Grid gridComponent))
+                    {
+                        Grid g = gridObject.AddComponent<Grid>();
+                        g.cellSize = gridComponent.cellSize;
+                    }
+                }
+
+                foreach (var tileMap in grid.tilemaps)
+                {
+                    Transform existingTileMap = gridObject.transform.Find(tileMap.tilemapObject.name);
+
+                    GameObject tileMapObject;
+
+                    if (existingTileMap != null)
+                    {
+                        tileMapObject = existingTileMap.gameObject;
+                    }
+                    else
+                    {
+                        tileMapObject = new GameObject($"{tileMap.tilemapObject.name}_{chunkPos.x}_{chunkPos.y}");
+                        tileMapObject.transform.SetParent(gridObject.transform);
+
+                        tileMapObject.layer = tileMap.tilemapObject.layer;
+
+                        if (tileMap.tilemapObject.TryGetComponent<Tilemap>(out Tilemap _))
+                        {
+                            tileMapObject.AddComponent<Tilemap>();
+                        }
+
+                        if (tileMap.tilemapObject.TryGetComponent<Rigidbody2D>(out Rigidbody2D originalRb))
+                        {
+                            Rigidbody2D rb = tileMapObject.AddComponent<Rigidbody2D>();
+                            rb.bodyType = originalRb.bodyType;
+                        }
+
+                        if (tileMap.tilemapObject.TryGetComponent<CompositeCollider2D>(out CompositeCollider2D originalCC))
+                        {
+                            CompositeCollider2D cc = tileMapObject.AddComponent<CompositeCollider2D>();
+                            cc.usedByEffector = originalCC.usedByEffector;
+                            cc.sharedMaterial = originalCC.sharedMaterial;
+                        }
+
+                        if (tileMap.tilemapObject.TryGetComponent<PlatformEffector2D>(out PlatformEffector2D originalPE))
+                        {
+                            PlatformEffector2D pe = tileMapObject.AddComponent<PlatformEffector2D>();
+
+                            pe.rotationalOffset = originalPE.rotationalOffset;
+                            pe.useOneWay = originalPE.useOneWay;
+                            pe.useOneWayGrouping = originalPE.useOneWayGrouping;
+                            pe.useSideFriction = originalPE.useSideFriction;
+                            pe.useSideBounce = originalPE.useSideBounce;
+                            pe.surfaceArc = originalPE.surfaceArc;
+                            pe.sideArc = originalPE.sideArc;
+                        }
+                    }
+
+                    foreach (TileData tileData in tileMap.tiles)
+                    {
+                        if (tileData.tileObject.transform.parent != tileMapObject.transform)
+                        {
+                            tileData.tileObject.transform.SetParent(tileMapObject.transform, true);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    #endregion
+
+    #region Remove Empty Chunks
+    void RemoveEmptyChunks()
+    {
+        // Hierarchy
+        for (int i = transform.childCount - 1; i >= 0; i--)
+        {
+            var chunk = transform.GetChild(i);
+
+            for (int g = chunk.childCount - 1; g >= 0; g--)
+            {
+                var grid = chunk.GetChild(g);
+
+                for (int t = grid.childCount - 1; t >= 0; t--)
+                {
+                    var tilemap = grid.GetChild(t);
+                    if (tilemap.childCount == 0)
+                    {
+                        DestroyImmediate(tilemap.gameObject);
+                    }
+                }
+
+                if (grid.childCount == 0)
+                {
+                    DestroyImmediate(grid.gameObject);
+                }
+            }
+
+            if (chunk.childCount == 0)
+            {
+                DestroyImmediate(chunk.gameObject);
+            }
+        }
+
+        // Chunks list
+        for (int i = chunks.Count - 1; i >= 0; i--)
+        {
+            ChunkData chunk = chunks[i];
+
+            for (int g = chunk.grids.Count - 1; g >= 0; g--)
+            {
+                GridData grid = chunk.grids[g];
+
+                if (grid.gridObject == null)
+                {
+                    chunk.grids.RemoveAt(g);
+                    continue;
+                }
+
+                for (int t = grid.tilemaps.Count - 1; t >= 0; t--)
+                {
+                    TilemapData tilemap = grid.tilemaps[t];
+
+                    if (tilemap.tilemapObject == null)
+                    {
+                        grid.tilemaps.RemoveAt(t);
+                        continue;
+                    }
+
+                    tilemap.tiles.RemoveAll(ti => ti.tileObject == null);
+
+                    if (tilemap.tiles.Count == 0)
+                    {
+                        grid.tilemaps.RemoveAt(t);
+                    }
+                }
+
+                if (grid.tilemaps.Count == 0)
+                {
+                    chunk.grids.RemoveAt(g);
+                }
+            }
+
+            if (chunk.grids.Count == 0)
+            {
+                chunks.RemoveAt(i);
+            }
+        }
+
+        // chunkManager.chunkPrefabs
+        for (int i = chunkManager.chunkPrefabs.Count - 1; i >= 0; i--)
+        {
+            if (chunkManager.chunkPrefabs[i] == null)
+            {
+                chunkManager.chunkPrefabs.RemoveAt(i);
+            }
+        }
+    }
+    #endregion
+
+    #region Sort Children
+    void SortChildren()
+    {
+        List<Transform> children = new List<Transform>();
+        foreach (Transform child in transform) children.Add(child);
+
+        children.Sort((a, b) =>
+        {
+            MatchCollection matchesA = Regex.Matches(a.name, @"-?\d+");
+            MatchCollection matchesB = Regex.Matches(b.name, @"-?\d+");
+
+            if (matchesA.Count >= 2 && matchesB.Count >= 2)
+            {
+                int xA = int.Parse(matchesA[0].Value);
+                int yA = int.Parse(matchesA[1].Value);
+
+                int xB = int.Parse(matchesB[0].Value);
+                int yB = int.Parse(matchesB[1].Value);
+
+                int compareX = xA.CompareTo(xB);
+                if (compareX != 0) return compareX;
+
+                return yA.CompareTo(yB);
+            }
+
+            return a.name.CompareTo(b.name);
+        });
+
+        for (int i = 0; i < children.Count; i++)
+        {
+            children[i].SetSiblingIndex(i);
+        }
+    }
+    #endregion
+}
+
+[Serializable]
+public class ChunkData
+{
+    public Vector2Int chunkCoord;
+    public List<GridData> grids = new List<GridData>();
+}
+
+[Serializable]
+public class GridData
+{
+    public GameObject gridObject;
+    public List<TilemapData> tilemaps = new List<TilemapData>();
+}
+
+[Serializable]
+public class TilemapData
+{
+    public GameObject tilemapObject;
+    public List<TileData> tiles = new List<TileData>();
+}
+
+[Serializable]
+public class TileData
+{
+    public GameObject tileObject;
+}

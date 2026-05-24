@@ -6,36 +6,38 @@ public class ChunkManager : MonoBehaviour
 {
     GameObject player;
 
+    ChunkEditorScript chunkEditorScript;
+
     [Header("Settings")]
     public int chunkSize = 16;
     public int renderDistance = 2;
 
-    public List<GameObject> chunkPrefabs;
+    [HideInInspector] public List<GameObject> chunkPrefabs;
 
     // Loaded chunks in scene
     Dictionary<Vector2Int, GameObject> loadedChunks = new Dictionary<Vector2Int, GameObject>();
-
+    
     // All available chunk prefabs
     Dictionary<Vector2Int, GameObject> chunkLookup = new Dictionary<Vector2Int, GameObject>();
 
     void Awake()
     {
         player = GameObject.FindWithTag("Player");
+        chunkEditorScript = GetComponent<ChunkEditorScript>();
     }
 
-    /*IEnumerator Start()
+    void Start()
     {
-        yield return new WaitForEndOfFrame();
+        DisableChildren();
         RegisterChunks();
-    }*/
+    }
 
     void Update()
     {
         UpdateChunks();
     }
 
-    #region Register Chunks
-    public void RegisterChunks()
+    void RegisterChunks()
     {
         if (chunkPrefabs == null)
             { return; }
@@ -44,16 +46,19 @@ public class ChunkManager : MonoBehaviour
         {
             Chunk chunkData = prefab.GetComponent<Chunk>();
 
-            if (chunkData == null)
-            {
-                Debug.LogError(prefab.name + " is missing Chunk.cs!");
-                continue;
-            }
-
             if (!chunkLookup.ContainsKey(chunkData.chunkCoord))
             {
                 chunkLookup.Add(chunkData.chunkCoord, prefab);
             }
+        }
+    }
+
+    #region Disable Children
+    void DisableChildren()
+    {
+        foreach (Transform child in transform)
+        {
+            child.gameObject.SetActive(false);
         }
     }
     #endregion
@@ -61,9 +66,6 @@ public class ChunkManager : MonoBehaviour
     #region Update Chunks
     void UpdateChunks()
     {
-        if (chunkPrefabs == null)
-            { return; }
-
         Vector2Int playerChunk = GetChunkCoord(player.transform.position);
 
         HashSet<Vector2Int> neededChunks = new HashSet<Vector2Int>();
@@ -91,7 +93,7 @@ public class ChunkManager : MonoBehaviour
         {
             if (!neededChunks.Contains(chunk.Key))
             {
-                Destroy(chunk.Value);
+                //Destroy(chunk.Value);
                 chunksToUnload.Add(chunk.Key);
             }
         }
@@ -111,22 +113,19 @@ public class ChunkManager : MonoBehaviour
     // Spawn chunk
     void LoadChunk(Vector2Int coord)
     {
-        // Does this chunk exist?
+        if (loadedChunks.ContainsKey(coord))
+            return;
+
         if (!chunkLookup.ContainsKey(coord))
             return;
 
         GameObject prefab = chunkLookup[coord];
 
-        Vector3 worldPosition = new Vector3(coord.x * chunkSize, coord.y * chunkSize, 0);
-
-        GameObject chunk = Instantiate(prefab, Vector3.zero, Quaternion.identity, this.transform);
-
+        GameObject chunk = Instantiate(prefab, Vector3.zero, Quaternion.identity, transform);
+        
         chunk.SetActive(true);
 
         chunk.name = "Chunk_" + coord.x + "_" + coord.y;
-
-        if (loadedChunks.ContainsKey(coord))
-            return;
 
         loadedChunks.Add(coord, chunk);
     }
