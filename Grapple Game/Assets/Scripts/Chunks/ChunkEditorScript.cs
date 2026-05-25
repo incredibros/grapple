@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using System.Text.RegularExpressions;
+using System.Linq;
 
 public class ChunkEditorScript : MonoBehaviour
 {
@@ -78,6 +78,7 @@ public class ChunkEditorScript : MonoBehaviour
         foreach (var tile in halfSemiSolidTiles)
             tile.SetParent(halfSemiSolidTilemap, true);
         
+        chunks.Clear();
         RemoveEmptyChunks();
     }
     #endregion
@@ -89,7 +90,6 @@ public class ChunkEditorScript : MonoBehaviour
         UpdateChunksList();
         RemoveEmptyChunks();
         InstantiateChunks();
-        SortChildren();
     }
     #endregion
 
@@ -110,33 +110,30 @@ public class ChunkEditorScript : MonoBehaviour
 
     void AddTile(Vector2Int chunkPos, GameObject gridObj, GameObject tilemapObj, GameObject tileObj)
     {
-        ChunkData chunk = chunks.Find(c => c.chunkCoord == chunkPos);
+        ChunkData chunk = chunks.SingleOrDefault(c => c.chunkCoord == chunkPos);
         if (chunk == null)
         {
-            chunk = new ChunkData { chunkCoord = chunkPos };
+            chunk = new ChunkData(chunkPos);
             chunks.Add(chunk);
         }
 
-        GridData grid = chunk.grids.Find(g => g.gridObject == gridObj);
+        GridData grid = chunk.grids.SingleOrDefault(g => g.gridObject == gridObj);
         if (grid == null)
         {
-            grid = new GridData { gridObject = gridObj };
+            grid = new GridData(gridObj);
             chunk.grids.Add(grid);
         }
 
-        TilemapData tilemap = grid.tilemaps.Find(t => t.tilemapObject == tilemapObj);
+        TilemapData tilemap = grid.tilemaps.SingleOrDefault(t => t.tilemapObject == tilemapObj);
         if (tilemap == null)
         {
-            tilemap = new TilemapData { tilemapObject = tilemapObj };
+            tilemap = new TilemapData(tilemapObj);
             grid.tilemaps.Add(tilemap);
         }
 
-        if (!tilemap.tiles.Exists(t => t.tileObject == tileObj))
+        if (!tilemap.tiles.Any(t => t.tileObject == tileObj))
         {
-            tilemap.tiles.Add(new TileData
-            {
-                tileObject = tileObj,
-            });
+            tilemap.tiles.Add(new TileData(tileObj));
         }
     }
 
@@ -170,8 +167,6 @@ public class ChunkEditorScript : MonoBehaviour
 
                 Chunk c = chunkObject.AddComponent<Chunk>();
                 c.chunkCoord = chunkPos;
-
-                chunkManager.chunkPrefabs.Add(chunkObject);
             }
 
             foreach (var grid in chunk.grids)
@@ -335,50 +330,6 @@ public class ChunkEditorScript : MonoBehaviour
                 chunks.RemoveAt(i);
             }
         }
-
-        // chunkManager.chunkPrefabs
-        for (int i = chunkManager.chunkPrefabs.Count - 1; i >= 0; i--)
-        {
-            if (chunkManager.chunkPrefabs[i] == null)
-            {
-                chunkManager.chunkPrefabs.RemoveAt(i);
-            }
-        }
-    }
-    #endregion
-
-    #region Sort Children
-    void SortChildren()
-    {
-        List<Transform> children = new List<Transform>();
-        foreach (Transform child in transform) children.Add(child);
-
-        children.Sort((a, b) =>
-        {
-            MatchCollection matchesA = Regex.Matches(a.name, @"-?\d+");
-            MatchCollection matchesB = Regex.Matches(b.name, @"-?\d+");
-
-            if (matchesA.Count >= 2 && matchesB.Count >= 2)
-            {
-                int xA = int.Parse(matchesA[0].Value);
-                int yA = int.Parse(matchesA[1].Value);
-
-                int xB = int.Parse(matchesB[0].Value);
-                int yB = int.Parse(matchesB[1].Value);
-
-                int compareX = xA.CompareTo(xB);
-                if (compareX != 0) return compareX;
-
-                return yA.CompareTo(yB);
-            }
-
-            return a.name.CompareTo(b.name);
-        });
-
-        for (int i = 0; i < children.Count; i++)
-        {
-            children[i].SetSiblingIndex(i);
-        }
     }
     #endregion
 }
@@ -388,6 +339,11 @@ public class ChunkData
 {
     public Vector2Int chunkCoord;
     public List<GridData> grids = new List<GridData>();
+
+    public ChunkData(Vector2Int c)
+    {
+        chunkCoord = c;
+    }
 }
 
 [Serializable]
@@ -395,6 +351,11 @@ public class GridData
 {
     public GameObject gridObject;
     public List<TilemapData> tilemaps = new List<TilemapData>();
+
+    public GridData(GameObject g)
+    {
+        gridObject = g;
+    }
 }
 
 [Serializable]
@@ -402,10 +363,26 @@ public class TilemapData
 {
     public GameObject tilemapObject;
     public List<TileData> tiles = new List<TileData>();
+
+    public TilemapData(GameObject t)
+    {
+        tilemapObject = t;
+    }
+
+    /*public bool type;
+    public List<GameObject> tileObjects = new List<GameObject>();
+    public List<TileBase> tilesSprites = new List<TileBase>();*/
 }
 
 [Serializable]
 public class TileData
 {
     public GameObject tileObject;
+
+    public TileData(GameObject t)
+    {
+        tileObject = t;
+    }
+
+    //public TileBase tileBase;
 }

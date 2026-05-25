@@ -12,8 +12,6 @@ public class ChunkManager : MonoBehaviour
     public int chunkSize = 16;
     public int renderDistance = 2;
 
-    [HideInInspector] public List<GameObject> chunkPrefabs;
-
     // Loaded chunks in scene
     Dictionary<Vector2Int, GameObject> loadedChunks = new Dictionary<Vector2Int, GameObject>();
     
@@ -29,7 +27,7 @@ public class ChunkManager : MonoBehaviour
     void Start()
     {
         DisableChildren();
-        RegisterChunks();
+        RegisterExistingChunks();
     }
 
     void Update()
@@ -37,21 +35,20 @@ public class ChunkManager : MonoBehaviour
         UpdateChunks();
     }
 
-    void RegisterChunks()
+    #region Register Existing Chunks
+    void RegisterExistingChunks()
     {
-        if (chunkPrefabs == null)
-            { return; }
-
-        foreach (GameObject prefab in chunkPrefabs)
+        foreach (Transform child in transform)
         {
-            Chunk chunkData = prefab.GetComponent<Chunk>();
+            Chunk chunk = child.GetComponent<Chunk>();
 
-            if (!chunkLookup.ContainsKey(chunkData.chunkCoord))
+            if (chunk != null)
             {
-                chunkLookup.Add(chunkData.chunkCoord, prefab);
+                chunkLookup[chunk.chunkCoord] = child.gameObject;
             }
         }
     }
+    #endregion
 
     #region Disable Children
     void DisableChildren()
@@ -62,6 +59,7 @@ public class ChunkManager : MonoBehaviour
         }
     }
     #endregion
+
 
     #region Update Chunks
     void UpdateChunks()
@@ -93,7 +91,7 @@ public class ChunkManager : MonoBehaviour
         {
             if (!neededChunks.Contains(chunk.Key))
             {
-                //Destroy(chunk.Value);
+                chunk.Value.SetActive(false);
                 chunksToUnload.Add(chunk.Key);
             }
         }
@@ -119,13 +117,8 @@ public class ChunkManager : MonoBehaviour
         if (!chunkLookup.ContainsKey(coord))
             return;
 
-        GameObject prefab = chunkLookup[coord];
-
-        GameObject chunk = Instantiate(prefab, Vector3.zero, Quaternion.identity, transform);
-        
+        GameObject chunk = chunkLookup[coord];
         chunk.SetActive(true);
-
-        chunk.name = "Chunk_" + coord.x + "_" + coord.y;
 
         loadedChunks.Add(coord, chunk);
     }
