@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Linq;
+using UnityEditor;
+using UnityEditor.SceneManagement;
 
 public class ChunkEditorScript : MonoBehaviour
 {
@@ -64,22 +66,24 @@ public class ChunkEditorScript : MonoBehaviour
         Transform halfSemiSolidTilemap = grids[1].transform.Find("HalfSemiSolidTilemap");
 
         foreach (var tile in groundTiles)
-            tile.SetParent(platformsTilemap, true);
-
+            Undo.SetTransformParent(tile, platformsTilemap, "Reparent Tile");
         foreach (var tile in semiSolidTiles)
-            tile.SetParent(semiSolidTilemap, true);
-
+            Undo.SetTransformParent(tile, semiSolidTilemap, "Reparent Tile");
         foreach (var tile in extraTiles)
-            tile.SetParent(extraTilemap, true);
-
+            Undo.SetTransformParent(tile, extraTilemap, "Reparent Tile");
         foreach (var tile in halfGroundTiles)
-            tile.SetParent(halfPlatformsTilemap, true);
-
+            Undo.SetTransformParent(tile, halfPlatformsTilemap, "Reparent Tile");
         foreach (var tile in halfSemiSolidTiles)
-            tile.SetParent(halfSemiSolidTilemap, true);
+            Undo.SetTransformParent(tile, halfSemiSolidTilemap, "Reparent Tile");
         
         chunks.Clear();
         RemoveEmptyChunks();
+        
+        if (!Application.isPlaying)
+        {
+            EditorUtility.SetDirty(this);
+            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+        }
     }
     #endregion
     
@@ -90,6 +94,12 @@ public class ChunkEditorScript : MonoBehaviour
         UpdateChunksList();
         RemoveEmptyChunks();
         InstantiateChunks();
+        
+        if (!Application.isPlaying)
+        {
+            EditorUtility.SetDirty(this);
+            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+        }
     }
     #endregion
 
@@ -149,11 +159,8 @@ public class ChunkEditorScript : MonoBehaviour
         foreach (var chunk in chunks)
         {
             Vector2Int chunkPos = chunk.chunkCoord;
-
             string chunkName = $"Chunk_{chunkPos.x}_{chunkPos.y}";
-
             Transform existingChunk = chunkManager.transform.Find(chunkName);
-
             GameObject chunkObject;
 
             if (existingChunk != null)
@@ -164,6 +171,7 @@ public class ChunkEditorScript : MonoBehaviour
             {
                 chunkObject = new GameObject(chunkName);
                 chunkObject.transform.SetParent(chunkManager.transform);
+                Undo.RegisterCreatedObjectUndo(chunkObject, "Create Chunk");
 
                 Chunk c = chunkObject.AddComponent<Chunk>();
                 c.chunkCoord = chunkPos;
@@ -172,7 +180,6 @@ public class ChunkEditorScript : MonoBehaviour
             foreach (var grid in chunk.grids)
             {
                 Transform existingGrid = chunkObject.transform.Find(grid.gridObject.name);
-
                 GameObject gridObject;
 
                 if (existingGrid != null)
@@ -183,6 +190,7 @@ public class ChunkEditorScript : MonoBehaviour
                 {
                     gridObject = new GameObject($"{grid.gridObject.name}_{chunkPos.x}_{chunkPos.y}");
                     gridObject.transform.SetParent(chunkObject.transform);
+                    Undo.RegisterCreatedObjectUndo(gridObject, "Create Chunk Grid");
 
                     if (grid.gridObject.TryGetComponent<Grid>(out Grid gridComponent))
                     {
@@ -194,7 +202,6 @@ public class ChunkEditorScript : MonoBehaviour
                 foreach (var tileMap in grid.tilemaps)
                 {
                     Transform existingTileMap = gridObject.transform.Find(tileMap.tilemapObject.name);
-
                     GameObject tileMapObject;
 
                     if (existingTileMap != null)
@@ -205,6 +212,7 @@ public class ChunkEditorScript : MonoBehaviour
                     {
                         tileMapObject = new GameObject($"{tileMap.tilemapObject.name}_{chunkPos.x}_{chunkPos.y}");
                         tileMapObject.transform.SetParent(gridObject.transform);
+                        Undo.RegisterCreatedObjectUndo(tileMapObject, "Create Chunk Tilemap");
 
                         tileMapObject.layer = tileMap.tilemapObject.layer;
 
@@ -229,7 +237,6 @@ public class ChunkEditorScript : MonoBehaviour
                         if (tileMap.tilemapObject.TryGetComponent<PlatformEffector2D>(out PlatformEffector2D originalPE))
                         {
                             PlatformEffector2D pe = tileMapObject.AddComponent<PlatformEffector2D>();
-
                             pe.rotationalOffset = originalPE.rotationalOffset;
                             pe.useOneWay = originalPE.useOneWay;
                             pe.useOneWayGrouping = originalPE.useOneWayGrouping;
@@ -244,7 +251,7 @@ public class ChunkEditorScript : MonoBehaviour
                     {
                         if (tileData.tileObject.transform.parent != tileMapObject.transform)
                         {
-                            tileData.tileObject.transform.SetParent(tileMapObject.transform, true);
+                            Undo.SetTransformParent(tileData.tileObject.transform, tileMapObject.transform, "Reparent Tile");
                         }
                     }
                 }
@@ -256,7 +263,6 @@ public class ChunkEditorScript : MonoBehaviour
     #region Remove Empty Chunks
     void RemoveEmptyChunks()
     {
-        // Hierarchy
         for (int i = transform.childCount - 1; i >= 0; i--)
         {
             var chunk = transform.GetChild(i);
@@ -270,23 +276,22 @@ public class ChunkEditorScript : MonoBehaviour
                     var tilemap = grid.GetChild(t);
                     if (tilemap.childCount == 0)
                     {
-                        DestroyImmediate(tilemap.gameObject);
+                        Undo.DestroyObjectImmediate(tilemap.gameObject);
                     }
                 }
 
                 if (grid.childCount == 0)
                 {
-                    DestroyImmediate(grid.gameObject);
+                    Undo.DestroyObjectImmediate(grid.gameObject);
                 }
             }
 
             if (chunk.childCount == 0)
             {
-                DestroyImmediate(chunk.gameObject);
+                Undo.DestroyObjectImmediate(chunk.gameObject);
             }
         }
 
-        // Chunks list
         for (int i = chunks.Count - 1; i >= 0; i--)
         {
             ChunkData chunk = chunks[i];

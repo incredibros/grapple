@@ -14231,6 +14231,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9069f76574ce49cea67a42916cdc6d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetToKeepActive: {fileID: 0}
+  pauseMenuUI: {fileID: 0}
 --- !u!114 &1052165217
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -43443,26 +43445,13 @@ GameObject:
   - component: {fileID: 2115351701}
   - component: {fileID: 2115351700}
   - component: {fileID: 2115351699}
-  - component: {fileID: 2115351698}
   m_Layer: 14
   m_Name: Chunk Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &2115351698
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2115351697}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4204afaa6039f485aafaf91980c8428e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_IsActive: 0
 --- !u!114 &2115351699
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -43477,7 +43466,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chunkSize: 16
   renderDistance: 2
-  chunkPrefabs: []
 --- !u!66 &2115351700
 CompositeCollider2D:
   m_ObjectHideFlags: 0
@@ -44755,6 +44743,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 514e87e45beca4720a00546233b4cd64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gunTip: {fileID: 0}
 --- !u!61 &2792833293769150615
 BoxCollider2D:
   m_ObjectHideFlags: 0

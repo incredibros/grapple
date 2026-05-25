@@ -5,8 +5,8 @@ using UnityEngine;
 public class ChunkManager : MonoBehaviour
 {
     GameObject player;
-
     ChunkEditorScript chunkEditorScript;
+    TilemapChunker tilemapChunker;
 
     [Header("Settings")]
     public int chunkSize = 16;
@@ -22,6 +22,7 @@ public class ChunkManager : MonoBehaviour
     {
         player = GameObject.FindWithTag("Player");
         chunkEditorScript = GetComponent<ChunkEditorScript>();
+        tilemapChunker = GetComponent<TilemapChunker>();
     }
 
     void Start()

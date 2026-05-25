@@ -310,6 +310,7 @@ public class Rope : MonoBehaviour
                 {
                     Collider2D collider = collisionResults[c];
 
+                    Physics2D.SyncTransforms();
                     Vector2 closestPoint = collider.ClosestPoint(point.currentPos);
                     float distance = Vector2.Distance(point.currentPos, closestPoint);
                     if (distance < collisionRadius)

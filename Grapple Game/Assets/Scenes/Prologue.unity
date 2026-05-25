@@ -3386,7 +3386,6 @@ GameObject:
   - component: {fileID: 275284213}
   - component: {fileID: 275284212}
   - component: {fileID: 275284216}
-  - component: {fileID: 275284215}
   m_Layer: 14
   m_Name: Chunk Manager
   m_TagString: Untagged
@@ -3520,22 +3519,6 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
---- !u!114 &275284215
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 275284210}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4204afaa6039f485aafaf91980c8428e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  loadingCanvas: {fileID: 230008722}
-  progressText: {fileID: 427410859}
-  loadingSlider: {fileID: 1877256651}
-  chunksPerFrame: 1
 --- !u!114 &275284216
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3550,7 +3533,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chunkSize: 16
   renderDistance: 2
-  chunkPrefabs: []
 --- !u!4 &276662818 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5210432870057780889, guid: f98dc99e27a8c78429461a440d67d8fd, type: 3}
