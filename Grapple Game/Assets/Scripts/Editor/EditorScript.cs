@@ -83,14 +83,14 @@ public static class EditorScript
         if (e.keyCode == KeyCode.Alpha1)
         {
             GridPaintingState.scenePaintTarget = tilemaps[0];
-            GridPaintingState.gridBrush = gridBrushBases[0];
+            GridPaintingState.gridBrush = GridPaintingState.brushes[0];
             TilemapEditorTool.SetActiveEditorTool(typeof(PaintTool));
             Debug.Log("Ground Brush Selected");
         }
         if (e.keyCode == KeyCode.Alpha2)
         {
             GridPaintingState.scenePaintTarget = tilemaps[1];
-            GridPaintingState.gridBrush = gridBrushBases[1];
+            GridPaintingState.gridBrush = GridPaintingState.brushes[0];
             TilemapEditorTool.SetActiveEditorTool(typeof(PaintTool));
             Debug.Log("Semi Solid Brush Selected");
         }
@@ -112,14 +112,14 @@ public static class EditorScript
         if (e.keyCode == KeyCode.Alpha5)
         {
             GridPaintingState.scenePaintTarget = tilemaps[4];
-            GridPaintingState.gridBrush = gridBrushBases[2];
+            GridPaintingState.gridBrush = GridPaintingState.brushes[0];
             TilemapEditorTool.SetActiveEditorTool(typeof(PaintTool));
             Debug.Log("Half Ground Brush Selected");
         }
         if (e.keyCode == KeyCode.Alpha6)
         {
             GridPaintingState.scenePaintTarget = tilemaps[5];
-            GridPaintingState.gridBrush = gridBrushBases[3];
+            GridPaintingState.gridBrush = GridPaintingState.brushes[0];
             TilemapEditorTool.SetActiveEditorTool(typeof(PaintTool));
             Debug.Log("Half Semi Solid Brush Selected");
         }

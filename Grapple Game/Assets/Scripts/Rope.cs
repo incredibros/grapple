@@ -76,8 +76,7 @@ public class Rope : MonoBehaviour
         lineRenderer.SetPositions(renderPositions);
         #endregion
         
-        if (!isDetached)
-            return;
+        if (!isDetached) return;
         
         timeAfterDetached += Time.deltaTime;
         if (timeAfterDetached > fullTime)
@@ -101,8 +100,7 @@ public class Rope : MonoBehaviour
     void CheckForWrapping()
     {
         #region Check Wrapping
-        if (isDetached)
-            return;
+        if (isDetached) return;
         
         RaycastHit2D hit;
         float distance = Vector2.Distance(points[^1].pastPos, points[^1].currentPos);
@@ -115,8 +113,7 @@ public class Rope : MonoBehaviour
             List<RaycastHit2D> cornerHits = new List<RaycastHit2D>();
             
             hit = Physics2D.Linecast(start, end, collisionLayer);
-            if (hit.collider == null || Vector2.Distance(hit.point, end) < 0.1f)
-                continue;
+            if (hit.collider == null || Vector2.Distance(hit.point, end) < 0.1f) continue;
             cornerHits.Add(hit);
             
             hit = Physics2D.Linecast(end, start, collisionLayer);
@@ -156,8 +153,7 @@ public class Rope : MonoBehaviour
             break;
         }
 
-        if (wrapPoints.Count == 1)
-            return;
+        if (wrapPoints.Count == 1) return;
         
         hit = Physics2D.Linecast(points[^1].currentPos, wrapPoints[^2].pos, collisionLayer);
         if (hit.collider == null || Vector2.Distance(hit.point, wrapPoints[^2].pos) <= 0.1f)
@@ -203,8 +199,7 @@ public class Rope : MonoBehaviour
         #region Change Velocity
         foreach (Point point in points)
         {
-            if (point.isLocked)
-                continue;
+            if (point.isLocked) continue;
             
             Vector2 velocity = (point.currentPos - point.pastPos) / subSteps;
             Vector2 gravity = gravityScale * Mathf.Pow(Time.fixedDeltaTime / subSteps, 2) * (1 - adjustment) * Physics.gravity;
@@ -226,8 +221,7 @@ public class Rope : MonoBehaviour
             foreach (Line line in lines)
             {
                 int2 index = line.pointIndexes;
-                if (points[index[0]].isLocked && points[index[1]].isLocked)
-                    continue;
+                if (points[index[0]].isLocked && points[index[1]].isLocked) continue;
                 
                 Vector2 distance = points[index[0]].currentPos - points[index[1]].currentPos;
                 float difference = distance.magnitude - (line.length * tension);
@@ -262,8 +256,7 @@ public class Rope : MonoBehaviour
 
                 float distance1 = v1.magnitude;
                 float distance2 = v2.magnitude;
-                if (distance1 == 0 || distance2 == 0)
-                    continue;
+                if (distance1 == 0 || distance2 == 0) continue;
                 
                 Vector2 direction1 = v1.normalized;
                 Vector2 direction2 = v2.normalized;
@@ -295,13 +288,11 @@ public class Rope : MonoBehaviour
             #endregion
 
             #region Collisions
-            if (i % collisionIntervals != 0 || stopCollisions)
-                continue;
+            if (i % collisionIntervals != 0 || stopCollisions) continue;
 
             foreach (Point point in points)
             {
-                if (point.isLocked)
-                    continue;
+                if (point.isLocked) continue;
                 
                 Vector2 velocity = point.currentPos - point.pastPos;
                 int count = Physics2D.OverlapCircleNonAlloc(point.currentPos, collisionRadius, collisionResults, collisionLayer);

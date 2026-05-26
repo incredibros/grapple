@@ -112,11 +112,9 @@ public class ChunkManager : MonoBehaviour
     // Spawn chunk
     void LoadChunk(Vector2Int coord)
     {
-        if (loadedChunks.ContainsKey(coord))
-            return;
+        if (loadedChunks.ContainsKey(coord)) return;
 
-        if (!chunkLookup.ContainsKey(coord))
-            return;
+        if (!chunkLookup.ContainsKey(coord)) return;
 
         GameObject chunk = chunkLookup[coord];
         chunk.SetActive(true);

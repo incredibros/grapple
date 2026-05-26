@@ -44,8 +44,7 @@ public class PlayerMovement : PlayerSystem
 
 	void Update()
 	{
-		if (state.isDead || state.isFrozen || MainMenu.GameIsPaused)
-			return;
+		if (state.isDead || state.isFrozen || MainMenu.GameIsPaused) return;
 		
 		Timers();
 		Checks();
@@ -63,8 +62,7 @@ public class PlayerMovement : PlayerSystem
 
 	void FixedUpdate()
 	{
-		if (state.isDead || state.isFrozen || MainMenu.GameIsPaused)
-			return;
+		if (state.isDead || state.isFrozen || MainMenu.GameIsPaused) return;
 		
 		LateralMovement();
 
@@ -154,8 +152,7 @@ public class PlayerMovement : PlayerSystem
 
 	bool CheckForWalls(int dir)
 	{
-		if (Mathf.Abs(rb.velocity.x) > 0.001f)
-			return false;
+		if (Mathf.Abs(rb.velocity.x) > 0.001f) return false;
 		
 		int wallsDetected = 0;
 		foreach (Vector2 pos in dir == 1 ? player.data.rightCheckPoints : player.data.leftCheckPoints)
@@ -299,19 +296,17 @@ public class PlayerMovement : PlayerSystem
 
 	void OnGrappleButtonDown()
 	{
-		if (grapples == 0)
-			return;
+		if (grapples == 0) return;
 		grapples--;
 		
 		Vector2 nudge = mouseDirection * -0.01f;
 		RaycastHit2D[] hit = Physics2D.RaycastAll(transform.position, mouseDirection, player.data.grappleRange, player.data.grappleLayers);
-		if (hit.Length == 0)
-			return;
+		if (hit.Length == 0) return;
 		
 		int hitIndex = -1;
 		for (int i = 0; i < hit.Length; i++)
 		{
-			int layer = hit[i].collider.transform.parent.gameObject.layer;
+			int layer = hit[i].collider.transform.gameObject.layer;
 
 			if ((player.data.nonGrappleLayer.value & (1 << layer)) != 0)
 			{
@@ -320,11 +315,12 @@ public class PlayerMovement : PlayerSystem
 			}
 			if ((player.data.semiSolidLayer.value & (1 << layer)) != 0 && mouseDirection.y >= 0)
 				continue;
+			
+
 			hitIndex = i;
 			break;
 		}
-		if (hitIndex == -1)
-			return;
+		if (hitIndex == -1) return;
 			
 		state.isGrappled = true;
 		joint.enabled = true;
@@ -359,8 +355,7 @@ public class PlayerMovement : PlayerSystem
 
 	void OnGrappleButtonUp()
 	{
-		if (grappleReleaseDelay > 0)
-			return;
+		if (grappleReleaseDelay > 0) return;
 			
 		state.isGrappled = false;
 		state.isHanging = false;
@@ -381,8 +376,7 @@ public class PlayerMovement : PlayerSystem
 		if (!state.isGrappled)
 		{
 			player.events.OnGrappleButtonDown?.Invoke();
-			if (!state.isGrappled)
-				return;
+			if (!state.isGrappled) return;
 		}
 		
 		state.isHanging = false;
@@ -459,8 +453,7 @@ public class PlayerMovement : PlayerSystem
 	#region Orbs
 	void OnOrbPickUp(GameObject orb)
 	{
-		if (grapples != 0)
-			return;
+		if (grapples != 0) return;
 		grapples = 1;
 		orb.GetComponent<Orb>().OnPickUp(this.transform);
 	}

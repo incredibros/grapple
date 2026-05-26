@@ -13,8 +13,7 @@ public class PlayerRespawn : PlayerSystem
     
     void Update()
     {
-        if (!canMove)
-            return;
+        if (!canMove) return;
         
         #region Checkpoint
         Collider2D checkpoint = Physics2D.OverlapBox(transform.position, player.data.checkpointCheckSize, 0f, player.data.checkpointLayer);

@@ -12,8 +12,7 @@ public class PlayerRope : PlayerSystem
     
     void FixedUpdate()
     {
-        if (detached)
-            return;
+        if (detached) return;
 
         rope.points[^1].pastPos = rope.points[^1].currentPos;
 		rope.points[^1].currentPos = transform.position;
@@ -46,8 +45,7 @@ public class PlayerRope : PlayerSystem
         {
             rope.points.Add(new Point(Vector2.Lerp(point, transform.position, (float) i / totalLines), i == 0 || i == totalLines));
             
-            if (i == 0)
-                continue;
+            if (i == 0) continue;
             
             rope.lines.Add(new Line(new int2(i, i - 1), lineLength));
         }

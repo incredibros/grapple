@@ -10,6 +10,9 @@ EditorBuildSettings:
     guid: 994ef2b164f7a47f0aeb2b82a236f493
   - enabled: 1
     path: Assets/Scenes/Game.unity
+    guid: 7a45f2d123d92254a8a6919db6d13982
+  - enabled: 0
+    path: Assets/Scenes/Game Prefab.unity
     guid: 51a36cc23d1474c4ca1a28342fa5b599
   - enabled: 0
     path: Assets/Scenes/Prologue.unity
@@ -17,7 +20,4 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Scene1.unity
     guid: 2cda990e2423bbf4892e6590ba056729
-  - enabled: 0
-    path: Assets/Scenes/Scene2.unity
-    guid: e0d0e651dfda7754091f38ab674a34fe
   m_configObjects: {}

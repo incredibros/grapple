@@ -2,19 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-/*
+
 public class TilemapChunkManager : MonoBehaviour
 {
     GameObject player;
     TilemapChunker tilemapChunker;
 
-    [SerializeField] Tilemap tilemap;
+    [SerializeField] List<Tilemap> tilemaps;
 
     [Header("Settings")]
     public int chunkSize = 16;
-    public int renderDistance = 2;
+    public Vector2Int renderDistance = new Vector2Int(2, 1);
 
-    Vector2Int lastPlayerChunk = new Vector2Int(int.MaxValue, int.MaxValue);
+    [SerializeField] Vector2Int lastPlayerChunk = new Vector2Int(int.MaxValue, int.MaxValue);
 
     void Awake()
     {
@@ -24,22 +24,15 @@ public class TilemapChunkManager : MonoBehaviour
 
     void Start()
     {
-        if (tilemapChunker != null)
-        {
-            tilemapChunker.InitializeChunkCache(tilemap);
-        }
+        tilemapChunker.InitializeChunkCache(tilemaps);
         
-        if (tilemap != null)
-        {
-            tilemap.ClearAllTiles();
-        }
+        Vector2Int currentPlayerChunk = tilemapChunker.GetChunkCoord(player.transform.position);
+        RenderVisibleChunks(currentPlayerChunk);
     }
 
     void Update()
     {
-        if (player == null || tilemapChunker == null || tilemap == null) return;
-
-        Vector2Int currentPlayerChunk = GetChunkCoord.GetChunkCoord(player.transform.position);
+        Vector2Int currentPlayerChunk = tilemapChunker.GetChunkCoord(player.transform.position);
 
         if (currentPlayerChunk != lastPlayerChunk)
         {
@@ -50,25 +43,35 @@ public class TilemapChunkManager : MonoBehaviour
 
     void RenderVisibleChunks(Vector2Int centerChunk)
     {
-        tilemap.ClearAllTiles();
+        ClearAllTilemaps();
 
-        for (int x = -renderDistance; x <= renderDistance; x++)
+        for (int x = -renderDistance.x; x <= renderDistance.x; x++)
         {
-            for (int y = -renderDistance; y <= renderDistance; y++)
+            for (int y = -renderDistance.y; y <= renderDistance.y; y++)
             {
                 Vector2Int targetChunkCoord = new Vector2Int(centerChunk.x + x, centerChunk.y + y);
                 
-                List<TileData> tilesInChunk = GetChunkCoord.GetTilesInChunk(targetChunkCoord);
-
+                List<TileData> tilesInChunk = tilemapChunker.GetTilesInChunk(targetChunkCoord);
                 if (tilesInChunk != null)
                 {
                     foreach (TileData data in tilesInChunk)
                     {
-                        tilemap.SetTile((Vector3Int)data.gridPos, data.tile);
+                        data.originTilemap.SetTile((Vector3Int)data.gridPos, data.tile);
                     }
                 }
+                
+        }
+        }
+    }
+
+    void ClearAllTilemaps()
+    {
+        foreach (Tilemap tilemap in tilemaps)
+        {
+            if (tilemap != null)
+            {
+                tilemap.ClearAllTiles();
             }
         }
     }
 }
-*/

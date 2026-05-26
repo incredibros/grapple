@@ -31,8 +31,7 @@ public class PlayerInteractions : PlayerSystem
 
     void Update()
     {
-        if (!canMove)
-            return;
+        if (!canMove) return;
 
         for (int i = 0; i < layerMask.Count; i++)
         {

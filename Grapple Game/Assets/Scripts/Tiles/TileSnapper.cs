@@ -23,8 +23,7 @@ public class TileSnapper : MonoBehaviour
     #region Snap
     void Update()
     {
-        if (!grid)
-            return;
+        if (!grid) return;
 
        if (transform.hasChanged)
         {

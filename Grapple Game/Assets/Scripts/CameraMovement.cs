@@ -39,8 +39,7 @@ public class CameraMovement : MonoBehaviour
     #region Move Camera
     void LateUpdate()
     {
-        if (!foundPlayer)
-            { return; }
+        if (!foundPlayer) return;
         
         targetPosition = new Vector3(target.transform.position.x, target.transform.position.y, -10);
         
@@ -83,7 +82,7 @@ public class CameraMovement : MonoBehaviour
     #region Draw Gizmos
     void OnDrawGizmos()
     {
-        if (!showAreas) { return; }
+        if (!showAreas) return;
         
         for (int i = 0; i < allAreas.Count; i++)
         {

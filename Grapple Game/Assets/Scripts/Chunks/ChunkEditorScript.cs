@@ -143,7 +143,7 @@ public class ChunkEditorScript : MonoBehaviour
 
         if (!tilemap.tiles.Any(t => t.tileObject == tileObj))
         {
-            tilemap.tiles.Add(new TileData(tileObj));
+            tilemap.tiles.Add(new PrefabTileData(tileObj));
         }
     }
 
@@ -247,7 +247,7 @@ public class ChunkEditorScript : MonoBehaviour
                         }
                     }
 
-                    foreach (TileData tileData in tileMap.tiles)
+                    foreach (PrefabTileData tileData in tileMap.tiles)
                     {
                         if (tileData.tileObject.transform.parent != tileMapObject.transform)
                         {
@@ -367,7 +367,7 @@ public class GridData
 public class TilemapData
 {
     public GameObject tilemapObject;
-    public List<TileData> tiles = new List<TileData>();
+    public List<PrefabTileData> tiles = new List<PrefabTileData>();
 
     public TilemapData(GameObject t)
     {
@@ -380,11 +380,11 @@ public class TilemapData
 }
 
 [Serializable]
-public class TileData
+public class PrefabTileData
 {
     public GameObject tileObject;
 
-    public TileData(GameObject t)
+    public PrefabTileData(GameObject t)
     {
         tileObject = t;
     }
