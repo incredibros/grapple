@@ -5,7 +5,7 @@ using UnityEngine;
 public class ChunkManager : MonoBehaviour
 {
     GameObject player;
-    ChunkEditorScript chunkEditorScript;
+    //ChunkEditorScript chunkEditorScript;
     TilemapChunker tilemapChunker;
 
     [Header("Settings")]
@@ -21,7 +21,7 @@ public class ChunkManager : MonoBehaviour
     void Awake()
     {
         player = GameObject.FindWithTag("Player");
-        chunkEditorScript = GetComponent<ChunkEditorScript>();
+        //chunkEditorScript = GetComponent<ChunkEditorScript>();
         tilemapChunker = GetComponent<TilemapChunker>();
     }
 
