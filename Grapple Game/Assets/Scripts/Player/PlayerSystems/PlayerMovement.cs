@@ -13,7 +13,7 @@ public class PlayerMovement : PlayerSystem
 	Rigidbody2D rb;
 	DistanceJoint2D joint;
 
-    PlayerStates state = new PlayerStates();
+    public PlayerStates state = new PlayerStates();
 	Timers timer = new Timers();
 
 	Vector2 moveInput;
@@ -336,6 +336,16 @@ public class PlayerMovement : PlayerSystem
 
 		joint.connectedAnchor = grapplePoint = nudge + hitPoint;
 		joint.distance = grappleRadius = Vector2.Distance(transform.position, grapplePoint);
+
+		Piton piton = hits[hitIndex].collider.GetComponentInParent<Piton>();
+		if (piton != null)
+		{
+			activePiton = piton;
+		}
+		else
+		{
+			activePiton = null;
+		}
 
 		player.events.OnGrapple?.Invoke(grapplePoint);
 	}

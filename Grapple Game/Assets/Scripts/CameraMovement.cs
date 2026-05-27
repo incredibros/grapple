@@ -6,6 +6,8 @@ using UnityEngine;
 public class CameraMovement : MonoBehaviour
 {
     GameObject target;
+    PlayerMovement playerMovement;
+
     Vector3 targetPosition;
     Vector3 currentPosition;
     Vector3 currentOffset;
@@ -25,6 +27,7 @@ public class CameraMovement : MonoBehaviour
     void Awake()
     {
         target = GameObject.FindWithTag("Player");
+        playerMovement = target.GetComponent<PlayerMovement>();
         foundPlayer = target != null;
     }
     
@@ -39,7 +42,7 @@ public class CameraMovement : MonoBehaviour
     #region Move Camera
     void LateUpdate()
     {
-        if (!foundPlayer) return;
+        if (!foundPlayer || playerMovement.state.isDead) return;
         
         targetPosition = new Vector3(target.transform.position.x, target.transform.position.y, -10);
         

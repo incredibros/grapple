@@ -8,7 +8,7 @@ public class PlayerInteractions : PlayerSystem
 
     List<LayerMask> layerMask = new List<LayerMask>();
     List<Vector2> checkSize = new List<Vector2>();
-    Vector2? lastCheckpoint;
+    public static Vector2? lastCheckpoint;
     
     bool canMove = true;
 
@@ -20,13 +20,11 @@ public class PlayerInteractions : PlayerSystem
         layerMask.Add(player.data.hazardLayer);
         layerMask.Add(player.data.orbLayer);
         layerMask.Add(player.data.springLayer);
-        //layerMask.Add(player.data.pitonLayer);
 
         checkSize.Add(player.data.checkpointCheckSize);
         checkSize.Add(player.data.hazardCheckSize);
         checkSize.Add(player.data.orbCheckSize);
         checkSize.Add(player.data.springCheckSize);
-        //checkSize.Add(player.data.pitonCheckSize);
     }
 
     void Update()
@@ -65,6 +63,9 @@ public class PlayerInteractions : PlayerSystem
     {
         canMove = false;
         player.events.OnDeath?.Invoke();
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        rb.bodyType = RigidbodyType2D.Static;
+        SetPlayerVisibility(false);
 
         yield return new WaitForSeconds(0.5f);
 
@@ -76,9 +77,21 @@ public class PlayerInteractions : PlayerSystem
         {
             transform.position = Vector2.zero;
         }
+
+        rb.bodyType = RigidbodyType2D.Dynamic;
+        SetPlayerVisibility(true);
         
         player.events.OnRespawn?.Invoke();
         canMove = true;
+    }
+
+    void SetPlayerVisibility(bool visible)
+    {
+        SpriteRenderer[] renderers = player.GetComponentsInChildren<SpriteRenderer>();
+        foreach (var sr in renderers)
+        {
+            sr.enabled = visible;
+        }
     }
     #endregion
 }
