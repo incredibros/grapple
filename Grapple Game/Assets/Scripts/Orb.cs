@@ -39,7 +39,7 @@ public class Orb : MonoBehaviour
 
         yield return new WaitForSeconds(respawnTime);
 
-        sP.color = Color.white;
+        sP.color = new Color32(0, 90, 255, 255);
         transform.GetChild(0).gameObject.SetActive(true);
     }
     #endregion

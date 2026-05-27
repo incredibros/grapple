@@ -32,6 +32,11 @@ public class PlayerMovement : PlayerSystem
 
 	int grapples;
 
+	Piton activePiton;
+	Vector2 pitonStartPos;
+	float pitonZipTimer;
+	float pitonZipDuration;
+
 	// Override calls this awake function instead of the awake function from the parent
 	// base.Awake still makes sure to call the parent's awake function
 	protected override void Awake()
@@ -64,9 +69,15 @@ public class PlayerMovement : PlayerSystem
 	{
 		if (state.isDead || state.isFrozen || MainMenu.GameIsPaused) return;
 		
-		LateralMovement();
-
-		Gravity();
+		if (state.isPullingToPiton)
+		{
+			PitonZipMovement();
+		}
+		else
+		{
+			LateralMovement();
+			Gravity();
+		}
 	}
 
 	#region Timers
@@ -235,7 +246,7 @@ public class PlayerMovement : PlayerSystem
 		{
 			OnJump(0);
 		}
-		else if ((wallCoyote[0] > 0f && lateralBuffer[0] > 0f) || (wallCoyote[1] > 0f && lateralBuffer[1] > 0f))
+		else if (wallCoyote[0] > 0f || wallCoyote[1] > 0f)
 		{
 			OnJump(wallCoyote[0] > wallCoyote[1] ? -1 : 1);
 		}
@@ -315,16 +326,11 @@ public class PlayerMovement : PlayerSystem
 			}
 			if ((player.data.semiSolidLayer.value & (1 << layer)) != 0 && mouseDirection.y >= 0)
 				continue;
-			
 
 			hitIndex = i;
 			break;
 		}
 		if (hitIndex == -1) return;
-			
-		state.isGrappled = true;
-		joint.enabled = true;
-		grappleReleaseDelay = player.data.releaseDelayTime;
 		
 		TargetPosition hitCollider = hit[hitIndex].collider.GetComponentInParent<TargetPosition>();
 		Vector2 hitPoint = hit[hitIndex].point;
@@ -335,8 +341,23 @@ public class PlayerMovement : PlayerSystem
 				Mathf.Clamp(hitPoint.y, hitCollider.transform.position.y + hitCollider.minGrappleBounds.y, hitCollider.transform.position.y + hitCollider.maxGrappleBounds.y)
 			);
 		}
+
+		state.isGrappled = true;
+		joint.enabled = true;
+		grappleReleaseDelay = player.data.releaseDelayTime;
+
 		joint.connectedAnchor = grapplePoint = nudge + hitPoint;
 		joint.distance = grappleRadius = Vector2.Distance(transform.position, grapplePoint);
+
+		Piton piton = hit[hitIndex].collider.GetComponentInParent<Piton>();
+		if (piton != null)
+		{
+			activePiton = piton;
+		}
+		else
+		{
+			activePiton = null;
+		}
 
 		player.events.OnGrapple?.Invoke(grapplePoint);
 	}
@@ -385,7 +406,19 @@ public class PlayerMovement : PlayerSystem
 		state.isPulling = true;
 		accelTime = 0f;
 		grappleReleaseDelay = 0f;
-		rb.velocity = (grapplePoint - (Vector2) transform.position).normalized * player.data.minPullSpeed;
+
+		if (activePiton != null)
+		{
+			state.isPullingToPiton = true;
+			pitonStartPos = transform.position;
+        	pitonZipTimer = 0f;
+			float distance = Vector2.Distance(pitonStartPos, grapplePoint);
+			pitonZipDuration = distance > 0.01f ? distance / activePiton.zipSpeed : 0.1f;
+		}
+		else
+		{
+			rb.velocity = (grapplePoint - (Vector2) transform.position).normalized * player.data.minPullSpeed;
+		}
 
 		OnGrappleButtonUp();
 		StartCoroutine(FreezeMovement());
@@ -437,6 +470,7 @@ public class PlayerMovement : PlayerSystem
 		rb.gravityScale = 0;
 
 		StopAllCoroutines();
+		CancelPitonZip();
 
 		if (state.isGrappled)
 		{
@@ -472,9 +506,54 @@ public class PlayerMovement : PlayerSystem
 	#endregion
 
 	#region Piton
+	void PitonZipMovement()
+	{
+		rb.gravityScale = 0f;
+
+		pitonZipTimer += Time.fixedDeltaTime;
+    	float t = Mathf.Clamp01(pitonZipTimer / pitonZipDuration);
+
+		float smoothT = Mathf.SmoothStep(0f, 1f, t);
+
+		Vector2 nextPosition = Vector2.Lerp(pitonStartPos, grapplePoint, smoothT);
+    	rb.MovePosition(nextPosition);
+
+		float distance = Vector2.Distance(transform.position, grapplePoint);
+
+		if (t >= 1f || distance <= 0.6f) 
+		{
+			OnPitonActivated();
+		}
+	}
+
 	void OnPitonActivated()
 	{
-		// Boost
+		if (activePiton == null) return;
+
+		state.isHanging = false;
+		state.isJumping = false;
+		state.isWallJumping = false;
+		state.isPulling = true;
+		accelTime = 0f;
+
+		if (activePiton.boostForce > 0)
+		{
+			Vector2 boostDirection = (grapplePoint - pitonStartPos).normalized;
+			rb.velocity = boostDirection * activePiton.boostForce;
+		}
+		else
+		{
+			rb.velocity = Vector2.zero;
+		}
+		
+		CancelPitonZip();
+	}
+
+	void CancelPitonZip()
+	{
+		state.isPullingToPiton = false;
+		activePiton = null;
+		rb.gravityScale = player.data.gravityScale;
 	}
 	#endregion
 
@@ -493,7 +572,6 @@ public class PlayerMovement : PlayerSystem
 		player.events.OnRespawn += OnRespawn;
 		player.events.OnOrbPickUp += OnOrbPickUp;
 		player.events.OnSpringActivated += OnSpringActivated;
-		player.events.OnPitonActivated += OnPitonActivated;
     }
 
     void OnDisable()
@@ -510,7 +588,6 @@ public class PlayerMovement : PlayerSystem
 		player.events.OnRespawn -= OnRespawn;
 		player.events.OnOrbPickUp -= OnOrbPickUp;
 		player.events.OnSpringActivated -= OnSpringActivated;
-		player.events.OnPitonActivated -= OnPitonActivated;
     }
 	#endregion
 }
@@ -529,6 +606,7 @@ public class PlayerStates
 	public bool isGrappled;
 	public bool isHanging;
 	public bool isPulling;
+	public bool isPullingToPiton;
 	public bool isFrozen;
 	public bool isDead;
 }

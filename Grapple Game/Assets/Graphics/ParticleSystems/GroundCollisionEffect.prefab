@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4964875382387153480}
   - component: {fileID: 6747487504644218509}
   - component: {fileID: 3647433385822716823}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: GroundCollisionEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}

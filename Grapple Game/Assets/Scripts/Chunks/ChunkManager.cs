@@ -1,125 +1,77 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class ChunkManager : MonoBehaviour
 {
     GameObject player;
-    //ChunkEditorScript chunkEditorScript;
-    TilemapChunker tilemapChunker;
+    ChunkSplitter chunkSplitter;
+
+    [SerializeField] List<Tilemap> tilemaps;
 
     [Header("Settings")]
     public int chunkSize = 16;
-    public int renderDistance = 2;
+    public Vector2Int renderDistance = new Vector2Int(2, 1);
 
-    // Loaded chunks in scene
-    Dictionary<Vector2Int, GameObject> loadedChunks = new Dictionary<Vector2Int, GameObject>();
-    
-    // All available chunk prefabs
-    Dictionary<Vector2Int, GameObject> chunkLookup = new Dictionary<Vector2Int, GameObject>();
+    Vector2Int lastPlayerChunk = new Vector2Int(int.MaxValue, int.MaxValue);
 
     void Awake()
     {
         player = GameObject.FindWithTag("Player");
-        //chunkEditorScript = GetComponent<ChunkEditorScript>();
-        tilemapChunker = GetComponent<TilemapChunker>();
+        chunkSplitter = GetComponent<ChunkSplitter>();
     }
 
     void Start()
     {
-        DisableChildren();
-        RegisterExistingChunks();
+        chunkSplitter.InitializeChunkCache(tilemaps);
+        
+        Vector2Int currentPlayerChunk = chunkSplitter.GetChunkCoord(player.transform.position);
+        RenderVisibleChunks(currentPlayerChunk);
     }
 
     void Update()
     {
-        UpdateChunks();
-    }
+        Vector2Int currentPlayerChunk = chunkSplitter.GetChunkCoord(player.transform.position);
 
-    #region Register Existing Chunks
-    void RegisterExistingChunks()
-    {
-        foreach (Transform child in transform)
+        if (currentPlayerChunk != lastPlayerChunk)
         {
-            Chunk chunk = child.GetComponent<Chunk>();
-
-            if (chunk != null)
-            {
-                chunkLookup[chunk.chunkCoord] = child.gameObject;
-            }
+            lastPlayerChunk = currentPlayerChunk;
+            RenderVisibleChunks(currentPlayerChunk);
         }
     }
-    #endregion
 
-    #region Disable Children
-    void DisableChildren()
+    void RenderVisibleChunks(Vector2Int centerChunk)
     {
-        foreach (Transform child in transform)
+        ClearAllTilemaps();
+
+        for (int x = -renderDistance.x; x <= renderDistance.x; x++)
         {
-            child.gameObject.SetActive(false);
-        }
-    }
-    #endregion
-
-
-    #region Update Chunks
-    void UpdateChunks()
-    {
-        Vector2Int playerChunk = GetChunkCoord(player.transform.position);
-
-        HashSet<Vector2Int> neededChunks = new HashSet<Vector2Int>();
-
-        // Load Neaby Chunks
-        for (int x = -renderDistance; x <= renderDistance; x++)
-        {
-            for (int y = -renderDistance; y <= renderDistance; y++)
+            for (int y = -renderDistance.y; y <= renderDistance.y; y++)
             {
-                Vector2Int coord = new Vector2Int(playerChunk.x + x, playerChunk.y + y);
-
-                neededChunks.Add(coord);
-
-                if (!loadedChunks.ContainsKey(coord))
+                Vector2Int targetChunkCoord = new Vector2Int(centerChunk.x + x, centerChunk.y + y);
+                
+                List<TileData> tilesInChunk = chunkSplitter.GetTilesInChunk(targetChunkCoord);
+                if (tilesInChunk != null)
                 {
-                    LoadChunk(coord);
+                    foreach (TileData data in tilesInChunk)
+                    {
+                        data.originTilemap.SetTile((Vector3Int)data.gridPos, data.tile);
+                    }
                 }
-            }
+                
         }
+        }
+    }
 
-        // Unload far chunks
-        List<Vector2Int> chunksToUnload = new List<Vector2Int>();
-
-        foreach (var chunk in loadedChunks)
+    void ClearAllTilemaps()
+    {
+        foreach (Tilemap tilemap in tilemaps)
         {
-            if (!neededChunks.Contains(chunk.Key))
+            if (tilemap != null)
             {
-                chunk.Value.SetActive(false);
-                chunksToUnload.Add(chunk.Key);
+                tilemap.ClearAllTiles();
             }
         }
-
-        foreach (Vector2Int coord in chunksToUnload)
-        {
-            loadedChunks.Remove(coord);
-        }
     }
-
-    // Convert world position to chunk coordinate
-    Vector2Int GetChunkCoord(Vector3 pos)
-    {
-        return new Vector2Int(Mathf.FloorToInt(pos.x / chunkSize), Mathf.FloorToInt(pos.y / chunkSize));
-    }
-
-    // Spawn chunk
-    void LoadChunk(Vector2Int coord)
-    {
-        if (loadedChunks.ContainsKey(coord)) return;
-
-        if (!chunkLookup.ContainsKey(coord)) return;
-
-        GameObject chunk = chunkLookup[coord];
-        chunk.SetActive(true);
-
-        loadedChunks.Add(coord, chunk);
-    }
-    #endregion
 }

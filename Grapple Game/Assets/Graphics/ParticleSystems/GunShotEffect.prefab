@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5101269242853446025}
   - component: {fileID: 5614137623839384701}
   - component: {fileID: 1839619388887618870}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: GunShotEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -17,11 +17,13 @@ Y: Transform tool (combines move, rotate, and scale).
 7: Select Half Hazard Brush
 8: Select Half Sprite Brush
 
-P: Move Player
+9: Move Player
 
-U: Spawn Checkpoint
+C: Spawn Checkpoint
 O: Spawn Orb
-I: Spawn Peg
+P: Spawn Peg
+S: Spawn Spring
+I: Spawn Piton
 
 GAME:
 Move: W A S D / Arrow Keys

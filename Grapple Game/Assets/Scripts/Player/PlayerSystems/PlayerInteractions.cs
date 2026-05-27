@@ -57,12 +57,6 @@ public class PlayerInteractions : PlayerSystem
             {
                 player.events.OnSpringActivated?.Invoke();
             }
-
-            // Piton
-            else if (i == 4 && hitCollider != null)
-            {
-                player.events.OnPitonActivated?.Invoke();
-            }
         }
     }
 

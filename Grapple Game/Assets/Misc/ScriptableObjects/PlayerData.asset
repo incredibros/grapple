@@ -109,7 +109,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 65536
   springForce: 20
-  pitonCheckSize: {x: 0, y: 0}
+  pitonCheckSize: {x: 1, y: 1}
   pitonLayer:
     serializedVersion: 2
     m_Bits: 131072

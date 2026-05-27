@@ -4,15 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class TilemapChunker : MonoBehaviour
+public class ChunkSplitter : MonoBehaviour
 {
-    TilemapChunkManager chunkManager;
+    ChunkManager chunkManager;
 
     Dictionary<Vector2Int, List<TileData>> cachedChunks;
 
     void Awake()
     {
-        chunkManager = GetComponent<TilemapChunkManager>();
+        chunkManager = GetComponent<ChunkManager>();
     }
 
     public void InitializeChunkCache(List<Tilemap> tilemaps)

@@ -9,6 +9,7 @@ using UnityEditor.SceneManagement;
 
 public class ChunkEditorScript : MonoBehaviour
 {
+    /*
     [SerializeField] ChunkManager chunkManager;
     [SerializeField] List<GameObject> grids;
 
@@ -337,8 +338,10 @@ public class ChunkEditorScript : MonoBehaviour
         }
     }
     #endregion
+    */
 }
 
+/*
 [Serializable]
 public class ChunkData
 {
@@ -374,9 +377,9 @@ public class TilemapData
         tilemapObject = t;
     }
 
-    /*public bool type;
+    public bool type;
     public List<GameObject> tileObjects = new List<GameObject>();
-    public List<TileBase> tilesSprites = new List<TileBase>();*/
+    public List<TileBase> tilesSprites = new List<TileBase>();
 }
 
 [Serializable]
@@ -391,3 +394,4 @@ public class PrefabTileData
 
     //public TileBase tileBase;
 }
+*/
