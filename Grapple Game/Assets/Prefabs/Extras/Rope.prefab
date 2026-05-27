@@ -224,8 +224,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   bounceFactor: 0.1
-  iterationsPerSubStep: 5
   subSteps: 10
+  iterationsPerSubStep: 5
   collisionIntervals: 4
+  wrapResolution: 0.2
+  maxWrapChecks: 30
   fullTime: 5
   invisTime: 0

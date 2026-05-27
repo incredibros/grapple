@@ -97,10 +97,11 @@ public class Rope : MonoBehaviour
         AdjustRope(distance, adjustment);
     }
 
+    #region Check Wrapping
     void CheckForWrapping()
     {
-        #region Check Wrapping
-        if (isDetached) return;
+        if (isDetached)
+            return;
         
         RaycastHit2D hit;
         float distance = Vector2.Distance(points[^1].pastPos, points[^1].currentPos);
@@ -113,7 +114,8 @@ public class Rope : MonoBehaviour
             List<RaycastHit2D> cornerHits = new List<RaycastHit2D>();
             
             hit = Physics2D.Linecast(start, end, collisionLayer);
-            if (hit.collider == null || Vector2.Distance(hit.point, end) < 0.1f) continue;
+            if (hit.collider == null || Vector2.Distance(hit.point, end) < 0.1f)
+                continue;
             cornerHits.Add(hit);
             
             hit = Physics2D.Linecast(end, start, collisionLayer);
@@ -162,7 +164,6 @@ public class Rope : MonoBehaviour
             player.events.OnChangeAnchorPoint?.Invoke(wrapPoints[^2].pos, false);
             wrapPoints.RemoveAt(wrapPoints.Count - 1);
         }
-        #endregion
     }
 
     void WrapPointFallback(Vector2 wrapPos, Vector2 hitPos, Vector2 direction)
@@ -186,6 +187,7 @@ public class Rope : MonoBehaviour
 
         Debug.Log("Max length: " + maxLength + ", Line Length: " + lineLength + ", Lines: " + lines.Count + ", Index: " + index + ", Remainder: " + remainder);
     }
+    #endregion
 
     void FindValuesForRope(out float distance, out float tension, out float adjustment)
     {

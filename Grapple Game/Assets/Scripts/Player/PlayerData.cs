@@ -52,16 +52,20 @@ public class PlayerData : ScriptableObject
 	public GameObject grapplePrefab;
 	public float grappleRange;
 	public float minLineLength;
-	public LayerMask grappleLayers;
-	public LayerMask nonGrappleLayer;
-	public LayerMask semiSolidLayer;
 	[Space(5)]
-	public float minPullSpeed;
+	public float pullSpeed;
+	public float reelSpeed;
 	public float freezeDuration;
 	public AnimationCurve freezeVelocity;
 	[Space(5)]
 	public float releaseDelayTime;
-
+	[Space(5)]
+	public LayerMask grappleLayers;
+	public LayerMask nonGrappleLayer;
+	public LayerMask platformLayer;
+	public LayerMask semiSolidLayer;
+	public LayerMask pitonLayer;
+	
 	[Header("Checkpoint")]
 	public Vector2 checkpointCheckSize;
 	public LayerMask checkpointLayer;
@@ -78,10 +82,6 @@ public class PlayerData : ScriptableObject
 	public Vector2 springCheckSize;
 	public LayerMask springLayer;
 	public int springForce;
-
-	[Header("Pitons")]
-	public Vector2 pitonCheckSize;
-	public LayerMask pitonLayer;
 
 	[Header("Effects")]
 	public GameObject groundEffectPrefab;

@@ -20,13 +20,13 @@ public class PlayerInteractions : PlayerSystem
         layerMask.Add(player.data.hazardLayer);
         layerMask.Add(player.data.orbLayer);
         layerMask.Add(player.data.springLayer);
-        layerMask.Add(player.data.pitonLayer);
+        //layerMask.Add(player.data.pitonLayer);
 
         checkSize.Add(player.data.checkpointCheckSize);
         checkSize.Add(player.data.hazardCheckSize);
         checkSize.Add(player.data.orbCheckSize);
         checkSize.Add(player.data.springCheckSize);
-        checkSize.Add(player.data.pitonCheckSize);
+        //checkSize.Add(player.data.pitonCheckSize);
     }
 
     void Update()
