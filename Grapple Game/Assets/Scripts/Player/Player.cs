@@ -9,6 +9,10 @@ public class Player : MonoBehaviour
     // On here are access to player data, containing all the info to control the player to change and tweak in the editor,
     // and player events, containing all the ways the player system scripts can talk to each other
 
+    // Static Configuration Assets (Scriptable Object)
     public PlayerData data;
+    // Dynamic, Temporary Game State (Lives in RAM)
+    public PlayerSaveData saveData;
+    //Communications (Actions/Events)
     public PlayerEvents events;
 }

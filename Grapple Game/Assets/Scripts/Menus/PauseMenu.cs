@@ -7,6 +7,7 @@ using TMPro;
 
 public class PauseMenu : MonoBehaviour
 {
+    [SerializeField] GameObject targetToKeepActive;
     [SerializeField] GameObject pauseMenuUI;
     [SerializeField] GameObject optionsMenuUI;
 
@@ -24,7 +25,14 @@ public class PauseMenu : MonoBehaviour
     {
         foreach (Transform child in transform)
         {
-            child.gameObject.SetActive(false);
+            if (targetToKeepActive != null && child.gameObject == targetToKeepActive)
+            {
+                child.gameObject.SetActive(true);
+            }
+            else
+            {
+                child.gameObject.SetActive(false);
+            }
         }
     }
 
@@ -67,11 +75,9 @@ public class PauseMenu : MonoBehaviour
 
     public void RestartLevel()
     {
-        player.events.OnDeath?.Invoke();
-        player.transform.position = (Vector3) PlayerInteractions.lastCheckpoint;
-        player.events.OnRespawn?.Invoke();
         Time.timeScale = 1f;
         MainMenu.GameIsPaused = false;
+        player.events.OnDeath?.Invoke();
         pauseMenuUI.SetActive(false);
     }
     #endregion

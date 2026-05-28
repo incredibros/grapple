@@ -21,7 +21,6 @@ public class PlayerMovement : PlayerSystem
 
 	[HideInInspector] public Vector2 grapplePoint;
 	[HideInInspector] public float grappleRadius;
-	[HideInInspector] public static bool CursorMode = true;
 
 	int grapples;
 	GrappleableObjects grappledObject;
@@ -153,10 +152,10 @@ public class PlayerMovement : PlayerSystem
 	#region Lateral Movement
 	void OnXYInput(Vector2 input)
     {
-		if (!CursorMode)
-			mouseDirection = input;
-
         moveInput = Vector2Int.RoundToInt(input);
+
+		if (player.saveData.DirectionalMode)
+			mouseDirection = input;
     }
 
 	void LateralMovement()
@@ -252,7 +251,7 @@ public class PlayerMovement : PlayerSystem
 			{
 				mouseDirection = pos.normalized;
 			}
-			else if (CursorMode)
+			else if (!player.saveData.DirectionalMode)
 			{
 				Vector2 mousePos = Camera.main.ScreenToWorldPoint(pos);
 				mouseDirection = (mousePos - (Vector2) transform.position).normalized;
@@ -451,6 +450,7 @@ public class PlayerMovement : PlayerSystem
 	void OnDeath()
 	{
 		state.isDead = true;
+		player.saveData.IsDead = true;
 
 		timer.coyote = 0f;
 		timer.wallCoyote[0] = 0f;
@@ -459,7 +459,6 @@ public class PlayerMovement : PlayerSystem
 		timer.lateralBuffer[0] = 0f;
 		timer.lateralBuffer[1] = 0f;
 		timer.jumpDelay = 0f;
-		rb.velocity = Vector2.zero;
 		rb.gravityScale = 0;
 
 		StopAllCoroutines();
@@ -469,11 +468,18 @@ public class PlayerMovement : PlayerSystem
 		{
 			OnGrappleButtonUp();
 		}
+
+		player.saveData.TotalDeaths++;
+
+		rb.bodyType = RigidbodyType2D.Static;
 	}
 
 	void OnRespawn()
 	{
 		state.isDead = false;
+		player.saveData.IsDead = false;
+
+		rb.bodyType = RigidbodyType2D.Dynamic;
 	}
 	#endregion
 

@@ -1,6 +1,6 @@
-# Grapple Game
+# Mount Vulcano
 
-A fast-paced movement game focused on grappling, momentum, and movement control.
+A fast-paced 2d platformer game focused on grappling, momentum, and movement control.
 
 ## Play the Game
 

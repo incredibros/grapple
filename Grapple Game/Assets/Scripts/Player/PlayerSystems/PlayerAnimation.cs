@@ -5,12 +5,23 @@ using UnityEngine;
 public class PlayerAnimation : PlayerSystem
 {
     // This system script controls all animation of the player, including gun movement and flipping sprites
+    
+    BoxCollider2D boxCollider;
 
     [SerializeField] Transform body;
     [SerializeField] Transform gun;
 
+    [SerializeField] bool showHitboxes = true;
+
     Vector2 moveInput;
     Vector2 mouseDirection;
+
+    protected override void Awake()
+	{
+		base.Awake();
+        
+        boxCollider = player.GetComponent<BoxCollider2D>();
+    }
 
     void Update()
     {
@@ -42,9 +53,49 @@ public class PlayerAnimation : PlayerSystem
 
         if (Input.GetKeyDown(KeyCode.H) && Input.GetKeyDown(KeyCode.O) && Input.GetKeyDown(KeyCode.G))
         {
-            PlayerMovement.CursorMode = !PlayerMovement.CursorMode;
+            player.saveData.DirectionalMode = !player.saveData.DirectionalMode;
         }
     }
+
+    #region Draw Gizmos
+    void OnDrawGizmos()
+    {
+        if (player == null || player.data == null || !showHitboxes) return;
+
+        // Box Collider
+        Gizmos.color = Color.green;
+        Vector3 bodyCenter = player.transform.TransformPoint(boxCollider.offset);
+        Gizmos.DrawWireCube(bodyCenter, boxCollider.size);
+
+        // Ground Check
+        Gizmos.color = Color.cyan;
+        Vector3 groundPos = player.transform.TransformPoint(player.data.groundCheckPoint);
+        Gizmos.DrawWireCube(groundPos, player.data.groundCheckSize);
+
+        // Ceiling Check
+        Gizmos.color = Color.yellow;
+        Vector3 ceilingPos = player.transform.TransformPoint(player.data.ceilingCheckPoint);
+        Gizmos.DrawWireCube(ceilingPos, player.data.ceilingCheckSize);
+        
+        // Wall Check
+        Gizmos.color = Color.red;
+        foreach(Vector2 localOffset in player.data.leftCheckPoints)
+        {
+            Vector3 worldPos = transform.position + new Vector3(localOffset.x, localOffset.y, 0);
+            Gizmos.DrawWireCube(worldPos, player.data.wallCheckSize);
+        }
+        foreach(Vector2 localOffset in player.data.rightCheckPoints)
+        {
+            Vector3 worldPos = transform.position + new Vector3(localOffset.x, localOffset.y, 0);
+            Gizmos.DrawWireCube(worldPos, player.data.wallCheckSize);
+        }
+
+        // Gun Barrel Tip
+        Gizmos.color = Color.magenta;
+        Vector3 gunTipPosition = gun.position + (gun.right * gun.localScale.x);
+        Gizmos.DrawWireSphere(gunTipPosition, 0.1f);
+    }
+    #endregion
 
     #region Flip Sprite
     void Flip(Transform sprite, bool isRight)
@@ -60,12 +111,12 @@ public class PlayerAnimation : PlayerSystem
     #region Movement
     void OnXYInput(Vector2 input)
     {
-        if (!PlayerMovement.CursorMode)
+        moveInput = input;
+
+        if (player.saveData.DirectionalMode)
 		{
 			mouseDirection = input;
 		}
-
-        moveInput = input;
     }
     #endregion
 
@@ -76,7 +127,7 @@ public class PlayerAnimation : PlayerSystem
 		{
 			mouseDirection = pos.normalized;
 		}
-		else if (PlayerMovement.CursorMode)
+		else if (!player.saveData.DirectionalMode)
 		{
 			Vector2 mousePos = Camera.main.ScreenToWorldPoint(pos);
 			mouseDirection = (mousePos - (Vector2) transform.position).normalized;

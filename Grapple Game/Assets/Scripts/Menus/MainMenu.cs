@@ -40,15 +40,20 @@ public class MainMenu : MonoBehaviour
         AsyncOperation operation = SceneManager.LoadSceneAsync("Game");
         operation.allowSceneActivation = false;
 
+        loadingSlider.minValue = 0f;
+        loadingSlider.maxValue = 1f;
+        loadingSlider.value = 0f;
+        progressText.text = "0%";
+
+        yield return null;
+
         while (!operation.isDone)
         {
             float progressValue = Mathf.Clamp01(operation.progress / 0.9f);
 
-            //loadingSlider.value = progressValue;
-            loadingSlider.value = 0;
+            loadingSlider.value = progressValue;
 
-            //progressText.text = Mathf.RoundToInt(progressValue * 100f) + "%";
-            progressText.text = "0%";
+            progressText.text = Mathf.RoundToInt(progressValue * 100f) + "%";
 
             if (operation.progress >= 0.9f)
             {

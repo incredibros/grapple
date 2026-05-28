@@ -8,9 +8,6 @@ public class PlayerInteractions : PlayerSystem
 
     List<LayerMask> layerMask = new List<LayerMask>();
     List<Vector2> checkSize = new List<Vector2>();
-    public static Vector2? lastCheckpoint;
-    
-    bool canMove = true;
 
     protected override void Awake()
     {
@@ -29,8 +26,6 @@ public class PlayerInteractions : PlayerSystem
 
     void Update()
     {
-        if (!canMove) return;
-
         for (int i = 0; i < layerMask.Count; i++)
         {
             Collider2D hitCollider = Physics2D.OverlapBox(transform.position, checkSize[i], 0f, layerMask[i]);
@@ -38,12 +33,12 @@ public class PlayerInteractions : PlayerSystem
             // Check Point
             if (i == 0 && hitCollider != null)
             {
-                lastCheckpoint = hitCollider.transform.position;
+                player.saveData.LastCheckpoint = hitCollider.transform.position;
             }
             // Hazard
             else if (i == 1 && hitCollider != null)
             {
-                StartCoroutine(OnDeath());
+                player.events.OnDeath?.Invoke();
             }
             // Orb
             else if (i == 2 && hitCollider != null)
@@ -59,39 +54,6 @@ public class PlayerInteractions : PlayerSystem
     }
 
     #region Death
-    IEnumerator OnDeath()
-    {
-        canMove = false;
-        player.events.OnDeath?.Invoke();
-        Rigidbody2D rb = GetComponent<Rigidbody2D>();
-        rb.bodyType = RigidbodyType2D.Static;
-        SetPlayerVisibility(false);
-
-        yield return new WaitForSeconds(0.5f);
-
-        if (lastCheckpoint != null)
-        {
-            transform.position = (Vector3) lastCheckpoint;
-        }
-        else
-        {
-            transform.position = Vector2.zero;
-        }
-
-        rb.bodyType = RigidbodyType2D.Dynamic;
-        SetPlayerVisibility(true);
-        
-        player.events.OnRespawn?.Invoke();
-        canMove = true;
-    }
-
-    void SetPlayerVisibility(bool visible)
-    {
-        SpriteRenderer[] renderers = player.GetComponentsInChildren<SpriteRenderer>();
-        foreach (var sr in renderers)
-        {
-            sr.enabled = visible;
-        }
-    }
+    
     #endregion
 }

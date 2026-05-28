@@ -4,22 +4,31 @@ using UnityEngine;
 
 public class PlayerDeath : PlayerSystem
 {
-    float shakeDuration = 0.2f;
-    float shakeMagnitude = 0.15f;
+    // This system script controls player death and running the death animation
 
     Transform cam;
+
+    bool died = false;
+
+    float shakeDuration = 0.2f;
+    float shakeMagnitude = 0.15f;
 
     void Start()
     {
         cam = Camera.main.transform;
     }
 
+    #region Event Handlers
     void PlayDeathFX()
     {
+        if (died)
+            return;
+
         GameObject effect = Instantiate(player.data.gunShotEffectPrefab, transform.position, Quaternion.identity);
         Destroy(effect, 1f);
 
         StartCoroutine(ScreenShake());
+        StartCoroutine(OnDeath());
     }
 
     void PlayRespawnFX()
@@ -45,6 +54,38 @@ public class PlayerDeath : PlayerSystem
 
         Camera.main.transform.localPosition = originalCamPos;
     }
+
+    IEnumerator OnDeath()
+    {
+        died = true;
+        SetPlayerVisibility(false);
+
+        yield return new WaitForSeconds(0.5f);
+
+        if (player.saveData.LastCheckpoint != null)
+        {
+            transform.position = (Vector3) player.saveData.LastCheckpoint;
+        }
+        else
+        {
+            transform.position = Vector2.zero;
+        }
+
+        SetPlayerVisibility(true);
+        died = false;
+        
+        player.events.OnRespawn?.Invoke();
+    }
+
+    void SetPlayerVisibility(bool visible)
+    {
+        SpriteRenderer[] renderers = player.GetComponentsInChildren<SpriteRenderer>();
+        foreach (var sr in renderers)
+        {
+            sr.enabled = visible;
+        }
+    }
+    #endregion
 
     #region Events
     void OnEnable()
