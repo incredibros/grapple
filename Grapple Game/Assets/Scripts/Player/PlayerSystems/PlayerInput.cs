@@ -96,15 +96,35 @@ public class PlayerInput : PlayerSystem
 	{
 		Vector2 currentPos = context.ReadValue<Vector2>();
 
-		if (context.control.device is Gamepad || context.control.device is Joystick)
-		{
-			player.events.OnPointerMove?.Invoke(currentPos, true);
-		}
-		else
-		{
-			player.events.OnPointerMove?.Invoke(currentPos, false);
-		}
+		bool isGamepad = context.control.device is Gamepad || context.control.device is Joystick;
+
+        UpdateCursorState(isGamepad);
+        player.events.OnPointerMove?.Invoke(currentPos, isGamepad);
 	}
+
+	public void OnLookMove(InputAction.CallbackContext context)
+	{
+		Vector2 currentPos = context.ReadValue<Vector2>();
+
+		bool isGamepad = context.control.device is Gamepad;
+
+		UpdateCursorState(isGamepad);
+        player.events.OnLookMove?.Invoke(currentPos, isGamepad);
+	}
+
+	void UpdateCursorState(bool isGamepad)
+    {
+        if (isGamepad)
+        {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+        else
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.Confined;
+        }
+    }
 	#endregion
 
 	#region Event Handlers

@@ -27,9 +27,8 @@ I: Spawn Piton
 
 GAME:
 Move: W A S D / Arrow Keys
-Aim: Mouse Movement / Player Input
+Aim: Mouse Position
 Jump: Space
-Grapple: Left Click / O
-Pull: Right Click / P
-Toggle Cursor Mode: H and O and G
+Grapple: Left Click
+Pull: Right Click
 Pause Menu: Esc

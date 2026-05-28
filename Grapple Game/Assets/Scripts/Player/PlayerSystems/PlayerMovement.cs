@@ -153,9 +153,6 @@ public class PlayerMovement : PlayerSystem
 	void OnXYInput(Vector2 input)
     {
         moveInput = Vector2Int.RoundToInt(input);
-
-		if (player.saveData.DirectionalMode)
-			mouseDirection = input;
     }
 
 	void LateralMovement()
@@ -249,9 +246,10 @@ public class PlayerMovement : PlayerSystem
 		{
 			if (directional)
 			{
+				if (pos.sqrMagnitude < 0.01f) return;
 				mouseDirection = pos.normalized;
 			}
-			else if (!player.saveData.DirectionalMode)
+			else
 			{
 				Vector2 mousePos = Camera.main.ScreenToWorldPoint(pos);
 				mouseDirection = (mousePos - (Vector2) transform.position).normalized;
@@ -449,8 +447,7 @@ public class PlayerMovement : PlayerSystem
 	#region Death
 	void OnDeath()
 	{
-		state.isDead = true;
-		player.saveData.IsDead = true;
+		state.isDead = player.saveData.IsDead = true;
 
 		timer.coyote = 0f;
 		timer.wallCoyote[0] = 0f;
@@ -476,8 +473,7 @@ public class PlayerMovement : PlayerSystem
 
 	void OnRespawn()
 	{
-		state.isDead = false;
-		player.saveData.IsDead = false;
+		state.isDead = player.saveData.IsDead = false;
 
 		rb.bodyType = RigidbodyType2D.Dynamic;
 	}

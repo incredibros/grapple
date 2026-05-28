@@ -13,7 +13,5 @@ public struct PlayerSaveData
 
     public int Gems;
 
-    public bool DirectionalMode;
-
     public bool IsDead;
 }

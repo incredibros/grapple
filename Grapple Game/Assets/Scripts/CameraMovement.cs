@@ -27,6 +27,8 @@ public class CameraMovement : MonoBehaviour
     Vector2 mousePosition;
     Vector2 mouseDirection;
 
+    Vector3 shiftedOffset;
+
     void Awake()
     {
         target = GameObject.FindWithTag("Player");
@@ -62,21 +64,6 @@ public class CameraMovement : MonoBehaviour
         }
         
         currentPosition = Vector3.SmoothDamp(currentPosition, targetPosition, ref velocity, smoothTime);
-
-        Vector3 shiftedOffset;
-        if (playerScript.saveData.DirectionalMode)
-        {
-            shiftedOffset = Vector3.zero;
-            shiftedOffset.x = offsetCurve.Evaluate(Mathf.Abs(mouseDirection.x)) * Mathf.Sign(mouseDirection.x) * offsetMult;
-            shiftedOffset.y = offsetCurve.Evaluate(Mathf.Abs(mouseDirection.y)) * Mathf.Sign(mouseDirection.y) * offsetMult;
-        }
-        else
-        {
-            mousePosition = Input.mousePosition;
-            Vector2 center = new Vector2(Screen.width / 2, Screen.height / 2);
-            Vector2 offset = new Vector2((mousePosition.x - center.x) / (Screen.width / 2), (mousePosition.y - center.y) / (Screen.height / 2));
-            shiftedOffset = new Vector3(offsetCurve.Evaluate(Mathf.Abs(offset.x)) * Mathf.Sign(offset.x) * offsetMult, offsetCurve.Evaluate(Mathf.Abs(offset.y)) * Mathf.Sign(offset.y) * offsetMult, 0);
-        }
         
         currentOffset = Vector3.SmoothDamp(currentOffset, shiftedOffset, ref velocityOffset, smoothTime);
 
@@ -129,16 +116,21 @@ public class CameraMovement : MonoBehaviour
     #endregion
 
     #region Mouse Movement
-    void OnPointerMove(Vector2 pos, bool directional)
+    void OnLookMove(Vector2 pos, bool directional)
 	{
 		if (directional)
 		{
 			mouseDirection = pos.normalized;
+            shiftedOffset.x = offsetCurve.Evaluate(Mathf.Abs(mouseDirection.x)) * Mathf.Sign(mouseDirection.x) * offsetMult;
+            shiftedOffset.y = offsetCurve.Evaluate(Mathf.Abs(mouseDirection.y)) * Mathf.Sign(mouseDirection.y) * offsetMult;
 		}
-		else if (!playerScript.saveData.DirectionalMode)
+		else
 		{
-			mousePosition = Camera.main.ScreenToWorldPoint(pos);
-			mouseDirection = (mousePosition - (Vector2) target.transform.position).normalized;
+			mousePosition = pos;
+            Vector2 center = new Vector2(Screen.width / 2, Screen.height / 2);
+            Vector2 offset = new Vector2(Mathf.Clamp((mousePosition.x - center.x) / center.x, -1f, 1f), Mathf.Clamp((mousePosition.y - center.y) / center.y, -1f, 1f));
+            shiftedOffset.x = offsetCurve.Evaluate(Mathf.Abs(offset.x)) * Mathf.Sign(offset.x) * offsetMult;
+            shiftedOffset.y = offsetCurve.Evaluate(Mathf.Abs(offset.y)) * Mathf.Sign(offset.y) * offsetMult;
 		}
 	}
     #endregion
@@ -146,12 +138,12 @@ public class CameraMovement : MonoBehaviour
     #region Events
     void OnEnable()
     {
-        playerScript.events.OnPointerMove += OnPointerMove;
+        playerScript.events.OnLookMove += OnLookMove;
     }
 
     void OnDisable()
     {
-        playerScript.events.OnPointerMove += OnPointerMove;
+        playerScript.events.OnLookMove -= OnLookMove;
     }
     #endregion
 }

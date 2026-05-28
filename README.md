@@ -8,15 +8,14 @@ The game website is linked directly in this repository. Open the provided Pages 
 
 ## Controls
 
-| Action                    | Input                  |
-| ------------------------- | ---------------------- |
-| Move                      | `W A S D / Arrow Keys` |
-| Aim                       | `Mouse Movement`       |
-| Jump                      | `Space`                |
-| Grapple                   | `Left Click / O`       |
-| Pull Toward Grapple Point | `Right Click / P`      |
-| Toggle Cursor Mode        | `H and O and G`        |
-| Pause Menu                | `Esc`                  |
+| Action          | Input                  |
+| --------------- | ---------------------- |
+| Move            | `W A S D / Arrow Keys` |
+| Aim             | `Mouse Position`       |
+| Jump            | `Space`                |
+| Grapple         | `Left Click`           |
+| Pull To Grapple | `Right Click`          |
+| Pause Menu      | `Esc`                  |
 
 ## Controller Support
 

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Audio;
 using TMPro;
@@ -36,20 +37,28 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
+    public void OnMenuDown(InputAction.CallbackContext context)
+	{
+        if (context.performed)
         {
             if (MainMenu.GameIsPaused)
             {
-                Resume();
+                if (optionsMenuUI.activeSelf)
+                {
+                    Pause();
+                }
+                else
+                {
+                    Resume();
+                }
+                
             }
             else
             {
                 Pause();
             }
         }
-    }
+	}
 
     #region Event Handlers
     public void Resume()
@@ -62,6 +71,7 @@ public class PauseMenu : MonoBehaviour
     void Pause()
     {
         pauseMenuUI.SetActive(true);
+        optionsMenuUI.SetActive(false);
         MainMenu.GameIsPaused = true;
         Time.timeScale = 0f;
     }
@@ -71,6 +81,8 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 1f;
         MainMenu.GameIsPaused = true;
         SceneManager.LoadScene("MainMenu");
+        pauseMenuUI.SetActive(false);
+        optionsMenuUI.SetActive(false);
     }
 
     public void RestartLevel()
@@ -79,6 +91,7 @@ public class PauseMenu : MonoBehaviour
         MainMenu.GameIsPaused = false;
         player.events.OnDeath?.Invoke();
         pauseMenuUI.SetActive(false);
+        optionsMenuUI.SetActive(false);
     }
     #endregion
 }

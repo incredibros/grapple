@@ -11,10 +11,13 @@ public class PlayerAnimation : PlayerSystem
     [SerializeField] Transform body;
     [SerializeField] Transform gun;
 
-    [SerializeField] bool showHitboxes = true;
+    [SerializeField] bool showHitboxes;
 
     Vector2 moveInput;
     Vector2 mouseDirection;
+
+    [SerializeField] Vector2 grapplePoint;
+    [SerializeField] bool isGrappled;
 
     protected override void Awake()
 	{
@@ -39,7 +42,20 @@ public class PlayerAnimation : PlayerSystem
         }
 
         // Flip gun
-        float angle = Mathf.Atan2(mouseDirection.y, mouseDirection.x) * Mathf.Rad2Deg;
+        float angle;
+        Vector2 aimDirection;
+
+        if (isGrappled)
+        {
+            aimDirection = (grapplePoint - (Vector2)gun.position).normalized;
+            angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
+        }
+        else
+        {
+            aimDirection = mouseDirection;
+            angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
+        }
+        
         if (mouseDirection.x > 0)
         {
             gun.rotation = Quaternion.Euler(0f, 0f, angle);
@@ -49,11 +65,6 @@ public class PlayerAnimation : PlayerSystem
         {
             gun.rotation = Quaternion.Euler(0f, 0f, angle + 180f);
             Flip(gun, false);
-        }
-
-        if (Input.GetKeyDown(KeyCode.H) && Input.GetKeyDown(KeyCode.O) && Input.GetKeyDown(KeyCode.G))
-        {
-            player.saveData.DirectionalMode = !player.saveData.DirectionalMode;
         }
     }
 
@@ -122,11 +133,6 @@ public class PlayerAnimation : PlayerSystem
     void OnXYInput(Vector2 input)
     {
         moveInput = input;
-
-        if (player.saveData.DirectionalMode)
-		{
-			mouseDirection = input;
-		}
     }
     #endregion
 
@@ -137,7 +143,7 @@ public class PlayerAnimation : PlayerSystem
 		{
 			mouseDirection = pos.normalized;
 		}
-		else if (!player.saveData.DirectionalMode)
+		else
 		{
 			Vector2 mousePos = Camera.main.ScreenToWorldPoint(pos);
 			mouseDirection = (mousePos - (Vector2) transform.position).normalized;
@@ -146,9 +152,25 @@ public class PlayerAnimation : PlayerSystem
     #endregion
 
     #region Grapple
+    void OnGrapple(Vector2 hookPoint)
+    {
+        grapplePoint = hookPoint;
+        isGrappled = true;
+    }
+
+    void OnGrappleButtonUp()
+    {
+        isGrappled = false;
+    }
+
+    void OnPull()
+    {
+        isGrappled = false;
+    }
+
     void OnChangeAnchorPoint(Vector2 point, bool shorten)
     {
-        //Maybe point to last point that was called
+        grapplePoint = point;
     }
     #endregion
 
@@ -158,6 +180,9 @@ public class PlayerAnimation : PlayerSystem
         player.events.OnXYInput += OnXYInput;
         player.events.OnPointerMove += OnPointerMove;
         player.events.OnChangeAnchorPoint += OnChangeAnchorPoint;
+        player.events.OnGrapple += OnGrapple;
+        player.events.OnGrappleButtonUp += OnGrappleButtonUp;
+        player.events.OnPull += OnPull;
     }
 
     void OnDisable()
@@ -165,6 +190,9 @@ public class PlayerAnimation : PlayerSystem
         player.events.OnXYInput -= OnXYInput;
         player.events.OnPointerMove -= OnPointerMove;
         player.events.OnChangeAnchorPoint -= OnChangeAnchorPoint;
+        player.events.OnGrapple -= OnGrapple;
+        player.events.OnGrappleButtonUp -= OnGrappleButtonUp;
+        player.events.OnPull -= OnPull;
     }
     #endregion
 }

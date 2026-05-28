@@ -23,6 +23,7 @@ public struct PlayerEvents
     public Action OnJumpButtonDown;
     public Action OnJumpButtonUp;
     public Action<Vector2, bool> OnPointerMove;
+    public Action<Vector2, bool> OnLookMove;
     #endregion
 
     #region Grapple
