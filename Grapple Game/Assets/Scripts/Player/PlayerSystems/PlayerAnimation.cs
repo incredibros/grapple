@@ -94,6 +94,16 @@ public class PlayerAnimation : PlayerSystem
         Gizmos.color = Color.magenta;
         Vector3 gunTipPosition = gun.position + (gun.right * gun.localScale.x);
         Gizmos.DrawWireSphere(gunTipPosition, 0.1f);
+
+        // Gun Aiming
+        if (mouseDirection != Vector2.zero)
+        {
+            Gizmos.color = Color.magenta;
+            Vector3 targetPosition = transform.position + (Vector3)(mouseDirection * player.data.grappleRange);
+            Gizmos.DrawLine(transform.position, targetPosition);
+
+            Gizmos.DrawWireSphere(targetPosition, 0.1f);
+        }
     }
     #endregion
 
