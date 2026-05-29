@@ -32,6 +32,7 @@ public struct PlayerEvents
     public Action OnGrappleButtonUp;
     public Action OnPullButtonDown;
     public Action OnPull;
+    public Action OnPullButtonUp;
     public Action<Vector2, bool> OnChangeAnchorPoint;
     #endregion
 

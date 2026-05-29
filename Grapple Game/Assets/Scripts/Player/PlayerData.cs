@@ -54,9 +54,11 @@ public class PlayerData : ScriptableObject
 	public float minLineLength;
 	[Space(5)]
 	public float pullSpeed;
+	public float pullFreezeDuration;
+	public AnimationCurve pullFreezeVelocity;
 	public float reelSpeed;
-	public float freezeDuration;
-	public AnimationCurve freezeVelocity;
+	public float reelVelocityChangeDuration;
+	public AnimationCurve reelVelocityChangeLerp;
 	[Space(5)]
 	public float releaseDelayTime;
 	[Space(5)]
@@ -82,6 +84,9 @@ public class PlayerData : ScriptableObject
 	public Vector2 springCheckSize;
 	public LayerMask springLayer;
 	public int springForce;
+
+	[Header("Piton")]
+	public float hangTime;
 
 	[Header("Effects")]
 	public GameObject groundEffectPrefab;

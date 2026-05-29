@@ -62,9 +62,9 @@ public class PlayerMovement : PlayerSystem
 	{
 		if (state.isDead || state.isFrozen || MainMenu.GameIsPaused) return;
 		
-		if (state.isPullingToPiton)
+		if (state.isReeling)
 		{
-			PitonZipMovement();
+			//PitonZipMovement();
 		}
 		else
 		{
@@ -333,8 +333,8 @@ public class PlayerMovement : PlayerSystem
 
 		joint.connectedAnchor = grapplePoint = nudge + hitPoint;
 		joint.distance = grappleRadius = Vector2.Distance(transform.position, grapplePoint);
-
-		Piton piton = hits[hitIndex].collider.GetComponentInParent<Piton>();
+		
+		/*Piton piton = hits[hitIndex].collider.GetComponentInParent<Piton>();
 		if (piton != null)
 		{
 			activePiton = piton;
@@ -342,7 +342,7 @@ public class PlayerMovement : PlayerSystem
 		else
 		{
 			activePiton = null;
-		}
+		}*/
 
 		player.events.OnGrapple?.Invoke(grapplePoint);
 	}
@@ -368,6 +368,7 @@ public class PlayerMovement : PlayerSystem
 	{
 		if (timer.grappleReleaseDelay > 0) return;
 			
+		grappledObject = GrappleableObjects.None;
 		state.isGrappled = false;
 		state.isHanging = false;
 		joint.enabled = false;
@@ -381,7 +382,7 @@ public class PlayerMovement : PlayerSystem
 	}
 	#endregion
 
-	#region Pull
+	#region Pull/Reel
 	void OnPullButtonDown()
 	{
 		if (!state.isGrappled)
@@ -393,13 +394,26 @@ public class PlayerMovement : PlayerSystem
 		state.isHanging = false;
 		state.isJumping = false;
 		state.isWallJumping = false;
-		state.isPulling = true;
 		timer.accelTime = 0f;
 		timer.grappleReleaseDelay = 0f;
 
-		if (activePiton != null)
+		
+		
+		if (grappledObject == GrappleableObjects.Platform || grappledObject == GrappleableObjects.SemiSolid || grappledObject == GrappleableObjects.Peg)
 		{
-			state.isPullingToPiton = true;
+			state.isPulling = true;
+		}
+		else if (grappledObject == GrappleableObjects.Piton)
+		{
+			state.isReeling = true;
+		}
+
+		StartCoroutine(MovementForPulling());
+		player.events.OnPull?.Invoke();
+		
+		/*if (activePiton != null)
+		{
+			state.isReeling = true;
 			pitonStartPos = transform.position;
         	pitonZipTimer = 0f;
 			float distance = Vector2.Distance(pitonStartPos, grapplePoint);
@@ -407,18 +421,18 @@ public class PlayerMovement : PlayerSystem
 		}
 		else
 		{
-			rb.velocity = (grapplePoint - (Vector2) transform.position).normalized * player.data.pullSpeed;
-		}
-
-		OnGrappleButtonUp();
-		StartCoroutine(FreezeMovement());
-		player.events.OnPull?.Invoke();
+			
+		}*/
 	}
 
-	IEnumerator FreezeMovement()
+	IEnumerator MovementForPulling()
 	{
 		state.isFrozen = true;
-
+		
+		state.isGrappled = false;
+		state.isHanging = false;
+		joint.enabled = false;
+		
 		timer.coyote = 0f;
 		timer.wallCoyote[0] = 0f;
 		timer.wallCoyote[1] = 0f;
@@ -429,18 +443,64 @@ public class PlayerMovement : PlayerSystem
 
 		rb.gravityScale = 0;
 
-		Vector2 startingVelocity = rb.velocity;
 		float freezeTimer = 0f;
 		
-		while (freezeTimer < player.data.freezeDuration)
+		if (grappledObject == GrappleableObjects.Platform || grappledObject == GrappleableObjects.SemiSolid || grappledObject == GrappleableObjects.Peg)
 		{
-			rb.velocity = startingVelocity * player.data.freezeVelocity.Evaluate(freezeTimer / player.data.freezeDuration);
-			freezeTimer += Time.deltaTime;
-			yield return new WaitForSeconds(0);
+			rb.velocity = (grapplePoint - (Vector2) transform.position).normalized * player.data.pullSpeed;
+			Vector2 startingVelocity = rb.velocity;
+			
+			while (freezeTimer < player.data.pullFreezeDuration)
+			{
+				rb.velocity = startingVelocity * player.data.pullFreezeVelocity.Evaluate(freezeTimer / player.data.pullFreezeDuration);
+				freezeTimer += Time.deltaTime;
+				yield return null;
+			}
+
+			rb.velocity = startingVelocity;
+		}
+		else if (grappledObject == GrappleableObjects.Piton)
+		{
+			Vector2 startingVelocity = rb.velocity;
+			float distance = Vector2.Distance(transform.position, grapplePoint);
+			while (distance > rb.velocity.magnitude * Time.deltaTime)
+			{
+				Vector2 reelVelocity = (grapplePoint - (Vector2) transform.position).normalized * player.data.reelSpeed;
+				if (freezeTimer <= player.data.reelVelocityChangeDuration)
+					rb.velocity = Vector2.Lerp(startingVelocity, reelVelocity, player.data.reelVelocityChangeLerp.Evaluate(freezeTimer / player.data.reelVelocityChangeDuration));
+				else
+					rb.velocity = reelVelocity;
+				distance = Vector2.Distance(transform.position, grapplePoint);
+				freezeTimer += Time.deltaTime;
+				yield return null;
+			}
+
+			transform.position = grapplePoint;
+			rb.velocity = Vector2.zero;
+			freezeTimer = 0f;
+
+			while (freezeTimer < player.data.hangTime)
+			{
+				freezeTimer += Time.deltaTime;
+				yield return null;
+			}
+
+			grapples++;
+			
+			state.isReeling = false;
 		}
 
-		rb.velocity = startingVelocity;
+		grappledObject = GrappleableObjects.None;
+		
 		state.isFrozen = false;
+	}
+
+	void OnPullButtonUp()
+	{
+		StopAllCoroutines();
+		state.isReeling = false;
+		state.isFrozen = false;
+		grappledObject = GrappleableObjects.None;
 	}
 	#endregion
 
@@ -459,7 +519,6 @@ public class PlayerMovement : PlayerSystem
 		rb.gravityScale = 0;
 
 		StopAllCoroutines();
-		CancelPitonZip();
 
 		if (state.isGrappled)
 		{
@@ -474,6 +533,7 @@ public class PlayerMovement : PlayerSystem
 	void OnRespawn()
 	{
 		state.isDead = player.saveData.IsDead = false;
+		state.isFrozen = false;
 
 		rb.bodyType = RigidbodyType2D.Dynamic;
 	}
@@ -501,7 +561,7 @@ public class PlayerMovement : PlayerSystem
 	#endregion
 
 	#region Piton
-	void PitonZipMovement()
+	/*void PitonZipMovement()
 	{
 		rb.gravityScale = 0f;
 
@@ -546,10 +606,10 @@ public class PlayerMovement : PlayerSystem
 
 	void CancelPitonZip()
 	{
-		state.isPullingToPiton = false;
+		state.isReeling = false;
 		activePiton = null;
 		rb.gravityScale = player.data.gravityScale;
-	}
+	}*/
 	#endregion
 
     #region Events
@@ -562,6 +622,7 @@ public class PlayerMovement : PlayerSystem
         player.events.OnGrappleButtonDown += OnGrappleButtonDown;
         player.events.OnGrappleButtonUp += OnGrappleButtonUp;
 		player.events.OnPullButtonDown += OnPullButtonDown;
+		player.events.OnPullButtonUp += OnPullButtonUp;
 		player.events.OnChangeAnchorPoint += OnChangeAnchorPoint;
 		player.events.OnDeath += OnDeath;
 		player.events.OnRespawn += OnRespawn;
@@ -578,6 +639,7 @@ public class PlayerMovement : PlayerSystem
         player.events.OnGrappleButtonDown -= OnGrappleButtonDown;
         player.events.OnGrappleButtonUp -= OnGrappleButtonUp;
 		player.events.OnPullButtonDown -= OnPullButtonDown;
+		player.events.OnPullButtonUp -= OnPullButtonUp;
 		player.events.OnChangeAnchorPoint -= OnChangeAnchorPoint;
 		player.events.OnDeath -= OnDeath;
 		player.events.OnRespawn -= OnRespawn;
@@ -600,7 +662,7 @@ public class PlayerStates
 	public bool isGrappled;
 	public bool isHanging;
 	public bool isPulling;
-	public bool isPullingToPiton;
+	public bool isReeling;
 	public bool isFrozen;
 	public bool isDead;
 }

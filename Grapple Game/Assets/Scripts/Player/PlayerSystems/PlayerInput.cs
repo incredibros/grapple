@@ -90,6 +90,11 @@ public class PlayerInput : PlayerSystem
 		{
 			player.events.OnPullButtonDown?.Invoke();
 		}
+
+		if (context.canceled)
+		{
+			player.events.OnPullButtonUp?.Invoke();
+		}
 	}
 
 	public void OnPointerMove(InputAction.CallbackContext context)

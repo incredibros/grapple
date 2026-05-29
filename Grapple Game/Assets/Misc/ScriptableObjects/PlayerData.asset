@@ -57,28 +57,53 @@ MonoBehaviour:
   grappleRange: 15
   minLineLength: 0.2
   pullSpeed: 14
-  reelSpeed: 24
-  freezeDuration: 0.05
-  freezeVelocity:
+  pullFreezeDuration: 0.05
+  pullFreezeVelocity:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: -0.0000017434359
-      value: 1.9991962
-      inSlope: 0.008015522
-      outSlope: 0.008015522
+      time: -0.0000017462298
+      value: 2.0000172
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.2094463
+      outWeight: 0
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: -2.7053702
-      outSlope: -2.7053702
+      inSlope: -2.6168666
+      outSlope: -2.6168666
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.0480201
+      inWeight: 0.044071298
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reelSpeed: 24
+  reelVelocityChangeDuration: 0.5
+  reelVelocityChangeLerp:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -116,6 +141,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 65536
   springForce: 20
+  hangTime: 0.5
   groundEffectPrefab: {fileID: 852556821801593712, guid: 048194095832f4f0a8941085678e01e4, type: 3}
   gunShotEffectPrefab: {fileID: 4659489677238979286, guid: c5397f7b2dbcdf14ca0e03c4a932c1b0, type: 3}
   accels:
