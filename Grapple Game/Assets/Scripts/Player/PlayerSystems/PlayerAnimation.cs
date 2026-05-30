@@ -7,6 +7,7 @@ public class PlayerAnimation : PlayerSystem
     // This system script controls all animation of the player, including gun movement and flipping sprites
     
     BoxCollider2D boxCollider;
+    Animator animator;
 
     [SerializeField] Transform body;
     [SerializeField] Transform gun;
@@ -16,14 +17,21 @@ public class PlayerAnimation : PlayerSystem
     Vector2 moveInput;
     Vector2 mouseDirection;
 
-    [SerializeField] Vector2 grapplePoint;
-    [SerializeField] bool isGrappled;
+    Vector2 grapplePoint;
+    bool isGrappled;
+
+    [SerializeField] float ghostDuplicateDelayTotal;
+    float ghostDuplicateDelay;
+    float ghostTotalDelay;
+    [SerializeField] GameObject ghost;
+    bool makeGhost;
 
     protected override void Awake()
 	{
 		base.Awake();
         
-        boxCollider = player.GetComponent<BoxCollider2D>();
+        boxCollider = GetComponent<BoxCollider2D>();
+        animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -31,7 +39,14 @@ public class PlayerAnimation : PlayerSystem
         if (MainMenu.GameIsPaused)
             return;
 
-        // Flip player
+        SpawnPullGhost();
+        FlipPlayer();
+        FlipGun();
+    }
+
+    #region Flipping
+    void FlipPlayer()
+    {
         if (moveInput.x > 0)
         {
             Flip(body, true);
@@ -40,8 +55,10 @@ public class PlayerAnimation : PlayerSystem
         {
             Flip(body, false);
         }
+    }
 
-        // Flip gun
+    void FlipGun()
+    {
         float angle;
         Vector2 aimDirection;
 
@@ -66,6 +83,47 @@ public class PlayerAnimation : PlayerSystem
             gun.rotation = Quaternion.Euler(0f, 0f, angle + 180f);
             Flip(gun, false);
         }
+    }
+
+    void Flip(Transform sprite, bool isRight)
+    {
+        Vector3 scale = sprite.localScale;
+
+        scale.x = Mathf.Abs(scale.x) * (isRight ? 1f : -1f);
+
+        sprite.localScale = scale;
+    }
+    #endregion
+
+    void SpawnPullGhost()
+    {
+        if (makeGhost)
+        {
+            if (ghostTotalDelay > 0)
+            {
+                makeGhost = false;
+            }
+            else
+            {
+                ghostTotalDelay -= Time.deltaTime;
+            }
+
+            if (ghostDuplicateDelay > 0)
+            {
+                ghostDuplicateDelay -= Time.deltaTime;
+            }
+            else
+            {
+                GameObject currentGhost = Instantiate(ghost, transform.position, transform.rotation);
+                Sprite currentSprite = body.GetComponent<SpriteRenderer>().sprite;
+                currentGhost.transform.localScale = transform.localScale;
+                currentGhost.GetComponent<SpriteRenderer>().sprite = currentSprite;
+                ghostDuplicateDelay = ghostDuplicateDelayTotal;
+                Destroy(currentGhost, 1f);
+                Debug.Log("ghost made");
+            }
+        }
+        
     }
 
     #region Draw Gizmos
@@ -118,17 +176,6 @@ public class PlayerAnimation : PlayerSystem
     }
     #endregion
 
-    #region Flip Sprite
-    void Flip(Transform sprite, bool isRight)
-    {
-        Vector3 scale = sprite.localScale;
-
-        scale.x = Mathf.Abs(scale.x) * (isRight ? 1f : -1f);
-
-        sprite.localScale = scale;
-    }
-    #endregion
-
     #region Movement
     void OnXYInput(Vector2 input)
     {
@@ -161,11 +208,14 @@ public class PlayerAnimation : PlayerSystem
     void OnGrappleButtonUp()
     {
         isGrappled = false;
+
     }
 
     void OnPull()
     {
         isGrappled = false;
+        makeGhost = true;
+        ghostTotalDelay = player.data.pullFreezeDuration;
     }
 
     void OnChangeAnchorPoint(Vector2 point, bool shorten)

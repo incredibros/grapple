@@ -13,7 +13,9 @@ public class PlayerMovement : PlayerSystem
 	Rigidbody2D rb;
 	DistanceJoint2D joint;
 
-    public PlayerStates state = new PlayerStates();
+	Animator animator;
+
+    PlayerStates state = new PlayerStates();
 	Timers timer = new Timers();
 
 	Vector2 moveInput;
@@ -40,12 +42,15 @@ public class PlayerMovement : PlayerSystem
 
         rb = GetComponent<Rigidbody2D>();
 		joint = GetComponent<DistanceJoint2D>();
+
+		animator = GetComponent<Animator>();
 	}
 
 	void Update()
 	{
 		if (state.isDead || state.isFrozen || MainMenu.GameIsPaused) return;
 		
+		Animator();
 		Timers();
 		Checks();
 
@@ -61,16 +66,13 @@ public class PlayerMovement : PlayerSystem
 	void FixedUpdate()
 	{
 		if (state.isDead || state.isFrozen || MainMenu.GameIsPaused) return;
-		
-		if (state.isReeling)
-		{
-			//PitonZipMovement();
-		}
-		else
-		{
-			LateralMovement();
-			Gravity();
-		}
+		LateralMovement();
+		Gravity();
+	}
+
+	void Animator()
+	{
+		animator.SetFloat("Speed", Mathf.Abs(moveInput.x));
 	}
 
 	#region Timers
@@ -558,58 +560,6 @@ public class PlayerMovement : PlayerSystem
 		timer.accelTime = 0f;
 		rb.velocity = new Vector2(rb.velocity.x, player.data.springForce);
 	}
-	#endregion
-
-	#region Piton
-	/*void PitonZipMovement()
-	{
-		rb.gravityScale = 0f;
-
-		pitonZipTimer += Time.fixedDeltaTime;
-    	float t = Mathf.Clamp01(pitonZipTimer / pitonZipDuration);
-
-		float smoothT = Mathf.SmoothStep(0f, 1f, t);
-
-		Vector2 nextPosition = Vector2.Lerp(pitonStartPos, grapplePoint, smoothT);
-    	rb.MovePosition(nextPosition);
-
-		float distance = Vector2.Distance(transform.position, grapplePoint);
-
-		if (t >= 1f || distance <= 0.6f) 
-		{
-			OnPitonActivated();
-		}
-	}
-
-	void OnPitonActivated()
-	{
-		if (activePiton == null) return;
-
-		state.isHanging = false;
-		state.isJumping = false;
-		state.isWallJumping = false;
-		state.isPulling = true;
-		timer.accelTime = 0f;
-
-		if (activePiton.boostForce > 0)
-		{
-			Vector2 boostDirection = (grapplePoint - pitonStartPos).normalized;
-			rb.velocity = boostDirection * activePiton.boostForce;
-		}
-		else
-		{
-			rb.velocity = Vector2.zero;
-		}
-		
-		CancelPitonZip();
-	}
-
-	void CancelPitonZip()
-	{
-		state.isReeling = false;
-		activePiton = null;
-		rb.gravityScale = player.data.gravityScale;
-	}*/
 	#endregion
 
     #region Events
