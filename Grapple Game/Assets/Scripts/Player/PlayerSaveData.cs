@@ -14,4 +14,5 @@ public struct PlayerSaveData
     public int Gems;
 
     public bool IsDead;
+    public bool OnGround;
 }

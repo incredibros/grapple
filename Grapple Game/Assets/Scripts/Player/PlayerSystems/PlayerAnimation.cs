@@ -39,9 +39,15 @@ public class PlayerAnimation : PlayerSystem
         if (MainMenu.GameIsPaused)
             return;
 
-        SpawnPullGhost();
+        SetAnimator();
         FlipPlayer();
         FlipGun();
+        SpawnPullGhost();
+    }
+
+    void SetAnimator()
+    {
+        animator.SetFloat("Speed", Mathf.Abs(moveInput.x));
     }
 
     #region Flipping
@@ -101,11 +107,11 @@ public class PlayerAnimation : PlayerSystem
         {
             if (ghostTotalDelay > 0)
             {
-                makeGhost = false;
+                ghostTotalDelay -= Time.deltaTime;
             }
             else
             {
-                ghostTotalDelay -= Time.deltaTime;
+                makeGhost = false;
             }
 
             if (ghostDuplicateDelay > 0)
@@ -118,12 +124,11 @@ public class PlayerAnimation : PlayerSystem
                 Sprite currentSprite = body.GetComponent<SpriteRenderer>().sprite;
                 currentGhost.transform.localScale = transform.localScale;
                 currentGhost.GetComponent<SpriteRenderer>().sprite = currentSprite;
+                //currentGhost.GetComponent<Ghost>().startingAlpha = 1 - player.data.accels[4].accelTime.Evaluate(ghostTotalDelay);
                 ghostDuplicateDelay = ghostDuplicateDelayTotal;
                 Destroy(currentGhost, 1f);
-                Debug.Log("ghost made");
             }
         }
-        
     }
 
     #region Draw Gizmos
@@ -215,7 +220,7 @@ public class PlayerAnimation : PlayerSystem
     {
         isGrappled = false;
         makeGhost = true;
-        ghostTotalDelay = player.data.pullFreezeDuration;
+        ghostTotalDelay = player.data.accels[4].time;
     }
 
     void OnChangeAnchorPoint(Vector2 point, bool shorten)

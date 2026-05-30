@@ -13,8 +13,6 @@ public class PlayerMovement : PlayerSystem
 	Rigidbody2D rb;
 	DistanceJoint2D joint;
 
-	Animator animator;
-
     PlayerStates state = new PlayerStates();
 	Timers timer = new Timers();
 
@@ -42,15 +40,12 @@ public class PlayerMovement : PlayerSystem
 
         rb = GetComponent<Rigidbody2D>();
 		joint = GetComponent<DistanceJoint2D>();
-
-		animator = GetComponent<Animator>();
 	}
 
 	void Update()
 	{
 		if (state.isDead || state.isFrozen || MainMenu.GameIsPaused) return;
-		
-		Animator();
+
 		Timers();
 		Checks();
 
@@ -66,13 +61,9 @@ public class PlayerMovement : PlayerSystem
 	void FixedUpdate()
 	{
 		if (state.isDead || state.isFrozen || MainMenu.GameIsPaused) return;
+
 		LateralMovement();
 		Gravity();
-	}
-
-	void Animator()
-	{
-		animator.SetFloat("Speed", Mathf.Abs(moveInput.x));
 	}
 
 	#region Timers
@@ -96,12 +87,12 @@ public class PlayerMovement : PlayerSystem
 		if (Physics2D.OverlapBox(player.data.groundCheckPoint + (Vector2) transform.position, player.data.groundCheckSize, 0f, player.data.groundLayer) && Mathf.Abs(rb.velocity.y) <= 0.001f)
 		{
 			timer.coyote = player.data.coyoteTime;
-			state.onGround = true;
+			state.onGround = player.saveData.OnGround = true;
 			if (grapples == 0 && !state.isGrappled)
 				grapples++;
 		}
 		else
-			state.onGround = false;
+			state.onGround = player.saveData.OnGround = false;
 		
 		if (rb.velocity.y < -0.001f && !state.isHanging)
 		{
@@ -140,7 +131,7 @@ public class PlayerMovement : PlayerSystem
 
 	bool CheckForWalls(int dir)
 	{
-		if (Mathf.Abs(rb.velocity.x) > 0.001f) return false;
+		//if (Mathf.Abs(rb.velocity.x) > 0.001f) return false;
 		
 		int wallsDetected = 0;
 		foreach (Vector2 pos in dir == 1 ? player.data.rightCheckPoints : player.data.leftCheckPoints)
@@ -170,8 +161,8 @@ public class PlayerMovement : PlayerSystem
 	{
 		// Swing(2) -> WallJump(3) -> Pull(4) -> Ground(0) -> Air(1)
 
-		if (!state.isWallJumping.Equals(false) && timer.accelTime >= player.data.accels[3].time)
-			state.isWallJumping = false;
+		if ((state.isWallJumping.x || state.isWallJumping.y) && timer.accelTime >= player.data.accels[3].time)
+        	state.isWallJumping = false;
 		if (state.isPulling && timer.accelTime >= player.data.accels[4].time)
 			state.isPulling = false;
 		
@@ -488,7 +479,6 @@ public class PlayerMovement : PlayerSystem
 			}
 
 			grapples++;
-			
 			state.isReeling = false;
 		}
 
@@ -599,6 +589,7 @@ public class PlayerMovement : PlayerSystem
 	#endregion
 }
 
+[System.Serializable]
 public class PlayerStates
 {
 	public bool onGround;

@@ -2,7 +2,7 @@
 	"projectId": 1,
 	"projectName": "Grapple Game",
 	"scene": "Game",
-	"creator": "Komine3000",
+	"creator": "NinjaCad",
 	"version": "2.0.4",
 	"port": 8000,
 	"application": "Unity 2021.3.45f2"
