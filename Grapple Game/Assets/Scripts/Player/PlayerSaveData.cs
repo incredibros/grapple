@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public struct PlayerSaveData
@@ -11,8 +12,13 @@ public struct PlayerSaveData
     public float GameTimer;
     public int TotalDeaths;
 
-    public int Gems;
+    public int Crystals;
 
     public bool IsDead;
     public bool OnGround;
+    public bool IsJumping;
+    public bool IsFalling;
+    public bool IsHanging;
+    public bool IsPulling;
+    public bool2 OnWall;
 }

@@ -43,6 +43,7 @@ public struct PlayerEvents
 
     #region Extras
     public Action<GameObject> OnOrbPickUp;
+    public Action<GameObject> OnCrystalPickUp;
     public Action OnSpringActivated;
     #endregion
 }

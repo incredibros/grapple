@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/MainStyles.uss?fileID=7433441132597879392&amp;guid=ba0bc3b172effc44d9df3879b20a58f2&amp;type=3#MainStyles" />
+    <ui:VisualElement name="Container" style="width: 100%; height: 100%; align-items: center; background-image: url(&quot;project://database/Assets/Graphics/Gradients/RedBackground.png?fileID=2800000&amp;guid=6bbdb5b6fadad7242b9a6f28fb613b4e&amp;type=3#RedBackground&quot;);">
+        <ui:Label text="Mount Vulcano" display-tooltip-when-elided="true" name="GameTitle" class="header" style="font-size: 200px; -unity-text-align: upper-center; margin-top: 30px;" />
+        <ui:Button text="Play" display-tooltip-when-elided="true" name="Play" class="buttons" style="margin-top: 160px; margin-bottom: 25px;" />
+        <ui:Button text="Options" display-tooltip-when-elided="true" name="Options" class="buttons" />
+        <ui:Button text="Credits" display-tooltip-when-elided="true" name="Credits" class="buttons" />
+        <ui:Button text="Quit" display-tooltip-when-elided="true" name="Quit" class="buttons" />
+    </ui:VisualElement>
+</ui:UXML>

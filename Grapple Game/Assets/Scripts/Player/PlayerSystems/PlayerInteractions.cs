@@ -17,11 +17,13 @@ public class PlayerInteractions : PlayerSystem
         layerMask.Add(player.data.hazardLayer);
         layerMask.Add(player.data.orbLayer);
         layerMask.Add(player.data.springLayer);
+        layerMask.Add(player.data.crystalLayer);
 
         checkSize.Add(player.data.checkpointCheckSize);
         checkSize.Add(player.data.hazardCheckSize);
         checkSize.Add(player.data.orbCheckSize);
         checkSize.Add(player.data.springCheckSize);
+        checkSize.Add(player.data.crystalCheckSize);
     }
 
     void Update()
@@ -49,6 +51,11 @@ public class PlayerInteractions : PlayerSystem
             else if (i == 3 && hitCollider != null)
             {
                 player.events.OnSpringActivated?.Invoke();
+            }
+            // Crystal
+            else if (i == 4 && hitCollider != null)
+            {
+                player.events.OnCrystalPickUp?.Invoke(hitCollider.transform.parent.gameObject);
             }
         }
     }

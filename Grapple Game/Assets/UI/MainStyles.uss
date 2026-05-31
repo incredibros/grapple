@@ -1,0 +1,32 @@
+.header {
+    font-size: 180px;
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+    margin-top: 75px;
+    white-space: nowrap;
+    align-items: center;
+    color: rgba(255, 255, 255, 255);
+    background-color: rgba(0, 0, 0, 0);
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0);
+    border-top-width: 100px;
+}
+
+.buttons {
+    width: 25%;
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+    font-size: 60px;
+    margin-top: 25px;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0);
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0);
+    color: rgba(255, 255, 255, 255);
+}
+
+.buttons:hover {
+    scale: 1.1 1.1;
+}
+
+.buttons:focus {
+    scale: 1.1 1.1;
+}

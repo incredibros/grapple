@@ -5,9 +5,6 @@ using UnityEngine;
 public class Ghost : MonoBehaviour
 {
     SpriteRenderer sprite;
-    public float startingAlpha;
-    Color spriteColor;
-
     [SerializeField] float alphaTime;
 
 
@@ -19,7 +16,7 @@ public class Ghost : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(FadeAlphaOverTime(0f, 0.5f));
+        StartCoroutine(FadeAlphaOverTime(0f, alphaTime));
     }
 
     IEnumerator FadeAlphaOverTime(float targetAlpha, float duration)
@@ -34,6 +31,9 @@ public class Ghost : MonoBehaviour
 
             float newAlpha = Mathf.Lerp(startAlpha, targetAlpha, elapsedTime / duration);
 
+            if (newAlpha < 0.1f)
+                break;
+
             currentColor.a = newAlpha;
             sprite.color = currentColor;
 
@@ -42,5 +42,6 @@ public class Ghost : MonoBehaviour
 
         currentColor.a = targetAlpha;
         sprite.color = currentColor;
+        Destroy(gameObject);
     }
 }

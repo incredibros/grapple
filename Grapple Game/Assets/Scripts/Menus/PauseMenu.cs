@@ -2,96 +2,132 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
-using UnityEngine.Audio;
-using TMPro;
 
 public class PauseMenu : MonoBehaviour
 {
-    [SerializeField] GameObject targetToKeepActive;
-    [SerializeField] GameObject pauseMenuUI;
-    [SerializeField] GameObject optionsMenuUI;
-
     Player player;
+    UIDocument pauseDocument;
+    VisualElement pauseVE;
+
+    Button resumeButton;
+    Button restartButton;
+    Button optionsButton;
+    Button mainMenuButton;
+
+    void Awake()
+    {
+        pauseDocument = GetComponent<UIDocument>();
+        FindElements();
+
+        GameObject playerObj = GameObject.Find("Player");
+
+        player = playerObj.GetComponent<Player>();
+    }
 
     void Start()
     {
-        player = GameObject.Find("Player").GetComponent<Player>();
-        Deactivate();
-        Time.timeScale = 1f;
-        MainMenu.GameIsPaused = false;
+        pauseVE.style.display = DisplayStyle.None;
     }
 
-    void Deactivate()
+    void FindElements()
     {
-        foreach (Transform child in transform)
-        {
-            if (targetToKeepActive != null && child.gameObject == targetToKeepActive)
-            {
-                child.gameObject.SetActive(true);
-            }
-            else
-            {
-                child.gameObject.SetActive(false);
-            }
-        }
+        pauseVE = pauseDocument.rootVisualElement;
+        resumeButton = pauseVE.Q<Button>("Resume");
+        restartButton = pauseVE.Q<Button>("Restart");
+        optionsButton = pauseVE.Q<Button>("Options");
+        mainMenuButton = pauseVE.Q<Button>("MainMenu");
     }
 
+    #region Event Handlers
     public void OnMenuDown(InputAction.CallbackContext context)
-	{
+    {
         if (context.performed)
         {
             if (MainMenu.GameIsPaused)
             {
-                if (optionsMenuUI.activeSelf)
-                {
-                    Pause();
-                }
-                else
-                {
-                    Resume();
-                }
-                
+                ResumeGame();
             }
             else
             {
-                Pause();
+                PauseGame();
             }
         }
-	}
-
-    #region Event Handlers
-    public void Resume()
-    {
-        Time.timeScale = 1f;
-        MainMenu.GameIsPaused = false;
-        pauseMenuUI.SetActive(false);
-        optionsMenuUI.SetActive(false);
     }
-    void Pause()
+
+    public void OnCancelDown(InputAction.CallbackContext context)
     {
-        pauseMenuUI.SetActive(true);
-        optionsMenuUI.SetActive(false);
+        if (context.performed)
+        {
+            if (MainMenu.GameIsPaused)
+            {
+                ResumeGame();
+            }
+        }
+    }
+
+    void PauseGame()
+    {
+        pauseVE.style.display = DisplayStyle.Flex;
         MainMenu.GameIsPaused = true;
         Time.timeScale = 0f;
+
+        StartCoroutine(FocusFirstButtonNextFrame());
+
+        //hud.DeactivateHUD();
     }
 
-    public void LoadMenu()
+    IEnumerator FocusFirstButtonNextFrame()
     {
+        yield return new WaitForEndOfFrame();
+        resumeButton.Focus();
+    }
+
+    void ResumeGame()
+    {
+        pauseVE.style.display = DisplayStyle.None;
+        MainMenu.GameIsPaused = false;
         Time.timeScale = 1f;
-        MainMenu.GameIsPaused = true;
-        SceneManager.LoadScene("MainMenu");
-        pauseMenuUI.SetActive(false);
-        optionsMenuUI.SetActive(false);
     }
 
-    public void RestartLevel()
+    void RestartGame()
     {
+        pauseVE.style.display = DisplayStyle.None;
+        player.events.OnDeath?.Invoke();
+        MainMenu.GameIsPaused = false;
+        Time.timeScale = 1f;
+    }
+
+    void OptionsGame()
+    {
+        Debug.Log("Options");
+    }
+
+    void MainMenuGame()
+    {
+        pauseVE.style.display = DisplayStyle.None;
         Time.timeScale = 1f;
         MainMenu.GameIsPaused = false;
-        player.events.OnDeath?.Invoke();
-        pauseMenuUI.SetActive(false);
-        optionsMenuUI.SetActive(false);
+        SceneManager.LoadScene("MainMenu");
+    }
+    #endregion
+
+    #region Events
+    void OnEnable()
+    {
+        resumeButton.clicked += ResumeGame;
+        restartButton.clicked += RestartGame;
+        optionsButton.clicked += OptionsGame;
+        mainMenuButton.clicked += MainMenuGame;
+    }
+
+    void OnDisable()
+    {
+        resumeButton.clicked -= ResumeGame;
+        restartButton.clicked -= RestartGame;
+        optionsButton.clicked -= OptionsGame;
+        mainMenuButton.clicked -= MainMenuGame;
     }
     #endregion
 }

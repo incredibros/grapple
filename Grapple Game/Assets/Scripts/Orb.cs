@@ -7,8 +7,8 @@ public class Orb : MonoBehaviour
 {
     SpriteRenderer sP;
 
-    public float travelTime;
-    public float respawnTime;
+    [SerializeField] float travelTime;
+    [SerializeField] float respawnTime;
 
     void Awake()
     {
@@ -31,7 +31,7 @@ public class Orb : MonoBehaviour
         {
             transform.position = Vector2.Lerp(startingPos, player.position, time / travelTime);
             time += Time.deltaTime;
-            yield return new WaitForSeconds(0);
+            yield return null;
         }
 
         transform.position = startingPos;

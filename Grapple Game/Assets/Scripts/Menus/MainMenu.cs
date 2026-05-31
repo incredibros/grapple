@@ -1,45 +1,48 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
-using UnityEngine.Audio;
-using UnityEngine.UI;
-using TMPro;
 
 public class MainMenu : MonoBehaviour
 {
-    [SerializeField] GameObject targetToKeepActive;
-    [HideInInspector] public static bool GameIsPaused = false;
+    [HideInInspector] public static bool GameIsPaused;
 
-    [SerializeField] TextMeshProUGUI progressText;
-    [SerializeField] Slider loadingSlider;
+    UIDocument mainMenuDocument;
+    VisualElement mainMenuVE;
+
+    Button playButton;
+    Button optionsButton;
+    Button creditsButton;
+    Button quitButton;
+
+    void Awake()
+    {
+        GameIsPaused = true;
+
+        mainMenuDocument = GetComponent<UIDocument>();
+        FindElements();
+    }
 
     void Start()
     {
-        Deactivate();
-        GameIsPaused = true;
+        mainMenuVE.style.display = DisplayStyle.Flex;
+        playButton.Focus();
     }
 
-    void Deactivate()
+    void FindElements()
     {
-        foreach (Transform child in transform)
-        {
-            if (child.gameObject == targetToKeepActive)
-            {
-                child.gameObject.SetActive(true);
-            }
-            else
-            {
-                child.gameObject.SetActive(false);
-            }
-        }
+        mainMenuVE = mainMenuDocument.rootVisualElement;
+        playButton = mainMenuVE.Q<Button>("Play");
+        optionsButton = mainMenuVE.Q<Button>("Options");
+        creditsButton = mainMenuVE.Q<Button>("Credits");
+        quitButton = mainMenuVE.Q<Button>("Quit");
     }
 
-    IEnumerator LoadAsync()
+    void LoadAsync()
     {
         AsyncOperation operation = SceneManager.LoadSceneAsync("Game");
-        operation.allowSceneActivation = false;
+        /*operation.allowSceneActivation = false;
 
         loadingSlider.minValue = 0f;
         loadingSlider.maxValue = 1f;
@@ -62,21 +65,49 @@ public class MainMenu : MonoBehaviour
             }
             
             yield return null;
-        }
+        }*/
     }
 
-    #region Main Menu
-    public void PlayGame()
+    #region Event Handlers
+    void PlayGame()
     {
         GameIsPaused = false;
-        StartCoroutine(LoadAsync());
+        LoadAsync();
     }
 
-    public void QuitGame()
+    void OptionsGame()
+    {
+        Debug.Log("Options");
+    }
+
+    void CreditsGame()
+    {
+        Debug.Log("Credits");
+    }
+
+    void QuitGame()
     {
         GameIsPaused = false;
-        Debug.Log("Quitting game...");
+        Debug.Log("Quit");
         Application.Quit();
+    }
+    #endregion
+
+    #region Events
+    void OnEnable()
+    {
+        playButton.clicked += PlayGame;
+        optionsButton.clicked += OptionsGame;
+        creditsButton.clicked += CreditsGame;
+        quitButton.clicked += QuitGame;
+    }
+
+    void OnDisable()
+    {
+        playButton.clicked -= PlayGame;
+        optionsButton.clicked -= OptionsGame;
+        creditsButton.clicked -= CreditsGame;
+        quitButton.clicked -= QuitGame;
     }
     #endregion
 }

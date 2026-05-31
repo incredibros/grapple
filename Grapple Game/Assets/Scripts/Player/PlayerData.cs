@@ -81,6 +81,10 @@ public class PlayerData : ScriptableObject
 	public LayerMask orbLayer;
 
 	[Header("Springs")]
+	public Vector2 crystalCheckSize;
+	public LayerMask crystalLayer;
+
+	[Header("Springs")]
 	public Vector2 springCheckSize;
 	public LayerMask springLayer;
 	public int springForce;
@@ -89,6 +93,8 @@ public class PlayerData : ScriptableObject
 	public float hangTime;
 
 	[Header("Effects")]
+	public float ghostDuplicateDelay;
+	public GameObject ghostPrefab;
 	public GameObject groundEffectPrefab;
 	public GameObject gunShotEffectPrefab;
 

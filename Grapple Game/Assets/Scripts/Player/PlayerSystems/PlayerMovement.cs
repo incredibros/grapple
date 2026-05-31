@@ -96,7 +96,7 @@ public class PlayerMovement : PlayerSystem
 		
 		if (rb.velocity.y < -0.001f && !state.isHanging)
 		{
-			state.isFalling = true;
+			state.isFalling = player.saveData.IsFalling = true;
 			if (moveInput.y == -1)
 			 	state.isFastFalling = true;
 		}

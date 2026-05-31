@@ -20,10 +20,8 @@ public class PlayerAnimation : PlayerSystem
     Vector2 grapplePoint;
     bool isGrappled;
 
-    [SerializeField] float ghostDuplicateDelayTotal;
     float ghostDuplicateDelay;
-    float ghostTotalDelay;
-    [SerializeField] GameObject ghost;
+    float ghostTotalDelay = 100f;
     bool makeGhost;
 
     protected override void Awake()
@@ -48,6 +46,11 @@ public class PlayerAnimation : PlayerSystem
     void SetAnimator()
     {
         animator.SetFloat("Speed", Mathf.Abs(moveInput.x));
+        animator.SetBool("IsJumping", player.saveData.IsJumping);
+        animator.SetBool("IsFalling", player.saveData.IsFalling);
+        animator.SetBool("IsHanging", player.saveData.IsHanging);
+        animator.SetBool("IsPulling", player.saveData.IsPulling);
+        animator.SetBool("OnWall", player.saveData.OnWall[0] || player.saveData.OnWall[1]);
     }
 
     #region Flipping
@@ -105,29 +108,23 @@ public class PlayerAnimation : PlayerSystem
     {
         if (makeGhost)
         {
-            if (ghostTotalDelay > 0)
+            if (ghostDuplicateDelay < 0)
             {
-                ghostTotalDelay -= Time.deltaTime;
-            }
-            else
-            {
-                makeGhost = false;
-            }
-
-            if (ghostDuplicateDelay > 0)
-            {
-                ghostDuplicateDelay -= Time.deltaTime;
-            }
-            else
-            {
-                GameObject currentGhost = Instantiate(ghost, transform.position, transform.rotation);
+                GameObject currentGhost = Instantiate(player.data.ghostPrefab, transform.position, transform.rotation);
                 Sprite currentSprite = body.GetComponent<SpriteRenderer>().sprite;
                 currentGhost.transform.localScale = transform.localScale;
                 currentGhost.GetComponent<SpriteRenderer>().sprite = currentSprite;
-                //currentGhost.GetComponent<Ghost>().startingAlpha = 1 - player.data.accels[4].accelTime.Evaluate(ghostTotalDelay);
-                ghostDuplicateDelay = ghostDuplicateDelayTotal;
-                Destroy(currentGhost, 1f);
+
+                if ((1 - player.data.accels[4].accelCurve.Evaluate(ghostTotalDelay / player.data.accels[4].time)) < 0.5f)
+                {
+                    makeGhost = false;
+                }
+                
+                ghostDuplicateDelay = player.data.ghostDuplicateDelay;
             }
+
+            ghostTotalDelay += Time.deltaTime;
+            ghostDuplicateDelay -= Time.deltaTime;
         }
     }
 
@@ -213,14 +210,13 @@ public class PlayerAnimation : PlayerSystem
     void OnGrappleButtonUp()
     {
         isGrappled = false;
-
     }
 
     void OnPull()
     {
         isGrappled = false;
         makeGhost = true;
-        ghostTotalDelay = player.data.accels[4].time;
+        ghostTotalDelay = 0;
     }
 
     void OnChangeAnchorPoint(Vector2 point, bool shorten)
