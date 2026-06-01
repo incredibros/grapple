@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+    [SerializeField] SettingsMenu settingsMenu;
+    [SerializeField] CreditsMenu creditsMenu;
     [HideInInspector] public static bool GameIsPaused;
 
     UIDocument mainMenuDocument;
@@ -26,8 +28,7 @@ public class MainMenu : MonoBehaviour
 
     void Start()
     {
-        mainMenuVE.style.display = DisplayStyle.Flex;
-        playButton.Focus();
+        LoadScreen();
     }
 
     void FindElements()
@@ -37,6 +38,12 @@ public class MainMenu : MonoBehaviour
         optionsButton = mainMenuVE.Q<Button>("Options");
         creditsButton = mainMenuVE.Q<Button>("Credits");
         quitButton = mainMenuVE.Q<Button>("Quit");
+    }
+
+    public void LoadScreen()
+    {
+        mainMenuVE.style.display = DisplayStyle.Flex;
+        playButton.Focus();
     }
 
     void LoadAsync()
@@ -77,12 +84,14 @@ public class MainMenu : MonoBehaviour
 
     void OptionsGame()
     {
-        Debug.Log("Options");
+        mainMenuVE.style.display = DisplayStyle.None;
+        settingsMenu.LoadScreen();
     }
 
     void CreditsGame()
     {
-        Debug.Log("Credits");
+        mainMenuVE.style.display = DisplayStyle.None;
+        creditsMenu.LoadScreen();
     }
 
     void QuitGame()

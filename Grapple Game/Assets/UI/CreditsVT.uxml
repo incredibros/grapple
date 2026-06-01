@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/MainStyles.uss?fileID=7433441132597879392&amp;guid=ba0bc3b172effc44d9df3879b20a58f2&amp;type=3#MainStyles" />
+    <ui:VisualElement name="Container" class="container">
+        <ui:VisualElement name="Background" class="background" style="background-color: rgba(60, 60, 60, 255);" />
+        <ui:Label text="Credits" display-tooltip-when-elided="true" name="CreditsTitle" class="header" />
+        <ui:VisualElement name="Content" style="width: 60%; height: 30%; margin-top: 100px; margin-bottom: 100px;">
+            <ui:Label text="NinjaCad&#10;Komine" display-tooltip-when-elided="true" name="Text" style="-unity-text-align: upper-center; font-size: 50px; color: rgba(255, 255, 255, 255);" />
+        </ui:VisualElement>
+        <ui:Button text="Back" display-tooltip-when-elided="true" name="Back" class="buttons" />
+    </ui:VisualElement>
+</ui:UXML>

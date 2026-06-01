@@ -5,7 +5,7 @@
     margin-top: 75px;
     white-space: nowrap;
     align-items: center;
-    color: rgba(255, 255, 255, 255);
+    color: rgb(255, 255, 255);
     background-color: rgba(0, 0, 0, 0);
     -unity-background-image-tint-color: rgba(255, 255, 255, 0);
     border-top-width: 100px;
@@ -16,11 +16,9 @@
     -unity-text-align: middle-center;
     white-space: nowrap;
     font-size: 60px;
-    margin-top: 25px;
     align-items: center;
+    color: rgb(255, 255, 255);
     background-color: rgba(0, 0, 0, 0);
-    -unity-background-image-tint-color: rgba(255, 255, 255, 0);
-    color: rgba(255, 255, 255, 255);
 }
 
 .buttons:hover {
@@ -29,4 +27,20 @@
 
 .buttons:focus {
     scale: 1.1 1.1;
+}
+
+.container {
+    width: 100%;
+    height: 100%;
+    align-items: center;
+}
+
+.background {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
 }

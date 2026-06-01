@@ -1,64 +1,123 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.Audio;
-using TMPro;
+using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 public class SettingsMenu : MonoBehaviour
 {
-    [SerializeField] AudioMixer audioMixer;
+    [SerializeField] GameObject menu;
+    MainMenu mainMenu;
+    PauseMenu pauseMenu;
 
-    [SerializeField] TMP_Dropdown resolutionDropdown;
+    UIDocument settingsDocument;
+    public VisualElement settingsVE;
 
-    Resolution[] resolutions;
+    Button backButton;
+    Button applyButton;
+
+    void Awake()
+    {
+        settingsDocument = GetComponent<UIDocument>();
+        FindScripts();
+        FindElements();
+    }
 
     void Start()
     {
-        resolutions = Screen.resolutions;
+        settingsVE.style.display = DisplayStyle.None;
+    }
 
-        resolutionDropdown.ClearOptions();
-
-        List<string> options = new List<string>();
-
-        int currentResolutionIndex = 0;
-        for (int i = 0; i < resolutions.Length; i++)
+    void FindScripts()
+    {
+        if (menu.name == "MainMenuScreen")
         {
-            string option = resolutions[i].width + " x " + resolutions[i].height;
-            options.Add(option);
-
-            if (resolutions[i].width == Screen.currentResolution.width &&
-                resolutions[i].height == Screen.currentResolution.height)
-            {
-                currentResolutionIndex = i;
-            }
+            mainMenu = menu.GetComponent<MainMenu>();
         }
+        if (menu.name == "PauseMenuScreen")
+        {
+            pauseMenu = menu.GetComponent<PauseMenu>();
+        }
+    }
 
-        resolutionDropdown.AddOptions(options);
-        resolutionDropdown.value = currentResolutionIndex;
-        resolutionDropdown.RefreshShownValue();
+    void FindElements()
+    {
+        settingsVE = settingsDocument.rootVisualElement;
+        backButton = settingsVE.Q<Button>("Back");
+        applyButton = settingsVE.Q<Button>("Apply");
+    }
+
+    public void LoadScreen()
+    {
+        settingsVE.style.display = DisplayStyle.Flex;
     }
 
     #region Event Handlers
-    public void SetResolution(int resolutionIndex)
+    public void OnMenuDown(InputAction.CallbackContext context)
     {
-        Resolution resolution = resolutions[resolutionIndex];
-        Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
+        if (context.performed)
+        {
+            if (settingsVE.style.display == DisplayStyle.Flex)
+            {
+                BackGame();
+            }
+            else if (menu.name == "MainMenuScreen")
+            {
+                LoadScreen();
+            }
+        }
     }
 
-    public void SetVolume(float volume)
+    public void OnCancelDown(InputAction.CallbackContext context)
     {
-        audioMixer.SetFloat("volume", volume);
+        if (context.performed)
+        {
+            if (settingsVE.style.display == DisplayStyle.Flex)
+            {
+                if (menu.name == "MainMenuScreen")
+                {
+                    settingsVE.style.display = DisplayStyle.None;
+                    mainMenu.LoadScreen();
+                }
+                if (menu.name == "PauseMenuScreen")
+                {
+                    settingsVE.style.display = DisplayStyle.None;
+                    pauseMenu.LoadScreen();
+                }
+            }
+        }
     }
 
-    public void SetQuality(int qualityIndex)
+    void BackGame()
     {
-        QualitySettings.SetQualityLevel(qualityIndex);
+        settingsVE.style.display = DisplayStyle.None;
+        if (menu.name == "MainMenuScreen")
+        {
+            mainMenu.LoadScreen();
+        }
+        if (menu.name == "PauseMenuScreen")
+        {
+            pauseMenu.LoadScreen();
+        }
+    }
+    
+    void ApplyGame()
+    {
+        Debug.Log("Apply settings");
+    }
+    #endregion
+
+    #region Events
+    void OnEnable()
+    {
+        backButton.clicked += BackGame;
+        applyButton.clicked += ApplyGame;
     }
 
-    public void SetFullscreen(bool isFullscreen)
+    void OnDisable()
     {
-        Screen.fullScreen = isFullscreen;
+        backButton.clicked -= BackGame;
+        applyButton.clicked -= ApplyGame;
     }
     #endregion
 }

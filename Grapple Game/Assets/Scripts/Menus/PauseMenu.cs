@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
+    [SerializeField] SettingsMenu settingsMenu;
+
     Player player;
     UIDocument pauseDocument;
     VisualElement pauseVE;
@@ -40,18 +42,27 @@ public class PauseMenu : MonoBehaviour
         mainMenuButton = pauseVE.Q<Button>("MainMenu");
     }
 
+    public void LoadScreen()
+    {
+        pauseVE.style.display = DisplayStyle.Flex;
+        MainMenu.GameIsPaused = true;
+        Time.timeScale = 0f;
+
+        StartCoroutine(FocusFirstButtonNextFrame());
+    }
+
     #region Event Handlers
     public void OnMenuDown(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
-            if (MainMenu.GameIsPaused)
+            if (pauseVE.style.display == DisplayStyle.Flex)
             {
                 ResumeGame();
             }
             else
             {
-                PauseGame();
+                LoadScreen();
             }
         }
     }
@@ -60,22 +71,11 @@ public class PauseMenu : MonoBehaviour
     {
         if (context.performed)
         {
-            if (MainMenu.GameIsPaused)
+            if (pauseVE.style.display == DisplayStyle.Flex)
             {
                 ResumeGame();
             }
         }
-    }
-
-    void PauseGame()
-    {
-        pauseVE.style.display = DisplayStyle.Flex;
-        MainMenu.GameIsPaused = true;
-        Time.timeScale = 0f;
-
-        StartCoroutine(FocusFirstButtonNextFrame());
-
-        //hud.DeactivateHUD();
     }
 
     IEnumerator FocusFirstButtonNextFrame()
@@ -101,7 +101,8 @@ public class PauseMenu : MonoBehaviour
 
     void OptionsGame()
     {
-        Debug.Log("Options");
+        pauseVE.style.display = DisplayStyle.None;
+        settingsMenu.LoadScreen();
     }
 
     void MainMenuGame()
