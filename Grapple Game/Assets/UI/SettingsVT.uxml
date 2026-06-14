@@ -3,8 +3,8 @@
     <ui:VisualElement name="Container" class="container">
         <ui:VisualElement name="Background" class="background" style="background-color: rgb(60, 60, 60);" />
         <ui:Label text="Settings" display-tooltip-when-elided="true" name="SettingsTitle" class="header" style="-unity-text-align: upper-center; font-size: 100px; margin-top: 50px;" />
-        <ui:VisualElement name="Content" style="width: 60%; height: 50%; margin-top: 50px; margin-bottom: 50px; align-items: center; font-size: 30px; color: rgba(255, 255, 255, 255); padding-bottom: 0;">
-            <ui:Toggle label="Fullscreen:" name="Fullscreen" style="justify-content: center; margin-bottom: 10px;" />
+        <ui:VisualElement name="Content" style="width: 100%; height: 500px; margin-top: 50px; margin-bottom: 50px; align-items: center; font-size: 30px; color: rgb(255, 255, 255); padding-bottom: 0; justify-content: flex-start;">
+            <ui:Toggle label="Fullscreen:" name="Fullscreen" class="settings-toggle" style="justify-content: center; margin-bottom: 10px;" />
             <ui:VisualElement name="Resolution" style="flex-direction: row; margin-bottom: 10px;">
                 <ui:Label text="Resolution:" display-tooltip-when-elided="true" name="Text" />
                 <ui:Foldout text="1920 x 1080" />
@@ -13,8 +13,8 @@
                 <ui:Label text="Quality:" display-tooltip-when-elided="true" name="Text" />
                 <ui:Foldout text="Normal" />
             </ui:VisualElement>
-            <ui:Slider picking-mode="Ignore" label="Volume:" value="1" high-value="1" name="Volume" style="margin-bottom: 10px;" />
-            <ui:Slider picking-mode="Ignore" label="Brightness:" value="1" high-value="1" name="Brightness" style="margin-bottom: 10px;" />
+            <ui:Slider picking-mode="Ignore" label="Volume:" value="1" high-value="1" name="Volume" class="settings-slider" style="margin-bottom: 10px; justify-content: center; align-items: center;" />
+            <ui:Slider picking-mode="Ignore" label="Brightness:" value="1" high-value="1" name="Brightness" class="settings-slider" style="margin-bottom: 10px;" />
         </ui:VisualElement>
         <ui:VisualElement name="Buttons" style="flex-direction: row; align-items: center; width: 50%; justify-content: center;">
             <ui:Button text="Back" display-tooltip-when-elided="true" name="Back" class="buttons" style="margin-right: 25px;" />

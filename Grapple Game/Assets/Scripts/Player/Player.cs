@@ -12,7 +12,7 @@ public class Player : MonoBehaviour
     // Static Configuration Assets (Scriptable Object)
     public PlayerData data;
     // Dynamic, Temporary Game State (Lives in RAM)
-    public PlayerSaveData saveData;
+    public PlayerTempData tempData;
     //Communications (Actions/Events)
     public PlayerEvents events;
 }

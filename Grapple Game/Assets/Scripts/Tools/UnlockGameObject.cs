@@ -1,3 +1,4 @@
+/*
 using UnityEngine;
 using UnityEditor;
 
@@ -24,3 +25,4 @@ public class UnlockGameObject : MonoBehaviour
         }
     }
 }
+*/

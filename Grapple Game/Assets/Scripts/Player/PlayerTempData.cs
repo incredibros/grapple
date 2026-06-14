@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
-public struct PlayerSaveData
+public struct PlayerTempData
 {
     // This script contains all the info for variables that everyone uses
     // Basically the PlayerEvents but varaibles instead of actions

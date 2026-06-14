@@ -23,9 +23,9 @@ public class Crystal : MonoBehaviour
 
     void Update()
     {
-        if (hasCrystal && player.saveData.OnGround)
+        if (hasCrystal && player.tempData.OnGround)
         {
-            player.saveData.Crystals++;
+            player.tempData.Crystals++;
             Destroy(gameObject);
         }
     }

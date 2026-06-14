@@ -47,7 +47,7 @@ public class CameraMovement : MonoBehaviour
     #region Move Camera
     void LateUpdate()
     {
-        if (!foundPlayer || playerScript.saveData.IsDead) return;
+        if (!foundPlayer || playerScript.tempData.IsDead) return;
         
         targetPosition = new Vector3(target.transform.position.x, target.transform.position.y, -10);
         

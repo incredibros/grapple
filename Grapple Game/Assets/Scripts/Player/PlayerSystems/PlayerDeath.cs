@@ -62,9 +62,9 @@ public class PlayerDeath : PlayerSystem
 
         yield return new WaitForSeconds(0.5f);
 
-        if (player.saveData.LastCheckpoint != null)
+        if (player.tempData.LastCheckpoint != null)
         {
-            transform.position = (Vector3) player.saveData.LastCheckpoint;
+            transform.position = (Vector3) player.tempData.LastCheckpoint;
         }
         else
         {

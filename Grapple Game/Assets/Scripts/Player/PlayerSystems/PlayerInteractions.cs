@@ -35,7 +35,7 @@ public class PlayerInteractions : PlayerSystem
             // Check Point
             if (i == 0 && hitCollider != null)
             {
-                player.saveData.LastCheckpoint = hitCollider.transform.position;
+                player.tempData.LastCheckpoint = hitCollider.transform.position;
             }
             // Hazard
             else if (i == 1 && hitCollider != null)

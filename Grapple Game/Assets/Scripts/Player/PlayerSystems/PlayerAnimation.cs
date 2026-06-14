@@ -46,11 +46,11 @@ public class PlayerAnimation : PlayerSystem
     void SetAnimator()
     {
         animator.SetFloat("Speed", Mathf.Abs(moveInput.x));
-        animator.SetBool("IsJumping", player.saveData.IsJumping);
-        animator.SetBool("IsFalling", player.saveData.IsFalling);
-        animator.SetBool("IsHanging", player.saveData.IsHanging);
-        animator.SetBool("IsPulling", player.saveData.IsPulling);
-        animator.SetBool("OnWall", player.saveData.OnWall[0] || player.saveData.OnWall[1]);
+        animator.SetBool("IsJumping", player.tempData.IsJumping);
+        animator.SetBool("IsFalling", player.tempData.IsFalling);
+        animator.SetBool("IsHanging", player.tempData.IsHanging);
+        animator.SetBool("IsPulling", player.tempData.IsPulling);
+        animator.SetBool("OnWall", player.tempData.OnWall[0] || player.tempData.OnWall[1]);
     }
 
     #region Flipping

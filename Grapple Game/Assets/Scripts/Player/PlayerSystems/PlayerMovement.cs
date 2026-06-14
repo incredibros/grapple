@@ -87,16 +87,16 @@ public class PlayerMovement : PlayerSystem
 		if (Physics2D.OverlapBox(player.data.groundCheckPoint + (Vector2) transform.position, player.data.groundCheckSize, 0f, player.data.groundLayer) && Mathf.Abs(rb.velocity.y) <= 0.001f)
 		{
 			timer.coyote = player.data.coyoteTime;
-			state.onGround = player.saveData.OnGround = true;
+			state.onGround = true;
 			if (grapples == 0 && !state.isGrappled)
 				grapples++;
 		}
 		else
-			state.onGround = player.saveData.OnGround = false;
+			state.onGround = false;
 		
 		if (rb.velocity.y < -0.001f && !state.isHanging)
 		{
-			state.isFalling = player.saveData.IsFalling = true;
+			state.isFalling = true;
 			if (moveInput.y == -1)
 			 	state.isFastFalling = true;
 		}
@@ -115,7 +115,9 @@ public class PlayerMovement : PlayerSystem
 		state.isClinging = (state.onWall[0] && timer.lateralBuffer[0] > 0f) || (state.onWall[1] && timer.lateralBuffer[1] > 0f);
 
 		if (state.onWall[0])
+		{
 			timer.wallCoyote[0] = player.data.wallCoyoteTime;
+		}
 		if (state.onWall[1])
 			timer.wallCoyote[1] = player.data.wallCoyoteTime;
 		
@@ -221,6 +223,8 @@ public class PlayerMovement : PlayerSystem
 		state.isJumping = true;
 		state.isWallJumping = new bool2(dir == -1, dir == 1);
 		timer.accelTime = dir != 0 ? 0f : timer.accelTime;
+
+		state.isPulling = dir != 0 ? false : state.isPulling;
 	}
 
 	void OnJumpButtonUp()
@@ -499,7 +503,7 @@ public class PlayerMovement : PlayerSystem
 	#region Death
 	void OnDeath()
 	{
-		state.isDead = player.saveData.IsDead = true;
+		state.isDead = player.tempData.IsDead = true;
 
 		timer.coyote = 0f;
 		timer.wallCoyote[0] = 0f;
@@ -517,14 +521,14 @@ public class PlayerMovement : PlayerSystem
 			OnGrappleButtonUp();
 		}
 
-		player.saveData.TotalDeaths++;
+		player.tempData.TotalDeaths++;
 
 		rb.bodyType = RigidbodyType2D.Static;
 	}
 
 	void OnRespawn()
 	{
-		state.isDead = player.saveData.IsDead = false;
+		state.isDead = player.tempData.IsDead = false;
 		state.isFrozen = false;
 
 		rb.bodyType = RigidbodyType2D.Dynamic;
