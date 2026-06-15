@@ -21,9 +21,8 @@ public class PauseMenu : MonoBehaviour
     void Awake()
     {
         pauseDocument = GetComponent<UIDocument>();
-        FindElements();
 
-        GameObject playerObj = GameObject.Find("Player");
+        GameObject playerObj = GameObject.FindWithTag("Player");
 
         player = playerObj.GetComponent<Player>();
     }
@@ -117,6 +116,8 @@ public class PauseMenu : MonoBehaviour
     #region Events
     void OnEnable()
     {
+        FindElements();
+        
         resumeButton.clicked += ResumeGame;
         restartButton.clicked += RestartGame;
         optionsButton.clicked += OptionsGame;

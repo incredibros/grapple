@@ -10,7 +10,7 @@ public class ChunkManager : MonoBehaviour
 
     [SerializeField] List<Tilemap> tilemaps;
 
-    [Header("Settings")]
+    [Header("Chunk Settings")]
     public int chunkSize = 16;
     public Vector2Int renderDistance = new Vector2Int(2, 1);
 

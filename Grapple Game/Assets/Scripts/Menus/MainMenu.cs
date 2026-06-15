@@ -23,7 +23,6 @@ public class MainMenu : MonoBehaviour
         GameIsPaused = true;
 
         mainMenuDocument = GetComponent<UIDocument>();
-        FindElements();
     }
 
     void Start()
@@ -105,6 +104,8 @@ public class MainMenu : MonoBehaviour
     #region Events
     void OnEnable()
     {
+        FindElements();
+        
         playButton.clicked += PlayGame;
         optionsButton.clicked += OptionsGame;
         creditsButton.clicked += CreditsGame;

@@ -16,7 +16,6 @@ public class CreditsMenu : MonoBehaviour
     void Awake()
     {
         creditsDocument = GetComponent<UIDocument>();
-        FindElements();
     }
 
     void Start()
@@ -57,6 +56,8 @@ public class CreditsMenu : MonoBehaviour
     #region Events
     void OnEnable()
     {
+        FindElements();
+        
         backButton.clicked += BackGame;
     }
 

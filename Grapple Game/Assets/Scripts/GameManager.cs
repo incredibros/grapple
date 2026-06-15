@@ -33,13 +33,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void CleanUpSceneDuplicates(GameObject[] duplicatesInScene)
+    public void CleanUpSceneDuplicates(GameObject[] duplicatesInScene)
     {
-        foreach (GameObject duplicatePrefabOrObj in duplicatesInScene)
+        foreach (GameObject duplicateTarget in duplicatesInScene)
         {
-            if (duplicatePrefabOrObj != null)
+            if (duplicateTarget != null)
             {
-                GameObject duplicateInScene = GameObject.Find(duplicatePrefabOrObj.name);
+                GameObject duplicateInScene = GameObject.Find(duplicateTarget.name);
                 
                 if (duplicateInScene != null && duplicateInScene.scene.name != "DontDestroyOnLoad")
                 {
