@@ -29,7 +29,7 @@ public class PlayerMovement : PlayerSystem
 	float pitonZipTimer;
 	float pitonZipDuration;
 
-	enum GrappleableObjects { None, NonGrappleable, Platform, SemiSolid, Peg, Piton, Flinger }
+	enum GrappleableObjects { None, NonGrappleable, Platform, SemiSolid, CrumblingPlatform, Peg, Piton, Flinger }
 
 	// Override calls this awake function instead of the awake function from the parent
 	// base.Awake still makes sure to call the parent's awake function
@@ -117,6 +117,14 @@ public class PlayerMovement : PlayerSystem
 			state.onGround = player.tempData.OnGround = true;
 			if (grapples == 0 && !state.isGrappled)
 				grapples++;
+			
+			RaycastHit2D hit;
+			if(hit = Physics2D.Raycast(transform.position, Vector2.down, 0.6f, player.data.crumblingPlatformLayer))
+			{
+				CrumblingPlatform crumblingPlatform = hit.collider.GetComponent<CrumblingPlatform>();
+				crumblingPlatform.player = player;
+				crumblingPlatform.ActivateCrumbling();
+			}
 		}
 		else
 			state.onGround = player.tempData.OnGround = false;
@@ -317,7 +325,9 @@ public class PlayerMovement : PlayerSystem
 			{
 				int parentLayer = hits[i].collider.transform.parent.gameObject.layer;
 				
-				if (OnLayer(parentLayer, player.data.pitonLayer))
+				if (OnLayer(parentLayer, player.data.crumblingPlatformLayer))
+					grappledObject = GrappleableObjects.CrumblingPlatform;
+				else if (OnLayer(parentLayer, player.data.pitonLayer))
 					grappledObject = GrappleableObjects.Piton;
 				else if (OnLayer(parentLayer, player.data.flingerLayer))
 					grappledObject = GrappleableObjects.Flinger;
@@ -337,8 +347,15 @@ public class PlayerMovement : PlayerSystem
 		
 		RaycastHit2D hit = hits[hitIndex];
 		Vector2 hitPoint = hit.point;
+
+		if (grappledObject == GrappleableObjects.CrumblingPlatform)
+		{
+			CrumblingPlatform crumblingPlatform = hit.collider.GetComponentInParent<CrumblingPlatform>();
+			crumblingPlatform.player = player;
+			crumblingPlatform.ActivateCrumbling();
+		}
 		
-		if (grappledObject == GrappleableObjects.Peg || grappledObject == GrappleableObjects.Piton || grappledObject == GrappleableObjects.Flinger)
+		if (grappledObject == GrappleableObjects.CrumblingPlatform || grappledObject == GrappleableObjects.Peg || grappledObject == GrappleableObjects.Piton || grappledObject == GrappleableObjects.Flinger)
 		{
 			TargetPosition hitCollider = hit.collider.GetComponentInParent<TargetPosition>();
 			hitPoint = new Vector2(
@@ -353,16 +370,6 @@ public class PlayerMovement : PlayerSystem
 
 		joint.connectedAnchor = grapplePoint = nudge + hitPoint;
 		joint.distance = grappleRadius = Vector2.Distance(transform.position, grapplePoint);
-		
-		/*Piton piton = hits[hitIndex].collider.GetComponentInParent<Piton>();
-		if (piton != null)
-		{
-			activePiton = piton;
-		}
-		else
-		{
-			activePiton = null;
-		}*/
 
 		player.events.OnGrapple?.Invoke(grapplePoint);
 	}

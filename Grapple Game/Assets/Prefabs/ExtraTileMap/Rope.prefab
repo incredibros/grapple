@@ -222,7 +222,7 @@ MonoBehaviour:
   collisionRadius: 0.07
   collisionLayer:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 67108992
   bounceFactor: 0.1
   subSteps: 10
   iterationsPerSubStep: 5

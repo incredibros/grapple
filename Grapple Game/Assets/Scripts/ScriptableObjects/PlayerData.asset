@@ -33,7 +33,7 @@ MonoBehaviour:
   groundCheckSize: {x: 0.44, y: 0.1}
   groundLayer:
     serializedVersion: 2
-    m_Bits: 1152
+    m_Bits: 67110016
   leftCheckPoints:
   - {x: -0.35, y: 0.3}
   - {x: -0.35, y: 0.12}
@@ -111,7 +111,7 @@ MonoBehaviour:
   releaseDelayTime: 2
   grappleLayers:
     serializedVersion: 2
-    m_Bits: 1920
+    m_Bits: 67110784
   nonGrappleLayer:
     serializedVersion: 2
     m_Bits: 512
@@ -121,6 +121,9 @@ MonoBehaviour:
   semiSolidLayer:
     serializedVersion: 2
     m_Bits: 1024
+  crumblingPlatformLayer:
+    serializedVersion: 2
+    m_Bits: 67108864
   pitonLayer:
     serializedVersion: 2
     m_Bits: 131072

@@ -34,6 +34,7 @@ public struct PlayerEvents
     public Action OnPull;
     public Action OnPullButtonUp;
     public Action<Vector2, bool> OnChangeAnchorPoint;
+    public Action ReleaseGrapplePoint;
     #endregion
 
     #region Death and Respawn

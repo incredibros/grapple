@@ -66,6 +66,7 @@ public class PlayerData : ScriptableObject
 	public LayerMask nonGrappleLayer;
 	public LayerMask platformLayer;
 	public LayerMask semiSolidLayer;
+	public LayerMask crumblingPlatformLayer;
 	public LayerMask pitonLayer;
 	public LayerMask flingerLayer;
 	public LayerMask spinnerLayer;
