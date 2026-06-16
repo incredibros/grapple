@@ -16,6 +16,7 @@ public class PlayerRope : PlayerSystem
 
         rope.points[^1].pastPos = rope.points[^1].currentPos;
 		rope.points[^1].currentPos = transform.position;
+        rope.wrapPoints[^1].pos = transform.position;
     }
 
     #region Rope
@@ -51,6 +52,7 @@ public class PlayerRope : PlayerSystem
         }
 
         rope.wrapPoints.Add(new WrapPoint(point, 0, 0f));
+        rope.wrapPoints.Add(new WrapPoint(transform.position, rope.points.Count - 1, 0f));
         detached = false;
     }
 

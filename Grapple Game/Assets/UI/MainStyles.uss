@@ -55,7 +55,7 @@ Toggle .unity-toggle__checkmark {
 }
 
 .settings-slider {
-    width: 200px;
+    width: 300px;
     justify-content: center;
     align-items: center;
 }
@@ -69,5 +69,5 @@ Toggle .unity-toggle__checkmark {
     width: 30px;
     height: 30px;
     border-radius: 15px;
-    margin-top: -15px;
+    margin-top: -12.5px;
 }

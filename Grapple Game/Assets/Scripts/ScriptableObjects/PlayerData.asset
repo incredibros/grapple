@@ -17,11 +17,11 @@ MonoBehaviour:
   jumpForce: 14
   wallJumpForce: {x: 9, y: 12}
   jumpCutMultiplier: 0.4
-  coyoteTime: 0.1
-  wallCoyoteTime: 0.05
-  jumpBufferTime: 0.1
-  lateralBufferTime: 0.1
-  jumpDelayTime: 0.25
+  coyoteTime: 5
+  wallCoyoteTime: 3
+  jumpBufferTime: 5
+  lateralBufferTime: 5
+  jumpDelayTime: 12
   gravityScale: 4
   fallGravityMultiplier: 2
   maxFallSpeed: 20
@@ -57,7 +57,7 @@ MonoBehaviour:
   grappleRange: 15
   minLineLength: 0.2
   pullSpeed: 14
-  pullFreezeDuration: 0.05
+  pullFreezeDuration: 0.06
   pullFreezeVelocity:
     serializedVersion: 2
     m_Curve:
@@ -108,7 +108,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  releaseDelayTime: 0.01
+  releaseDelayTime: 2
   grappleLayers:
     serializedVersion: 2
     m_Bits: 1920
@@ -124,6 +124,15 @@ MonoBehaviour:
   pitonLayer:
     serializedVersion: 2
     m_Bits: 131072
+  flingerLayer:
+    serializedVersion: 2
+    m_Bits: 4194304
+  spinnerLayer:
+    serializedVersion: 2
+    m_Bits: 8388608
+  bouncerLayer:
+    serializedVersion: 2
+    m_Bits: 262144
   checkpointCheckSize: {x: 0.5, y: 1}
   checkpointLayer:
     serializedVersion: 2
@@ -146,7 +155,8 @@ MonoBehaviour:
     m_Bits: 65536
   springForce: 20
   hangTime: 0.5
-  ghostDuplicateDelay: 0.07
+  flingerLaunchForce: 20
+  ghostDuplicateDelay: 0.06
   ghostPrefab: {fileID: 4341941176945344906, guid: 0378be27a793577408bdda3373d9053a, type: 3}
   groundEffectPrefab: {fileID: 852556821801593712, guid: 048194095832f4f0a8941085678e01e4, type: 3}
   gunShotEffectPrefab: {fileID: 4659489677238979286, guid: c5397f7b2dbcdf14ca0e03c4a932c1b0, type: 3}

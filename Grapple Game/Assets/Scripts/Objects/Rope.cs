@@ -103,14 +103,17 @@ public class Rope : MonoBehaviour
         if (isDetached)
             return;
         
+        // WrapPoints go from grapplePoint through wrapPoints to player
+        // Start: Player (wrapPoints[^1]), End: last wrapPoint (wrapPoints[^2])
+        
         RaycastHit2D hit;
         float distance = Vector2.Distance(points[^1].pastPos, points[^1].currentPos);
         int steps = Mathf.Min(Mathf.CeilToInt(distance / wrapResolution), maxWrapChecks);
-        Vector2 end = wrapPoints[^1].pos;
+        Vector2 end = wrapPoints[^2].pos;
         
         for (int i = 0; i < steps + 1; i++)
         {
-            Vector2 start = i != steps ? Vector2.Lerp(points[^1].pastPos, points[^1].currentPos, (wrapResolution * i) / distance) : points[^1].currentPos;
+            Vector2 start = i != steps ? Vector2.Lerp(points[^1].pastPos, points[^1].currentPos, wrapResolution * i / distance) : points[^1].currentPos;
             List<RaycastHit2D> cornerHits = new List<RaycastHit2D>();
             
             hit = Physics2D.Linecast(start, end, collisionLayer);
@@ -148,21 +151,21 @@ public class Rope : MonoBehaviour
 
             Vector2 newPos = corner + offset;
             FindValuesForWrapPoint(end, newPos, out int index, out float remainder);
-            wrapPoints.Add(new WrapPoint(newPos, index, remainder));
+            wrapPoints.Insert(wrapPoints.Count - 1, new WrapPoint(newPos, index, remainder));
             player.events.OnChangeAnchorPoint?.Invoke(newPos, true);
             wrappedLength -= Vector2.Distance(end, newPos);
             Debug.Log(corner + ", " + offset);
             break;
         }
 
-        if (wrapPoints.Count == 1) return;
+        if (wrapPoints.Count == 2) return;
         
-        hit = Physics2D.Linecast(points[^1].currentPos, wrapPoints[^2].pos, collisionLayer);
-        if (hit.collider == null || Vector2.Distance(hit.point, wrapPoints[^2].pos) <= 0.1f)
+        hit = Physics2D.Linecast(wrapPoints[^1].pos, wrapPoints[^3].pos, collisionLayer);
+        if (hit.collider == null || Vector2.Distance(hit.point, wrapPoints[^3].pos) <= 0.1f)
         {
-            wrappedLength += Vector2.Distance(wrapPoints[^1].pos, wrapPoints[^2].pos);
-            player.events.OnChangeAnchorPoint?.Invoke(wrapPoints[^2].pos, false);
-            wrapPoints.RemoveAt(wrapPoints.Count - 1);
+            wrappedLength += Vector2.Distance(wrapPoints[^2].pos, wrapPoints[^3].pos);
+            player.events.OnChangeAnchorPoint?.Invoke(wrapPoints[^3].pos, false);
+            wrapPoints.RemoveAt(wrapPoints.Count - 2);
         }
     }
 
@@ -171,7 +174,7 @@ public class Rope : MonoBehaviour
         Vector2 partialOffset = direction * collisionRadius;
         Vector2 newPos = hitPos + partialOffset;
         FindValuesForWrapPoint(wrapPos, newPos, out int index, out float remainder);
-        wrapPoints.Add(new WrapPoint(newPos, index, remainder));
+        wrapPoints.Insert(wrapPoints.Count - 1, new WrapPoint(newPos, index, remainder));
         player.events.OnChangeAnchorPoint?.Invoke(newPos, true);
         wrappedLength -= Vector2.Distance(wrapPos, newPos);
     }
@@ -179,7 +182,7 @@ public class Rope : MonoBehaviour
     void FindValuesForWrapPoint(Vector2 wrapPos, Vector2 newPos, out int index, out float remainder)
     {
         float lineLength = maxLength / lines.Count;
-        float accumulatedLength = wrapPoints[^1].index * lineLength + wrapPoints[^1].remainder;
+        float accumulatedLength = wrapPoints[^2].index * lineLength + wrapPoints[^2].remainder;
         accumulatedLength += Vector2.Distance(wrapPos, newPos);
         
         index = Mathf.FloorToInt(accumulatedLength / lineLength);
@@ -191,7 +194,7 @@ public class Rope : MonoBehaviour
 
     void FindValuesForRope(out float distance, out float tension, out float adjustment)
     {
-        distance = Vector2.Distance(wrapPoints[^1].pos, points[^1].currentPos);
+        distance = Vector2.Distance(wrapPoints[^2].pos, wrapPoints[^1].pos);
         tension = !isDetached ? tensionCurve.Evaluate(Mathf.Clamp01(distance / wrappedLength)) : 0.97f;
         adjustment = !isDetached ? adjustmentCurve.Evaluate(Mathf.Clamp01((wrappedLength - distance) / adjustmentLength)) : 0;
     }
@@ -335,12 +338,13 @@ public class Rope : MonoBehaviour
 
         int totalPoints = points.Count - 1;
         float lineLength = maxLength / totalPoints;
-        for (int i = 0; i < wrapPoints.Count; i++)
+        for (int i = 0; i < wrapPoints.Count - 1; i++)
         {
-            int totalBoundedPoints = (i + 1 != wrapPoints.Count ? wrapPoints[i + 1].index + 1 : points.Count) - (wrapPoints[i].index + 1);
+            int totalBoundedPoints = wrapPoints[i + 1].index - wrapPoints[i].index;
             int startIndex = wrapPoints[i].index + 1;
             Vector2 startPos = wrapPoints[i].pos;
-            Vector2 endPos = i + 1 != wrapPoints.Count ? wrapPoints[i + 1].pos : points[^1].currentPos;
+            Vector2 endPos = wrapPoints[i + 1].pos;
+
             float boundedDistance = Vector2.Distance(startPos, endPos);
             float offset = lineLength - wrapPoints[i].remainder;
             
@@ -369,20 +373,32 @@ public class Rope : MonoBehaviour
     public void DetachRope()
     {
         FindValuesForRope(out _, out _, out float adjustment);
-        if (adjustment != 0)
-        {
-            Vector2 direction = Vector2.Perpendicular((points[0].currentPos - points[^1].currentPos).normalized);
-            foreach (Point point in points)
-            {
-                Vector2 velocity = point.currentPos - point.pastPos;
-                Vector2 projected = Vector2.Dot(direction, velocity) * direction;
-                Vector2 finalVelocity = Vector2.Lerp(velocity, projected, adjustment);
-                point.pastPos = point.currentPos - finalVelocity;
-            }
-        }
-
         isDetached = true;
         timeAfterDetached = 0.0f;
+        
+        if (adjustment == 0)
+            return;
+        
+        for (int i = 0; i < wrapPoints.Count - 1; i++)
+        {
+            Vector2 direction = Vector2.Perpendicular((wrapPoints[i].pos - wrapPoints[i + 1].pos).normalized);
+            for (int j = wrapPoints[i].index + 1; j < wrapPoints[i + 1].index + 1; j++)
+            {
+                Vector2 velocity = points[j].currentPos - points[j].pastPos;
+                Vector2 projected = Vector2.Dot(direction, velocity) * direction;
+                Vector2 finalVelocity = Vector2.Lerp(velocity, projected, adjustment);
+                points[j].pastPos = points[j].currentPos - finalVelocity;
+            }
+        }
+        
+        /*Vector2 direction = Vector2.Perpendicular((points[0].currentPos - points[^1].currentPos).normalized);
+        foreach (Point point in points)
+        {
+            Vector2 velocity = point.currentPos - point.pastPos;
+            Vector2 projected = Vector2.Dot(direction, velocity) * direction;
+            Vector2 finalVelocity = Vector2.Lerp(velocity, projected, adjustment);
+            point.pastPos = point.currentPos - finalVelocity;
+        }*/
     }
 }
 

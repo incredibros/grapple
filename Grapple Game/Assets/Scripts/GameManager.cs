@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
+        /*
         if (Instance == null)
         {
             Instance = this;
@@ -20,6 +21,7 @@ public class GameManager : MonoBehaviour
             Instance.CleanUpSceneDuplicates(this.persistentObjects);
             Destroy(gameObject);
         }
+        */
     }
 
     void MakePersistentObjects()

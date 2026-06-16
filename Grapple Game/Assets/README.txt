@@ -19,11 +19,7 @@ Y: Transform tool (combines move, rotate, and scale).
 
 9: Move Player
 
-C: Spawn Checkpoint
-O: Spawn Orb
-P: Spawn Peg
-S: Spawn Spring
-I: Spawn Piton
+M: Parent Current Object with Extra Tilemap
 
 GAME:
 Move: W A S D / Arrow Keys

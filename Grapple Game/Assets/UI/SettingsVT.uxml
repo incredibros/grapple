@@ -5,9 +5,13 @@
         <ui:Label text="Settings" display-tooltip-when-elided="true" name="SettingsTitle" class="header" style="-unity-text-align: upper-center; font-size: 100px; margin-top: 50px;" />
         <ui:VisualElement name="Content" style="width: 100%; height: 500px; margin-top: 50px; margin-bottom: 50px; align-items: center; font-size: 30px; color: rgb(255, 255, 255); justify-content: flex-start;">
             <ui:Toggle label="Fullscreen:" name="Fullscreen" class="settings-toggle" style="justify-content: center; margin-bottom: 10px;" />
-            <ui:DropdownField label="Dropdown:" name="Resolution" index="0" choices="1920 x 1080" />
+            <ui:DropdownField label="Resolution:" name="Resolution" index="0" choices="1920 x 1080" />
             <ui:DropdownField label="Qaulity:" name="Quality" choices="Normal" index="0" />
-            <ui:Slider picking-mode="Ignore" label="Volume:" value="1" high-value="1" name="Volume" class="settings-slider" style="margin-bottom: 10px; justify-content: center; align-items: center;" />
+            <ui:Slider picking-mode="Ignore" label="Main Volume:" value="1" high-value="1" name="Volume" class="settings-slider" style="margin-bottom: 10px; justify-content: center; align-items: center;" />
+            <ui:Slider picking-mode="Ignore" label="Music Volume:" value="1" high-value="1" name="MusicVolume" class="settings-slider" style="margin-bottom: 10px; justify-content: center; align-items: center;" />
+            <ui:Slider picking-mode="Ignore" label="SFX Volume:" value="1" high-value="1" name="SFXVolume" class="settings-slider" style="margin-bottom: 10px; justify-content: center; align-items: center;" />
+            <ui:Toggle label="Timer:" name="Timer" style="margin-top: 30px;" />
+            <ui:Slider picking-mode="Ignore" label="Camera Sensitivity:" value="1" high-value="1" name="CameraSens" class="settings-slider" style="justify-content: center; align-items: center;" />
         </ui:VisualElement>
         <ui:VisualElement name="Buttons" style="flex-direction: row; align-items: center; width: 50%; justify-content: center;">
             <ui:Button text="Back" display-tooltip-when-elided="true" name="Back" class="buttons" style="margin-right: 25px;" />

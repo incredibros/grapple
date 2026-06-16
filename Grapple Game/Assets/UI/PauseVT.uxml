@@ -1,6 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/MainStyles.uss?fileID=7433441132597879392&amp;guid=ba0bc3b172effc44d9df3879b20a58f2&amp;type=3#MainStyles" />
     <ui:VisualElement name="Container" class="container">
+        <ui:Label text="100" display-tooltip-when-elided="true" name="Crystal" style="position: absolute; top: 118px; left: 1616px; font-size: 100px; color: rgb(255, 255, 255);" />
         <ui:VisualElement name="Background" class="background" style="background-color: rgba(0, 0, 0, 0.59);" />
         <ui:Label text="Pause" display-tooltip-when-elided="true" name="PauseTitle" class="header" />
         <ui:Button text="Resume" display-tooltip-when-elided="true" name="Resume" class="buttons" style="-unity-text-align: middle-center; margin-top: 150px; margin-right: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; margin-bottom: 25px;" />

@@ -12,8 +12,9 @@ public class Crystal : MonoBehaviour
 
     void Awake()
     {
-        sP = GetComponent<SpriteRenderer>();
         player = GameObject.FindWithTag("Player").GetComponent<Player>();
+        
+        sP = GetComponent<SpriteRenderer>();
     }
 
     void Start()

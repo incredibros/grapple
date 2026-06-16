@@ -64,15 +64,6 @@ public static class EditorScript
         Event e = Event.current;
         if (e.type != EventType.KeyDown)
             { return; }
-
-        if (e.keyCode == KeyCode.Alpha9)
-        {
-            Vector2 mousePos = Event.current.mousePosition;
-            Ray worldRay = HandleUtility.GUIPointToWorldRay(mousePos);
-            player.transform.position = worldRay.GetPoint(10f);
-            player.transform.position = new Vector3(Mathf.Round(player.transform.position.x - 0.5f) + 0.5f, Mathf.Round(player.transform.position.y - 0.5f) + 0.5f, 0);
-            Debug.Log("Player Selected");
-        }
         
         if (e.keyCode == KeyCode.Alpha0)
         {
@@ -140,100 +131,21 @@ public static class EditorScript
             Debug.Log("Half Sprite Brush Selected");
         }
 
-        if (e.keyCode == KeyCode.C)
+        if (e.keyCode == KeyCode.Alpha9)
         {
-            GameObject checkpoint = prefabs[0];
-
-            GameObject parent = tilemaps[8];
-
             Vector2 mousePos = Event.current.mousePosition;
             Ray worldRay = HandleUtility.GUIPointToWorldRay(mousePos);
-            Vector3 spawnPos = worldRay.GetPoint(10f);
-
-            GameObject obj = (GameObject)PrefabUtility.InstantiatePrefab(checkpoint, parent.transform);
-            obj.transform.position = new Vector3(Mathf.Round(spawnPos.x - 0.5f) + 0.5f, Mathf.Round(spawnPos.y - 0.5f) + 0.5f, 0);
-
-            Undo.RegisterCreatedObjectUndo(obj, "Spawn Checkpoint");
-
-            Selection.activeGameObject = obj;
-
-            Debug.Log("Checkpoint Spawned");
+            player.transform.position = worldRay.GetPoint(10f);
+            player.transform.position = new Vector3(Mathf.Round(player.transform.position.x - 0.5f) + 0.5f, Mathf.Round(player.transform.position.y - 0.5f) + 0.5f, 0);
+            Debug.Log("Player Selected");
         }
-        if (e.keyCode == KeyCode.O)
+
+        if (e.keyCode == KeyCode.M)
         {
-            GameObject checkpoint = prefabs[1];
-
-            GameObject parent = tilemaps[8];
-
-            Vector2 mousePos = Event.current.mousePosition;
-            Ray worldRay = HandleUtility.GUIPointToWorldRay(mousePos);
-            Vector3 spawnPos = worldRay.GetPoint(10f);
-
-            GameObject obj = (GameObject)PrefabUtility.InstantiatePrefab(checkpoint, parent.transform);
-            obj.transform.position = new Vector3(Mathf.Round(spawnPos.x - 0.5f) + 0.5f, Mathf.Round(spawnPos.y - 0.5f) + 0.5f, 0);
-
-            Undo.RegisterCreatedObjectUndo(obj, "Spawn Orb");
-
-            Selection.activeGameObject = obj;
-
-            Debug.Log("Orb Spawned");
-        }
-        if (e.keyCode == KeyCode.P)
-        {
-            GameObject checkpoint = prefabs[2];
-
-            GameObject parent = tilemaps[8];
-
-            Vector2 mousePos = Event.current.mousePosition;
-            Ray worldRay = HandleUtility.GUIPointToWorldRay(mousePos);
-            Vector3 spawnPos = worldRay.GetPoint(10f);
-
-            GameObject obj = (GameObject)PrefabUtility.InstantiatePrefab(checkpoint, parent.transform);
-            obj.transform.position = new Vector3(Mathf.Round(spawnPos.x - 0.5f) + 0.5f, Mathf.Round(spawnPos.y - 0.5f) + 0.5f, 0);
-
-            Undo.RegisterCreatedObjectUndo(obj, "Spawn Peg");
-
-            Selection.activeGameObject = obj;
-
-            Debug.Log("Peg Spawned");
-        }
-        if (e.keyCode == KeyCode.S)
-        {
-            GameObject spring = prefabs[3];
-
-            GameObject parent = tilemaps[8];
-
-            Vector2 mousePos = Event.current.mousePosition;
-            Ray worldRay = HandleUtility.GUIPointToWorldRay(mousePos);
-            Vector3 spawnPos = worldRay.GetPoint(10f);
-
-            GameObject obj = (GameObject)PrefabUtility.InstantiatePrefab(spring, parent.transform);
-            obj.transform.position = new Vector3(Mathf.Round(spawnPos.x - 0.5f) + 0.5f, Mathf.Round(spawnPos.y - 0.5f) + 0.5f, 0);
-
-            Undo.RegisterCreatedObjectUndo(obj, "Spawn Spring");
-
-            Selection.activeGameObject = obj;
-
-            Debug.Log("Spring Spawned");
-        }
-        if (e.keyCode == KeyCode.I)
-        {
-            GameObject piton = prefabs[3];
-
-            GameObject parent = tilemaps[8];
-
-            Vector2 mousePos = Event.current.mousePosition;
-            Ray worldRay = HandleUtility.GUIPointToWorldRay(mousePos);
-            Vector3 spawnPos = worldRay.GetPoint(10f);
-
-            GameObject obj = (GameObject)PrefabUtility.InstantiatePrefab(piton, parent.transform);
-            obj.transform.position = new Vector3(Mathf.Round(spawnPos.x - 0.5f) + 0.5f, Mathf.Round(spawnPos.y - 0.5f) + 0.5f, 0);
-
-            Undo.RegisterCreatedObjectUndo(obj, "Spawn Piton");
-
-            Selection.activeGameObject = obj;
-
-            Debug.Log("Piton Spawned");
+            GameObject selectedObj = Selection.activeGameObject;
+            GameObject targetParent = tilemaps[8];
+            Undo.SetTransformParent(selectedObj.transform, targetParent.transform, "Parent Selected Object");
+            Debug.Log($"{selectedObj.name} is now a child of {targetParent.name}");
         }
     }
     #endregion

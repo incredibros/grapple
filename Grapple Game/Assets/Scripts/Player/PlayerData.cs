@@ -19,11 +19,11 @@ public class PlayerData : ScriptableObject
 	public Vector2 wallJumpForce;
 	[Range(0f, 1)] public float jumpCutMultiplier;
 	[Space(5)]
-	public float coyoteTime;
-	public float wallCoyoteTime;
-	public float jumpBufferTime;
-	public float lateralBufferTime;
-	public float jumpDelayTime;
+	public int coyoteTime;
+	public int wallCoyoteTime;
+	public int jumpBufferTime;
+	public int lateralBufferTime;
+	public int jumpDelayTime;
 	[Space(5)]
 	public float gravityScale;
 	public float fallGravityMultiplier;
@@ -60,13 +60,16 @@ public class PlayerData : ScriptableObject
 	public float reelVelocityChangeDuration;
 	public AnimationCurve reelVelocityChangeLerp;
 	[Space(5)]
-	public float releaseDelayTime;
+	public int releaseDelayTime;
 	[Space(5)]
 	public LayerMask grappleLayers;
 	public LayerMask nonGrappleLayer;
 	public LayerMask platformLayer;
 	public LayerMask semiSolidLayer;
 	public LayerMask pitonLayer;
+	public LayerMask flingerLayer;
+	public LayerMask spinnerLayer;
+	public LayerMask bouncerLayer;
 	
 	[Header("Checkpoint")]
 	public Vector2 checkpointCheckSize;
@@ -91,6 +94,9 @@ public class PlayerData : ScriptableObject
 
 	[Header("Piton")]
 	public float hangTime;
+	
+	[Header("Flinger")]
+	public float flingerLaunchForce;
 
 	[Header("Effects")]
 	public float ghostDuplicateDelay;
