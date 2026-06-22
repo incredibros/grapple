@@ -169,11 +169,16 @@ public class PlayerMovement : PlayerSystem
 		//if (Mathf.Abs(rb.velocity.x) > 0.001f) return false;
 		
 		int wallsDetected = 0;
+		bool2 outerWalls = false;
+		int index = 0;
 		foreach (Vector2 pos in dir == 1 ? player.data.rightCheckPoints : player.data.leftCheckPoints)
 		{
-			wallsDetected += Physics2D.OverlapBox(pos + (Vector2) transform.position, player.data.wallCheckSize, 0f, player.data.wallLayer) ? 1 : 0;
+			bool detected = Physics2D.OverlapBox(pos + (Vector2) transform.position, player.data.wallCheckSize, 0f, player.data.wallLayer);
+			wallsDetected += detected ? 1 : 0;
+			outerWalls = new bool2(index == 0 && detected || outerWalls.x, index == 3 && detected || outerWalls.y);
+			index++;
 		}
-		return wallsDetected >= 3;
+		return wallsDetected >= 3 || outerWalls.Equals(true);
 	}
 	#endregion
 
