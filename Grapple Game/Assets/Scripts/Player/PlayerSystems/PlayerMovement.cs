@@ -485,7 +485,7 @@ public class PlayerMovement : PlayerSystem
 
 			rb.velocity = startingVelocity;
 		}
-		else if (grappledObject == GrappleableObjects.Piton)
+		else if (grappledObject == GrappleableObjects.Piton || grappledObject == GrappleableObjects.Flinger)
 		{
 			Vector2 startingVelocity = rb.velocity;
 			float distance = Vector2.Distance(transform.position, grapplePoint);
