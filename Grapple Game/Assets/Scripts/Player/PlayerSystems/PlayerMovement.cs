@@ -23,13 +23,11 @@ public class PlayerMovement : PlayerSystem
 	[HideInInspector] public float grappleRadius;
 
 	int grapples;
-	GrappleableObjects grappledObject;
+	Grappleable grappledObject;
 
 	Vector2 pitonStartPos;
 	float pitonZipTimer;
 	float pitonZipDuration;
-
-	enum GrappleableObjects { None, NonGrappleable, Platform, SemiSolid, CrumblingPlatform, Peg, Piton, Flinger }
 
 	// Override calls this awake function instead of the awake function from the parent
 	// base.Awake still makes sure to call the parent's awake function
@@ -298,10 +296,20 @@ public class PlayerMovement : PlayerSystem
 		RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, mouseDirection, player.data.grappleRange, player.data.grappleLayers);
 		
 		int hitIndex = -1;
-		grappledObject = GrappleableObjects.None;
+		Vector2 hitPoint = Vector2.zero;
+		grappledObject = null;
 		for (int i = 0; i < hits.Length; i++)
 		{
-			int layer = hits[i].collider.transform.gameObject.layer;
+			grappledObject = hits[i].collider.transform.GetComponent<Grappleable>();
+			
+			if (grappledObject.type == GrappleableTypes.SemiSolid && mouseDirection.y >= 0)
+				continue;
+			
+			hitIndex = i;
+			hitPoint = hits[i].point;
+			break;
+
+			/* int layer = hits[i].collider.transform.gameObject.layer;
 
 			if (OnLayer(layer, player.data.nonGrappleLayer))
 			{
@@ -341,31 +349,30 @@ public class PlayerMovement : PlayerSystem
 				
 				hitIndex = i;
 				break;
-			}
+			} */
 		}
 		
-		if (grappledObject == GrappleableObjects.None)
+		if (grappledObject == null)
 		{
 			// Shoot grapple and retract
 			return;
 		}
-		
-		RaycastHit2D hit = hits[hitIndex];
-		Vector2 hitPoint = hit.point;
 
-		if (grappledObject == GrappleableObjects.CrumblingPlatform)
+		if (grappledObject.type == GrappleableTypes.CrumblingPlatform)
 		{
-			CrumblingPlatform crumblingPlatform = hit.collider.GetComponentInParent<CrumblingPlatform>();
+			CrumblingPlatform crumblingPlatform = hits[hitIndex].collider.GetComponentInParent<CrumblingPlatform>();
 			crumblingPlatform.player = player;
 			crumblingPlatform.ActivateCrumbling();
 		}
 		
-		if (grappledObject == GrappleableObjects.CrumblingPlatform || grappledObject == GrappleableObjects.Peg || grappledObject == GrappleableObjects.Piton || grappledObject == GrappleableObjects.Flinger)
+		if (grappledObject.clampGrapple)
 		{
-			TargetPosition hitCollider = hit.collider.GetComponentInParent<TargetPosition>();
+			Vector2 center = grappledObject.transform.position;
+			Vector2 min = grappledObject.minGrappleBounds;
+			Vector2 max = grappledObject.maxGrappleBounds;
 			hitPoint = new Vector2(
-				Mathf.Clamp(hitPoint.x, hitCollider.transform.position.x + hitCollider.minGrappleBounds.x, hitCollider.transform.position.x + hitCollider.maxGrappleBounds.x),
-				Mathf.Clamp(hitPoint.y, hitCollider.transform.position.y + hitCollider.minGrappleBounds.y, hitCollider.transform.position.y + hitCollider.maxGrappleBounds.y)
+				Mathf.Clamp(hitPoint.x, center.x + min.x, center.x + max.x),
+				Mathf.Clamp(hitPoint.y, center.y + min.y, center.y + min.y)
 			);
 		}
 
@@ -379,28 +386,24 @@ public class PlayerMovement : PlayerSystem
 		player.events.OnGrapple?.Invoke(grapplePoint);
 	}
 
-	bool OnLayer(int layer, LayerMask comparedLayer)
+	/* bool OnLayer(int layer, LayerMask comparedLayer)
 	{
 		return (comparedLayer.value & (1 << layer)) != 0;
-	}
+	} */
 
 	void OnGrapple()
 	{
 		if (Vector2.Distance(transform.position, grapplePoint) >= grappleRadius - 0.1f && !state.onGround)
-		{
 			state.isHanging = true;
-		}
 		else
-		{
 			state.isHanging = false;
-		}
 	}
 
 	void OnGrappleButtonUp()
 	{
 		if (timer.grappleReleaseDelay > 0) return;
 			
-		grappledObject = GrappleableObjects.None;
+		grappledObject = null;
 		state.isGrappled = false;
 		state.isHanging = false;
 		joint.enabled = false;
@@ -431,11 +434,11 @@ public class PlayerMovement : PlayerSystem
 
 		
 		
-		if (grappledObject == GrappleableObjects.Platform || grappledObject == GrappleableObjects.SemiSolid || grappledObject == GrappleableObjects.Peg)
+		if (grappledObject.pullType == PullTypes.Boost)
 		{
 			state.isPulling = true;
 		}
-		else if (grappledObject == GrappleableObjects.Piton)
+		else if (grappledObject.pullType == PullTypes.Reel)
 		{
 			state.isReeling = true;
 		}
@@ -471,7 +474,7 @@ public class PlayerMovement : PlayerSystem
 
 		float freezeTimer = 0f;
 		
-		if (grappledObject == GrappleableObjects.Platform || grappledObject == GrappleableObjects.SemiSolid || grappledObject == GrappleableObjects.Peg)
+		if (grappledObject.pullType == PullTypes.Boost)
 		{
 			rb.velocity = (grapplePoint - (Vector2) transform.position).normalized * player.data.pullSpeed;
 			Vector2 startingVelocity = rb.velocity;
@@ -485,7 +488,7 @@ public class PlayerMovement : PlayerSystem
 
 			rb.velocity = startingVelocity;
 		}
-		else if (grappledObject == GrappleableObjects.Piton || grappledObject == GrappleableObjects.Flinger)
+		else if (grappledObject.pullType == PullTypes.Reel)
 		{
 			Vector2 startingVelocity = rb.velocity;
 			float distance = Vector2.Distance(transform.position, grapplePoint);
@@ -502,41 +505,29 @@ public class PlayerMovement : PlayerSystem
 			}
 
 			transform.position = grapplePoint;
-			rb.velocity = Vector2.zero;
-			freezeTimer = 0f;
 
-			while (freezeTimer < player.data.hangTime)
+			if (grappledObject.boostDirection == Vector2.zero)
 			{
-				freezeTimer += Time.deltaTime;
-				yield return null;
+				rb.velocity = Vector2.zero;
+				freezeTimer = 0f;
+
+				while (freezeTimer < player.data.hangTime)
+				{
+					freezeTimer += Time.deltaTime;
+					yield return null;
+				}
+
+				grapples++;
+				state.isReeling = false;
 			}
+			else
+				rb.velocity = grappledObject.boostDirection * player.data.flingerLaunchForce;
 
 			grapples++;
 			state.isReeling = false;
 		}
-		else if (grappledObject == GrappleableObjects.Flinger)
-		{
-			Vector2 startingVelocity = rb.velocity;
-			float distance = Vector2.Distance(transform.position, grapplePoint);
-			while (distance > rb.velocity.magnitude * Time.deltaTime)
-			{
-				Vector2 reelVelocity = (grapplePoint - (Vector2) transform.position).normalized * player.data.reelSpeed;
-				if (freezeTimer <= player.data.reelVelocityChangeDuration)
-					rb.velocity = Vector2.Lerp(startingVelocity, reelVelocity, player.data.reelVelocityChangeLerp.Evaluate(freezeTimer / player.data.reelVelocityChangeDuration));
-				else
-					rb.velocity = reelVelocity;
-				distance = Vector2.Distance(transform.position, grapplePoint);
-				freezeTimer += Time.deltaTime;
-				yield return null;
-			}
 
-			freezeTimer = 0f;
-			grapples++;
-			state.isReeling = false;
-		}
-
-		grappledObject = GrappleableObjects.None;
-		
+		grappledObject = null;
 		state.isFrozen = false;
 	}
 
@@ -545,7 +536,7 @@ public class PlayerMovement : PlayerSystem
 		StopAllCoroutines();
 		state.isReeling = false;
 		state.isFrozen = false;
-		grappledObject = GrappleableObjects.None;
+		grappledObject = null;
 	}
 	#endregion
 
@@ -587,6 +578,13 @@ public class PlayerMovement : PlayerSystem
 	}
 	#endregion
 
+	#region Crystal
+	void OnCrystalPickUp(GameObject crystal)
+	{
+		crystal.GetComponent<Crystal>().OnCrystalPickUp(this.gameObject);
+	}
+	#endregion
+
 	#region Spring
 	void OnSpringActivated()
 	{
@@ -614,6 +612,7 @@ public class PlayerMovement : PlayerSystem
 		player.events.OnDeath += OnDeath;
 		player.events.OnRespawn += OnRespawn;
 		player.events.OnOrbPickUp += OnOrbPickUp;
+		player.events.OnCrystalPickUp += OnCrystalPickUp;
 		player.events.OnSpringActivated += OnSpringActivated;
     }
 
@@ -631,6 +630,7 @@ public class PlayerMovement : PlayerSystem
 		player.events.OnDeath -= OnDeath;
 		player.events.OnRespawn -= OnRespawn;
 		player.events.OnOrbPickUp -= OnOrbPickUp;
+		player.events.OnCrystalPickUp -= OnCrystalPickUp;
 		player.events.OnSpringActivated -= OnSpringActivated;
     }
 	#endregion

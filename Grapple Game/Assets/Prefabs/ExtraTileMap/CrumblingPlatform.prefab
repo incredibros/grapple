@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 1072004084657170685}
   - component: {fileID: 9177659784883376203}
   - component: {fileID: 8720817052133481210}
-  - component: {fileID: 5482457055080215566}
   - component: {fileID: 8943099867544509682}
   - component: {fileID: 2745358247838495988}
   m_Layer: 26
@@ -115,20 +114,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 0.3}
   m_EdgeRadius: 0
---- !u!114 &5482457055080215566
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1071530297941514824}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e11e71aed58fe7742b9fc89d0afe4c00, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minGrappleBounds: {x: -0.5, y: 0.2}
-  maxGrappleBounds: {x: 0.5, y: 0.5}
 --- !u!114 &8943099867544509682
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -167,6 +152,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6194340267059647609}
   - component: {fileID: 2629135609621923488}
+  - component: {fileID: 1998085155359026634}
   m_Layer: 8
   m_Name: GrappleCollider
   m_TagString: Untagged
@@ -215,3 +201,21 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 0.3}
   m_EdgeRadius: 0
+--- !u!114 &1998085155359026634
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8734676642242510648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e11e71aed58fe7742b9fc89d0afe4c00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 4
+  pullType: 0
+  boostDirection: {x: 0, y: 0}
+  clampGrapple: 1
+  minGrappleBounds: {x: -0.5, y: 0.2}
+  maxGrappleBounds: {x: 0.5, y: 0.5}

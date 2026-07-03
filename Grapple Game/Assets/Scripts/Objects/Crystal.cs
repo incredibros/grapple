@@ -69,13 +69,11 @@ public class Crystal : MonoBehaviour
     void OnEnable()
     {
         player.events.OnRespawn += OnRespawn;
-        player.events.OnCrystalPickUp += OnCrystalPickUp;
     }
 
     void OnDisable()
     {
         player.events.OnRespawn -= OnRespawn;
-        player.events.OnCrystalPickUp -= OnCrystalPickUp;
     }
     #endregion
 }
